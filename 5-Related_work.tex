@@ -1,0 +1,45 @@
+\section{Related Work}
+\label{Sec:Related}
+%Loop summarization and loop reachability analysis are active areas of research. 
+%We discuss techniques related to \solveCHC below.
+
+\textbf{Invariant generation.} Inductive invariant generation is a widely used technique for 
+reasoning about loops by producing an overapproximation of program states, 
+such that any loop iteration remains within the same overapproximation. 
+Multiple approaches include CEGAR and predicate 
+abstraction~\cite{DBLP:conf/fmcad/HojjatR18,mcmillan2013computing}, 
+IC3/PDR~\cite{DBLP:journals/fmsd/KomuravelliGC16}, 
+program transformation-based methods~\cite{DBLP:conf/cav/KafleGM16}, 
+syntax-guided synthesis~\cite{DBLP:journals/fmsd/FedyukovichKB20}, and machine learning/neural 
+networks~\cite{DBLP:conf/iclr/RyanWYGJ20,DBLP:journals/corr/abs-2311-07948}. 
+One of the most popular approaches, used in a wide variety of algorithms, is 
+interpolation-based invariant generation~\cite{DBLP:conf/cav/McMillan06,DBLP:conf/kbse/LinSXLSH17,DBLP:conf/fmcad/BlichaFHS22,mcmillan2013computing,DBLP:conf/cav/McMillan03,DBLP:journals/fmsd/KomuravelliGC16,DBLP:conf/fmcad/HojjatR18}. 
+A recent advancement in this direction is Multiloop TPA~\cite{DBLP:conf/fm/BritikovBSF24}, which 
+specifically targets multi-loop programs. 
+However, unlike \solveCHC, this method does not support software with nested loops or gotos 
+and cannot be applied to general linear CHC systems.
+
+\textbf{Single-loop transformation.} A common strategy for analyzing complex 
+systems is to transform them into a single-loop representation~\cite{DBLP:journals/fmsd/DonaldsonKR11,DBLP:books/aw/AhoSU86,bueno2020horn2vmt}. 
+This enables the application of techniques such as IMC or TPA, optimized for 
+single-loop analysis~\cite{DBLP:journals/corr/abs-2208-05046}, allowing them 
+to reason over the original complex structure.
+
+\textbf{Loop acceleration.} Techniques~\cite{DBLP:conf/cav/BozgaIK10,DBLP:journals/sttt/BardinFLP08,DBLP:conf/tacas/Frohn20,DBLP:conf/cade/FrohnG22,DBLP:journals/corr/abs-1905-11187,DBLP:conf/fm/FrohnG24} 
+aim to produce quantifier-free first-order formulas that are equivalent to or underapproximate a loop's behaviour. 
+These methods are motivated by improving the scalability of safety verification, attempting to replace a 
+loop with a concrete formula. 
+State-of-the-art acceleration approaches predominantly rely on underapproximation and can struggle 
+with proving safety.
+
+\textbf{Loop summarization.} A group of approaches overapproximating loop execution 
+by constructing a symbolic relation between loop inputs and outputs, allowing the loop to be 
+abstracted away in subsequent analysis. 
+Common methods include symbolic abstraction~\cite{DBLP:conf/sac/BlichaKT22,DBLP:conf/cav/SilvermanK19,DBLP:conf/atva/KroeningSTTW08} 
+and symbolic execution~\cite{DBLP:conf/issta/StrejcekT12,DBLP:journals/tse/XieCZLLL19,DBLP:conf/issta/GodefroidL11}. 
+However, such approaches are typically property-agnostic and unaware of the surrounding system, 
+which can reduce their effectiveness. 
+Some of the approaches above also do not support summarization of nested loops. 
+In contrast, our method performs property-guided summary generation and handles nested loops.
+
+\vspace{-1em}

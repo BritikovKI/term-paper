@@ -1,0 +1,124 @@
+
+
+% \newcommand{\oreach}[1]{\ensuremath{\mathit{TPA}^{{\leq}#1}}}
+% \newcommand{\oreachfull}[3]{\ensuremath{\oreach{#1}(#2,#3)}}
+% \newcommand{\atrleq}[1]{\ensuremath{\mathit{TPA}^{{\leq}#1}}}
+% \newcommand{\atreq}[1]{\ensuremath{\mathit{TPA}^{{=}#1}}}
+% \newcommand{\atrlt}[1]{\ensuremath{\mathit{TPA}^{{<}#1}}}
+
+
+% \newcommand{\trleq}[1]{\ensuremath{\mathit{R}^{{\leq}#1}}}
+% \newcommand{\treq}[1]{\ensuremath{\mathit{R}^{{=}#1}}}
+% \newcommand{\trlt}[1]{\ensuremath{\mathit{R}^{{<}#1}}}
+
+% PRELIMINARIES  VARIABLES
+\newcommand{\source}{\mathit{src}}
+\newcommand{\target}{\mathit{trg}}
+\newcommand{\constraint}{\mathit{constr}}
+\newcommand{\clause}{\mathit{c}}
+\newcommand{\clauses}{C}
+\newcommand{\pred}{\mathit{p}}
+\newcommand{\preds}{\mathcal{P}}
+\newcommand{\predsf}{\mathit{preds}}
+\newcommand{\system}{\mathit{S}}
+\newcommand{\encoding}{\pi}
+\newcommand{\node}{n}
+\newcommand{\init}{\mathit{Source}}
+\newcommand{\route}{{{{h}}}}
+\newcommand{\routes}{\mathit{H}}
+\newcommand{\iteration}{{{\gamma}}}
+\newcommand{\proute}{{{\eta}}}
+\newcommand{\proutes}{\Theta}
+\newcommand{\query}{\mathit{Target}}
+\newcommand{\incoming}{\mathit{\alpha}}
+\newcommand{\outgoing}{\mathit{\omega}}
+\newcommand{\vars}{\mathcal{V}}
+\newcommand{\tr}{\mathit{Tr}}
+\newcommand{\inv}{\mathit{Inv}}
+\newcommand{\trInv}{\mathit{TrInv}}
+\newcommand{\mop}{\mathit{MOP}}
+\newcommand{\tpa}{\textsc{TPA}\xspace}
+\newcommand{\res}{\mathit{res}}
+\newcommand{\flas}{\mathit{Flas}}
+\newcommand{\id}{\mathit{Id}}
+\newcommand{\bad}{\mathit{Bad}}
+\newcommand{\varsx}{\ensuremath{\vec{x}}}
+
+\newcommand{\tuple}[1]{\langle #1 \rangle}
+
+\newcommand{\unrollings}{\mathcal{U}}
+\newcommand{\summaries}{\ensuremath{\Sigma}}
+\newcommand{\summary}{\ensuremath{\sigma}}
+% \newcommand{\inv}{\ensuremath{\inv}}
+% \newcommand{\program}{\ensuremath{\mathcal{P}}}
+% \newcommand{\cutpoints}{\ensuremath{\mathcal{CP}}}
+
+% \newcommand{\predicates}{\mathcal{Ps}}
+
+
+
+\newcommand{\false}{\mathit{false}}
+\newcommand{\true}{\mathit{true}}
+
+
+\newcommand{\SAFE}{\mathcal{SAFE}}
+\newcommand{\UNSAFE}{\mathcal{UNSAFE}}
+\newcommand{\DAG}{D}
+\newcommand{\curr}{\mathit{curr}}
+
+
+
+
+\newcommand{\gri}[1]{$[$\textbf{\textcolor{BrickRed}{Grigory}}:~~\emph{\textcolor{Mahogany}{#1}}$]$}
+\newcommand{\martin}[1]{$[$\textbf{\textcolor{BrickRed}{Martin}}:~~\emph{\textcolor{blue}{#1}}$]$}
+\newcommand{\konst}[1]{$[$\textbf{\textcolor{ForestGreen}{Konstantin}}:~~\emph{\textcolor{blue}{#1}}$]$}
+
+
+
+% ALGORITHM
+
+
+
+\newcommand{\cexp}{\ensuremath{\mathit{cexp}}}
+
+
+\newcommand{\solveCHC}{\textsc{CSRA}\xspace}
+\newcommand{\mergeTransition}{\textsc{SummarizeIteration}\xspace}
+\newcommand{\extractPaths}{\textsc{ExtractPaths}\xspace}
+\newcommand{\queryUnrolling}{\textsc{ExpandPath}\xspace}
+\newcommand{\summarize}{\textsc{AnalyzeCycles}\xspace}
+
+\newcommand{\inc}[1]{\ensuremath{{#1}^{\mathit{pre}}}}
+\newcommand{\out}[1]{\ensuremath{{#1}^{\mathit{post}}}}
+\newcommand{\checked}{\mathit{curr}}
+\newcommand{\safe}[1]{\ensuremath{#1.\mathit{sat}}}
+\newcommand{\mbp}{\ensuremath{\mathit{MBP}}\xspace}
+\newcommand{\splittpa}{\textsc{TPA}}
+\newcommand{\reached}{\ensuremath{\mathit{visited}}}
+\newcommand{\blocked}{\ensuremath{\mathit{blocked}}}
+\newcommand{\current}{\ensuremath{\mathit{curr}}}
+\newcommand{\outp}{\ensuremath{\mathit{output}}}
+\newcommand{\cex}{\ensuremath{\mathit{cex}}}
+\newcommand{\iter}{\ensuremath{\mathit{depth}}}
+\newcommand{\iterConst}{\ensuremath{\mathit{iterConst}}}
+\newcommand{\iterReached}{\ensuremath{\mathit{iterVisited}}}
+% \newcommand{\expansion}{\ensuremath{\mathit{exp}}}
+\newcommand{\ex}{\ensuremath{\mathit{e}}}
+
+\newcommand{\pop}{\ensuremath{\mathit{pop}}}
+\newcommand{\learnedConst}{\mathit{constr}}
+\newcommand{\precond}{\mathit{pre}}
+\newcommand{\postcond}{\mathit{post}}
+\newcommand{\sourcepred}{\mathit{s}}
+\newcommand{\targetpred}{\mathit{t}}
+% \newcommand{\id}{\mathit{Id}}
+
+
+
+\newcommand{\model}{M}
+\newcommand{\algorithmicbreak}{\textbf{break}}
+
+
+\newcommand{\sat}{\textsc{SAT}}
+\newcommand{\unsat}{\textsc{UNSAT}}
+

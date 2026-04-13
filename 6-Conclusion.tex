@@ -1,0 +1,14 @@
+\section{Conclusion}
+\label{Sec:Conclusion}
+This paper introduces Cycle Summarization-based Reachability Analysis (CSRA), a new CHC-based 
+reachability analysis approach designed for software with diverging control flow and nested loops. 
+The key insight is to analyze cycles modularly and construct/reuse cycle summaries on the fly. 
+\solveCHC decomposes the reachability analysis of a system into the exploration of separate simple 
+paths through the CHC system. 
+Applying \tpa modularly allows our approach to efficiently 
+unroll cycle paths and produce property-specific cycle summaries. 
+Modular application of \tpa together with maintaining the structural information about the CHC system, 
+enables our technique to efficiently verify complex programs. 
+We proved the algorithm's correctness and conducted an extensive experimental evaluation that 
+demonstrates the efficiency of \solveCHC compared to state-of-the-art competitors and reachability 
+analysis engines in Golem on challenging nested-loop systems.
