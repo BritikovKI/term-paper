@@ -80,7 +80,7 @@ The algorithm for proving nontermination of transition system is as follows:
     \Output{NONTERM | UNKNOWN}
     \While{$\top$}{
         \Switch{$safetyCheck(\tuple{Init, Tr, Sink, x})$}{
-            \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(n)})}$} {
+            \Case{$\tuple{UNSAFE, trace}$} {
                 $P \gets BlockTerm(P, trace)$ \label{SNA:BLOCKTERM}
             }
             \Case{$\tuple{SAFE, Inv(x)}$} {
@@ -113,7 +113,7 @@ Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
     \label{Alg:SNABlock}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
-    \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$, trace $trace(x^{(0)}, \dots, x^{(n)}) = Tr(x^{(0)}) \land \dots \land Tr(x^{(n)})$}
+    \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$, terminating trace $trace(x^{(0)}, \dots, x^{(n)}) = Tr(x^{(0)}) \land \dots \land Tr(x^{(n)})$}
     \Output{Refined safety problem $P' = \tuple{Init', Tr', Sink', x}$}
     $M \models Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(n)}) \land Sink(x^{(n)})$ \label{SNA:UNSAFE}  \\
     $i \gets n-1$ \\

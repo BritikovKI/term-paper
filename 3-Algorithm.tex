@@ -9,8 +9,6 @@ Otherwise, the algorithm identifies states not covered by the transition invaria
 
 
 
-
-
 \begin{algorithm}[t!]
 	\SetInd{0.5em}{0.5em}
     \DontPrintSemicolon
@@ -112,6 +110,61 @@ The disjunction of all well-founded disjuncts is then added to the candidate tra
     Since $s_m(x)$ is reachable from $Init(x)$ (line~\ref{SNA_Term:CheckNc}), $R(x)$ is also reachable from $Init(x)$, and therefore $R(x)$ is a recurrent set for the original transition system, which implies that the transition system is nonterminating.
 \end{proof}
 
+
+% \begin{algorithm}[t!]
+% 	\SetInd{0.5em}{0.5em}
+%     \DontPrintSemicolon
+%     \small
+%     \newcommand{\Continue}{\textbf{continue}}
+%     \caption{Analyze(P)}
+%     \label{Alg:SNA_Term}
+%     \SetKwInOut{Input}{Input}
+%     \SetKwInOut{Output}{Output}
+%     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
+%     \Output{$\tuple{NONTERM, R(x)}$ | $\tuple{TERM, TInv(x,x')}$}
+%     \While{$\top$} {
+%         $TInv \gets \bot$ \\
+%         \Switch{$safetyCheck(\tuple{Init, Tr, Sink, x})$}{
+%             \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(n)})}$} {
+%                 -- SAME AS IN ALGORITHM 2 -- \\
+%                 $T^n(x), \forall x. T^n(x) \rightarrow \forall x^{(1)}, \dots, x^{(n)}. trace(x, x^{(1)}, \dots, x^{(n)}) \rightarrow Sink(x^{(n)})$  \\
+%                 $Cs(x,x') \gets DNFIZE(Itp(trace(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x')))$ \\
+%                 $TInv(x,x') \gets TInv(x,x') \lor \bigvee_i d_i$\tcp*[r]{$\bigvee_i d_i$ are w-f disjuncts $\in Cs$} 
+%                 $Nc(x) \gets \exists x',x''. Tr(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x'')$ \\
+%                 \Switch{$safetyCheck(\tuple{Init, Tr, Nc, x})$}{ 
+%                     \label{SNA_Term:CheckNc}
+%                     \Case{$\tuple{SAFE, Inv(x)}$} {
+%                          \Return $\tuple{TERM, TInv(x,x')}$\label{SNA_Term:NEWTERM}
+%                     }
+%                     \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(m)})}$} {
+%                         $M \models Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(m)}) \land Sink(x^{(m)})$ \label{SNA_Term:UNSAFE}  \\
+%                         $s_m(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(m)}$\\
+%                         \Switch{$Analyze(\tuple{s_m(x), Tr, Sink, x})$} {
+%                             \Case{$\tuple{NONTERM, R(x)}$} {
+%                                 \Return $\tuple{NONTERM, R(x)}$ \label{SNA_Term:NEWNONTERM}
+%                             }
+%                             \Case{$\tuple{TERM, TInv'(x,x')}$} {
+%                                 $TInv(x,x') \gets TInv(x,x') \lor TInv'(x,x')$ \\
+%                             }
+%                         }
+%                     }       
+                
+%                 }
+%             }
+%             \Case{$\tuple{SAFE, Inv(x)}$} {
+%                  \label{SNA_Term:SAFE}
+%                 \lIf {UNSAT ? $Init(x) \land Tr(x,x')$} {
+%                     \Return $\tuple{TERM, TInv(x,x')}$\label{SNA_Term:OLDTERM}
+%                 }
+%                 \If{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
+%                     \Return $\tuple{NONTERM, Inv(x)}$ \label{SNA_Term:OLDNONTERM}
+%                 } 
+%                 $Sink(x) \gets \forall x. Sink'(x) \rightarrow \lnot \exists x'. Tr(x,x')$
+%             }
+%         }
+%     }
+    
+% \end{algorithm}
 
 \section{Safety-based Nontermination Analysis Extensions}
 \label{Sec:Main}
