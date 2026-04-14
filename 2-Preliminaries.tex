@@ -14,7 +14,7 @@ Bad state.
 Safety problem $P$ is unsafe if there exists a satisfying assignment for the following formula:
 $$Init(x^{(0)}) \land  Tr(x^{(0)}, x^{(1)}) \land \ldots \land Tr(x^{(n-1)}, x^{(n)}) \land Bad(x^{(n)})$$
 
-If $P$ is SAFE, then there exists an inductive invariant $Inv(x)$ such that $Init(x) \implies Inv(x)$, $Inv(x) \land Tr(x,x') \implies Inv(x')$, and $Inv(x) \implies \lnot Bad(x)$.
+If $P$ is SAFE, then there exists an inductive invariant $Inv(x)$ such that $Init(x) \rightarrow Inv(x)$, $Inv(x) \land Tr(x,x') \rightarrow Inv(x')$, and $Inv(x) \rightarrow \lnot Bad(x)$.
 We use $safetyCheck(P)$ to denote a safety verification procedure which returns a tuple $\tuple{res, \phi}$ where $res = SAFE$ if TS is safe and $\phi = Inv(x)$ (inductive state invariant), otherwise if TS is unsafe $res = UNSAFE$ and $\phi$ is a trace that leads to the bad states: 
 $$\phi = trace(x^{(0)}, \dots, x^{(n)}) =  Tr(x^{(0)},x^{(1)}) \land \ldots \land Tr(x^{(n-1)},x^{(n)}).$$
 
@@ -23,7 +23,7 @@ A transition system is called \textbf{nonterminating} if there exists a set of s
 \begin{definition}[Recurrent Set]
     For a Transition System $\tuple{ Init, Tr, x }$, a recurrent set is a formula $N(x)$ such that:
     \begin{itemize}
-        \item $\forall x. N(x) \implies \exists x'. Tr(x,x') \land N(x')$
+        \item $\forall x. N(x) \rightarrow \exists x'. Tr(x,x') \land N(x')$
         \item $\exists x. N(x) \land Init(x)$
     \end{itemize}
 \end{definition}
@@ -36,7 +36,7 @@ can be used to prove termination.
 
 \begin{definition}[Transition invariant]
     For a Transition System $\tuple{ Init, Tr, x }$, $TrInv(x,x')$ is a transition invariant if $Tr^*(x,x') \subset TrInv(x,x')$ over the set of reachable states.
-    In a First Order Logic: $\forall x,x'. R(x) \land Tr^*(x,x') \land R(x') \implies TrInv(x,x')$, where $Tr^*(x,x')$ is the reflexive transitive closure of $Tr(x,x')$
+    In a First Order Logic: $\forall x,x'. R(x) \land Tr^*(x,x') \land R(x') \rightarrow TrInv(x,x')$, where $Tr^*(x,x')$ is the reflexive transitive closure of $Tr(x,x')$
     and $R(x)$ is a formula which describes all of the states, reachable within transition system.
 \end{definition}
 
@@ -47,7 +47,7 @@ can be used to prove termination.
 \end{definition}
 
 \paragraph{Craig Interpolation.} This is a technique for computing an overapproximation of the formula~\cite{Craig_1957}.
-Particularly, given two formulas $A$ and $B$ such that $A \land B$ is unsatisfiable, a Craig interpolant for $A$ and $B$ is a formula $I$ such that $A \implies I$, $I \land B$ is unsatisfiable, and $I$ only contains the symbols that are common to both $A$ and $B$.
+Particularly, given two formulas $A$ and $B$ such that $A \land B$ is unsatisfiable, a Craig interpolant for $A$ and $B$ is a formula $I$ such that $A \rightarrow I$, $I \land B$ is unsatisfiable, and $I$ only contains the symbols that are common to both $A$ and $B$.
 We use $Itp(A, B)$ to denote the Craig interpolant for $A$ and $B$.
 
 \paragraph{Proving Nontermination via Safety.}
@@ -58,7 +58,7 @@ It was introduced in the context of proving nontermination of programs with nest
 \begin{definition}[Sink states]
     For a Transition System $\tuple{ Init, Tr, x }$, a state $Sink(x)$ is a sink state, if $Sink(x) \land Tr(x,x')$ is unsatisfiable.
     We use $Sink(x)$ to denote the formula describing all sink states in the transition system: 
-     $$\forall x. Sink(x) \implies \lnot \exists x'. Tr(x,x')$$
+     $$\forall x. Sink(x) \rightarrow \lnot \exists x'. Tr(x,x')$$
 \end{definition}
 
 Sink states can be computed by applying quantifier elimination to $\lnot \exists x'. Tr(x,x')$.
@@ -72,34 +72,20 @@ The algorithm for proving nontermination of transition system is as follows:
     \DontPrintSemicolon
     \small
     \newcommand{\Continue}{\textbf{continue}}
-    \caption{Nontermination analysis using Safety.}
+    \caption{Nontermination analysis using Safety.~\cite{DBLP:conf/tacas/ChenCFNO14}}
     \label{Alg:SNA}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
     \Output{NONTERM | UNKNOWN}
     \While{$\top$}{
-        $\tuple{res, \phi} \gets safetyCheck(P)$\\
-        \Switch{$safetyCheck(P)$}{
+        \Switch{$safetyCheck(\tuple{Init, Tr, Sink, x})$}{
             \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(n)})}$} {
-                $M \models Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(n)}) \land Sink(x^{(n)})$ \label{SNA:UNSAFE}  \\
-                $i \gets n-1$ \\
-                \While{$i > 0$}{
-                    $s_i(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(i)}$\\
-                    $s_{i+1}(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(i+1)}$\\
-
-                    \eIf{SAT ? $s_i(x) \land Tr(x,x') \land \lnot s_{i+1}(x')$}{
-                        $Tr(x,x') = Tr(x,x') \land \lnot s_{i+1}(x')$ \label{SNA:BLOCK} \\
-                        \break
-                    }{
-                        $i \gets i - 1$
-                    }
-                }
-                \lIf{i=0} {$Init(x) \gets Init(x) \land \lnot s_0(x)$  \label{SNA:BLOCKINIT}} 
+                $P \gets BlockTerm(P, trace)$ \label{SNA:BLOCKTERM}
             }
             \Case{$\tuple{SAFE, Inv(x)}$} {
                 \label{SNA:SAFE}
-                \If{$\forall x. Inv(x) \implies \exists x'. Tr(x,x') \land Inv(x')$} {
+                \If{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
                     \Return NONTERM \label{SNA:RECURRENT}
                 }
                 \Return UNKNOWN
@@ -111,14 +97,68 @@ The algorithm for proving nontermination of transition system is as follows:
 
 The algorithm begins with a safety check of $P$, where the bad states are set as the Sink states.
 At line~\ref{SNA:UNSAFE}, the algorithm handles the case when $P$ is unsafe (i.e., a trace reaching a sink state exists).
-The safety checker returns a concrete trace $trace(x^{(0)}, \dots, x^{(n)})$, and the algorithm extracts the satisfying model, that allows to calculate the formulas $s_0(x), s_1(x), \dots, s_n(x)$ - representing the reached system state after each step of the trace.
-Using these formulas, the algorithm iteratively checks if it is possible to take a transition from $s_i(x)$ to a state, different from $s_{i+1}(x)$.
-If it is possible, then the algorithm blocks the state $s_{i+1}(x)$ from the transition (at line~\ref{SNA:BLOCK}), since this state inevitably leads to a sink state.
-Otherwise, if such $s_i(x)$ does not exist, then the state $s_0(x)$ is deterministically leading to the sink states, indicating that all executions from $s_0$ terminate; accordingly, $s_0$ is excluded from the initial states.
-
-
-
+In this case, the algorithm calls the $BlockTerm$ procedure (Algorithm~\ref{Alg:SNABlock}), which refines the safety problem $P$ by blocking the trace that is guaranteed
+to lead to the sink states, updating the Safety problem.
 In the case when $P$ is safe, the algorithm extracts the inductive invariant $Inv(x)$ at line~\ref{SNA:SAFE}.
 The algorithm checks whether $Inv(x)$ is a recurrent set at line~\ref{SNA:RECURRENT}, meaning that it is possible to take a transition from every state within the invariant to another state.
 If $Inv(x)$ is a recurrent set, then the transition system is nonterminating.
 Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
+
+\begin{algorithm}
+    \SetInd{0.5em}{0.5em}
+    \DontPrintSemicolon
+    \small
+    \newcommand{\Continue}{\textbf{continue}}
+    \caption{BlockTerm(P, trace).~\cite{DBLP:conf/tacas/ChenCFNO14}}
+    \label{Alg:SNABlock}
+    \SetKwInOut{Input}{Input}
+    \SetKwInOut{Output}{Output}
+    \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$, trace $trace(x^{(0)}, \dots, x^{(n)}) = Tr(x^{(0)}) \land \dots \land Tr(x^{(n)})$}
+    \Output{Refined safety problem $P' = \tuple{Init', Tr', Sink', x}$}
+    $M \models Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(n)}) \land Sink(x^{(n)})$ \label{SNA:UNSAFE}  \\
+    $i \gets n-1$ \\
+    \While{$i > 0$}{
+        % $s_i(x) \gets QE(\exists x^{(0)}, \dots, x^{(i-1)}, x^{(i+1)}, \dots  | Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(n)}) \land Sink(x^{(n)}))$\\
+        $s_i(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(i)}$\\
+        $s_{i+1}(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(i+1)}$\\
+        \label{SNA:BLOCK} \If{SAT ? $s_i(x) \land Tr(x,x') \land \lnot s_{i+1}(x')$}{
+            $Tr'(x,x') \gets Tr(x,x') \land \lnot s_{i+1}(x')$  \\
+            \Return $\tuple{Init, Tr', Sink, x}$
+        }
+        $i \gets i - 1$
+        
+    }
+    $Init'(x) \gets Init(x) \land \lnot s_0(x)$  \label{SNA:BLOCKINIT} \\
+    \Return $\tuple{Init', Tr, Sink, x}$
+\end{algorithm}
+
+The $BlockTerm$ procedure takes a safety problem $P$ and a trace\\ $trace(x^{(0)}, \dots, x^{(n)})$ such that $Init(x) \land trace(x, \dots, x') \land Sink(x')$ is satisfiable.
+It refines the safety problem by blocking the states that deterministically lead to termination.
+At line~\ref{SNA:UNSAFE} the algorithm extracts the satisfying model, that allows to calculate the formulas $s_0(x), s_1(x), \dots, s_n(x)$ - representing the reached state after each step of the trace.
+Using these formulas, the algorithm iteratively checks if it is possible to take a transition from $s_i(x)$ to a state, different from $s_{i+1}(x)$ (at line~\ref{SNA:BLOCK}), using a query to the SMT solver.
+If it is possible, then the algorithm blocks the state $s_{i+1}(x)$ from the transition, since this state inevitably leads to a sink state.
+Otherwise, if $s_i(x)$ does not exist, then the state $s_0(x)$ deterministically leads to the sink states.
+$s_0$ is excluded from the initial states, and algorithm returns updated safety problem.
+
+
+
+\begin{lemma}
+    If Algorithm~\ref{Alg:SNA} returns NONTERM, then the transition system is nonterminating.
+\end{lemma}
+\begin{proof}
+    Suppose $\tuple{Init', Tr', x}$ Algorithm~\ref{Alg:SNA} returns NONTERM. 
+    Then, based on the line~\ref{SNA:SAFE} there exists an inductive invariant $Inv(x)$ such that:
+    \begin{enumerate}[label=\Roman*.]
+        \item $\forall x.\ Inv(x) \rightarrow \exists x'. Tr'(x,x') \land Inv(x')$.
+    \end{enumerate}
+    We show that $Inv(x)$ is also a recurrent set for the original system $\tuple{Init, Tr, x}$.
+
+    \textbf{Reachability from $Init$.} Since original $Init$ is updated as follows: $Init'(x) = Init(x) \land \bigwedge_i \lnot s_i(x)$, 
+    we have $Init'(x) \rightarrow Init(x)$. 
+    By definition of inductive invariant, $Init'(x) \rightarrow Inv(x)$, and therefore some states from $Init$ are in the recurrent set.
+
+    \textbf{Closure under $Tr$.} Since $Tr'(x,x') = Tr(x,x') \land \bigwedge_i \lnot s_i(x')$, we have $Tr'(x,x') \rightarrow Tr(x,x')$. 
+    Therefore, $\forall x.\ Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$.
+
+    Thus $Inv(x)$ satisfies both conditions of a recurrent set for $\tuple{Init, Tr, x}$, which is therefore nonterminating.
+\end{proof}
