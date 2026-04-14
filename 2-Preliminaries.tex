@@ -40,18 +40,17 @@ Additionally, a \emph{transition invariant}~\cite{DBLP:conf/lics/PodelskiR04}
 can be used to prove termination.
 
 \begin{definition}[Transition invariant]
-    For a Transition System $\tuple{ Init, Tr, x }$, $TrInv(x,x')$ is a transition invariant if $Tr^*(x,x') \subset TrInv(x,x')$ over the set of reachable states.
-    In a First Order Logic: $\forall x,x'. R(x) \land Tr^*(x,x') \land R(x') \rightarrow TrInv(x,x')$, where $Tr^*(x,x')$ is the reflexive transitive closure of $Tr(x,x')$
-    and $R(x)$ is a formula which describes all of the states, reachable within transition system.
+    For a Transition System $\tuple{ Init, Tr, x }$, $TrInv(x,x')$ is a transition invariant if: $\forall x,x'. R(x) \land Tr^*(x,x') \land R(x') \rightarrow TrInv(x,x')$, where $Tr^*(x,x')$ is the reflexive transitive closure of $Tr(x,x')$
+    and $R(x)$ is a formula which encodes the states, reachable within transition system.
 \end{definition}
 
-\emph{Transition invariant} proves the termination of transition system, if it can be expressed as a finite disjunction of well-founded relations.
+\emph{Transition invariant} proves the termination of transition system, if it can be expressed as a finite disjunction of well-founded formulas.
 
 \begin{definition}[Disjunctively well-founded transition invariant]
     A transition invariant $TrInv(x,x') = R_1(x,x') \lor R_2(x,x') \lor \dots \lor R_n(x,x')$ is called disjunctively well-founded if every disjunct $R_i(x,x')$ is well-founded. 
 \end{definition}n
 
-\paragraph{Craig Interpolation.} This is a technique for computing an overapproximation of the formula~\cite{Craig_1957}.
+\paragraph{Craig Interpolation.} A technique for computing an overapproximation of the formula~\cite{Craig_1957}.
 Particularly, given two formulas $A$ and $B$ such that $A \land B$ is unsatisfiable, a Craig interpolant for $A$ and $B$ is a formula $I$ such that $A \rightarrow I$, $I \land B$ is unsatisfiable, and $I$ only contains the symbols that are common to both $A$ and $B$.
 We use $Itp(A, B)$ to denote the Craig interpolant for $A$ and $B$.
 
