@@ -7,19 +7,23 @@ In cases where there are multiple states, we use superscripts to distinguish the
 We use $s(x), s_1(x), s_2(x) \dots$ to denote the specific states of the system, which is a conjunction in which each variable in $x$ is assigned a specific value.
 %
 \paragraph{Transition systems and Safety Problem.} 
-A \emph{transition system} is defined as $T = \tuple{ Init, Tr, x }$, where $Init$ is an initial state of the system represented by a first-order logic formula, $Tr$ is a transition formula, which represents the transition in the system, and $x$ is a set of system's variables. 
-A \emph{safety problem} is defined as  $P = \tuple{ Init, Tr, Bad, x }$ where $Bad$ is a formula that represents a state violating the safety property. 
-Safety verification amounts to determining whether there exists a transition trace through the system that reaches a BadBad
-Bad state.
-Safety problem $P$ is unsafe if there exists a satisfying assignment for the following formula:
+A \emph{transition system} (TS) is defined as $T = \tuple{ Init, Tr, x }$, where $Init$ is an initial state of the system represented by a first-order logic formula, $Tr$ is a transition formula, which represents the transition in the system, and $x$ is a set of system's variables. 
+A \emph{safety problem} is defined as  $P = \tuple{ Init, Tr, Bad, x }$ where $Bad$ is a formula that represents a state violating the safety property.
+Transition trace is a formula encoding multiple consecutive transitions in the Transition System: $trace(x^{(0)}, \dots, x^{(n)}) = Tr(x^{(0)}, x^{(1)}) \land \dots \land Tr(x^{(n-1)}, x^{(n)})$.
+Safety verification amounts to determining whether there exists a transition trace from the initial states that reaches a Bad state.
+Transition System is unsafe if there exists a satisfying assignment for the following formula:
 $$Init(x^{(0)}) \land  Tr(x^{(0)}, x^{(1)}) \land \ldots \land Tr(x^{(n-1)}, x^{(n)}) \land Bad(x^{(n)})$$
 
-If $P$ is SAFE, then there exists an inductive invariant $Inv(x)$ such that $Init(x) \rightarrow Inv(x)$, $Inv(x) \land Tr(x,x') \rightarrow Inv(x')$, and $Inv(x) \rightarrow \lnot Bad(x)$.
-We use $safetyCheck(P)$ to denote a safety verification procedure which returns a tuple $\tuple{res, \phi}$ where $res = SAFE$ if TS is safe and $\phi = Inv(x)$ (inductive state invariant), otherwise if TS is unsafe $res = UNSAFE$ and $\phi$ is a trace that leads to the bad states: 
+If $P$ is SAFE, then there exists an inductive invariant $Inv(x)$: (1) $Init(x) \rightarrow Inv(x)$, (2) $Inv(x) \land Tr(x,x') \rightarrow Inv(x')$, and (3) $Inv(x) \rightarrow \lnot Bad(x)$.
+We use $safetyCheck(P)$ to denote a safety verification procedure which returns a tuple $\tuple{res, \phi}$ where $res = SAFE$ if Transition System is SAFE and $\phi = Inv(x)$ (inductive invariant).
+Otherwise, if TS is unsafe $res = UNSAFE$ and $\phi$ is a trace that violates the safety propery: 
 $$\phi = trace(x^{(0)}, \dots, x^{(n)}) =  Tr(x^{(0)},x^{(1)}) \land \ldots \land Tr(x^{(n-1)},x^{(n)}).$$
 
 \paragraph{Nontermination.}
-A transition system is called \textbf{nonterminating} if there exists a set of states, called a \emph{recurrent set}, within which there always exists SAT transition to another state in recurrent set.
+A transition system is called \textbf{nonterminating} if there exists an initial state, from which it is possible to take any number of transitions:
+$$\exists x. Init(x) \land \forall n \in N \exists x^{(1)}, \dots, x^{(n)}. Init(x) \land trace(x, x^{(1)}, \dots, x^{(n)}).$$
+
+Non-termination can be proven with a set of states, called a \emph{recurrent set}, within which there always exists SAT transition to another state in recurrent set.
 \begin{definition}[Recurrent Set]
     For a Transition System $\tuple{ Init, Tr, x }$, a recurrent set is a formula $N(x)$ such that:
     \begin{itemize}
@@ -27,10 +31,11 @@ A transition system is called \textbf{nonterminating} if there exists a set of s
         \item $\exists x. N(x) \land Init(x)$
     \end{itemize}
 \end{definition}
-Intuitively, every state in the recurrent set has a successor that also lies in the recurrent set, and the set is reachable from some initial state.
-\paragraph{Termination.} A Transition System is called \textbf{Terminating} if for every initial state there does not exist an infinite satisfiable transition trace.
-Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}
-, which maps states to a well-founded domain such that its value strictly decreases along every transition.
+Intuitively, every state in the recurrent set has a successor that also lies in the recurrent set, and the recurrent set includes some of the states from the Initial states.
+\paragraph{Termination.} A Transition System is called \textbf{Terminating} if for every initial state it is possible to take only some limited number of transitions:
+For a Transition System $\tuple{ Init, Tr, x }$:
+$\forall x. Init(x) \exists n. \forall x^{(1)}, \dots, x^{(n)} \lnot(Init(x) \land trace(x, x^{(1)}, \dots, x^{(n)}))$.
+Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, which maps states to a well-founded domain such that its value strictly decreases along every transition.
 Additionally, a \emph{transition invariant}~\cite{DBLP:conf/lics/PodelskiR04} 
 can be used to prove termination.
 
@@ -44,7 +49,7 @@ can be used to prove termination.
 
 \begin{definition}[Disjunctively well-founded transition invariant]
     A transition invariant $TrInv(x,x') = R_1(x,x') \lor R_2(x,x') \lor \dots \lor R_n(x,x')$ is called disjunctively well-founded if every disjunct $R_i(x,x')$ is well-founded. 
-\end{definition}
+\end{definition}n
 
 \paragraph{Craig Interpolation.} This is a technique for computing an overapproximation of the formula~\cite{Craig_1957}.
 Particularly, given two formulas $A$ and $B$ such that $A \land B$ is unsatisfiable, a Craig interpolant for $A$ and $B$ is a formula $I$ such that $A \rightarrow I$, $I \land B$ is unsatisfiable, and $I$ only contains the symbols that are common to both $A$ and $B$.
