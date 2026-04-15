@@ -1,14 +1,25 @@
-\section{Termination Analysis with Interpolation-based Transition Invariant Generation}
+\section{Interpolation-based Transition Invariant Generation}
 
-In this section, we present our novel approach for termination analysis of transition systems, which leverages the 
-results of safety checks for the interpolation-based transition invariant generation.
-The core idea of this approach is to use the terminating traces, detected by the safety-based nontermination analysis, 
-to generate well-founded transition invariant.
-An over-approximation of the transition trace is constructed, and then transformed into a disjunctive normal form.
-Then, this formula is filtered, as all disjuncts that are not well-founded are removed from the formula.
-If the remaining, disjunctively well-founded formula is a transition invariant over the reachable states, then the transition system is 
-terminating.
-Otherwise, the algorithm identifies states not covered by the transition invariant and checks if they terminate as well.
+Our main procedure for the detection of termination leverages the existing safety verification techniques for the 
+interpolation-based transition invariant generation.
+Each iteration of the algorithm, the trace from initial states reaching termination is constructed and used for the termination proof.
+The algorithm keeps track of the states which are covered by the disjunctively well-founded transition invariant, and
+concentrates on construction of the invariant for the states which are not yet covered.
+Interpolation-based approach allows for property-based transition invariant generation, concentrating on the conditions
+which are important for the termination of the transition system.
+
+\subsection{Algorithm for Termination Analysis Transition Invariant Generation}
+
+
+The algorithm description is given in Algorithm~\ref{Alg:SNA_Term}. Below, we explain the steps of the algorithm in
+detail.
+Then, provide an algorithm execution example.
+Afterwards, we prove the correctness of the introduced approach.
+
+Our technique, similarly to the Algorithm~\ref{Alg:SNA} takes as input a Safety Problem $P=\tuple{Init, Tr, Sink, x}$, where $Init$ and 
+$Tr$ are formulas encoding initial states and transition within the Transition System, $Sink$ is the formula encoding sink states, and $x$ is 
+a set of variables over which the Transition System is defined.
+As an output, the algorithm returns NONTERM - if TS is nonterminating, or TERM - if TS terminates.
 
 
 
@@ -22,11 +33,11 @@ Otherwise, the algorithm identifies states not covered by the transition invaria
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
-    \Output{NONTERM | TERM | UNKNOWN}
+    \Output{NONTERM | TERM}
+    $TInv \gets \bot$ \\
+    $Init' \gets Init$ \\
     \While{$\top$} {
-        $TInv \gets \bot$ \\
-        $Init' \gets Init$ \\
-        \Switch{$safetyCheck(\tuple{Init', Tr, Sink, x})$}{
+        \label{SNA_Term:Safety} \Switch{$safetyCheck(\tuple{Init', Tr, Sink, x})$}{
             \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(n)})}$} {
                 $T^n(x) \gets \lnot QE(\exists x^{(1)}, \dots, x^{(n)} | trace(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}))$  \\
                 $Cs(x,x') \gets DNFIZE(Itp(trace(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x')))$ \\
@@ -49,15 +60,29 @@ Otherwise, the algorithm identifies states not covered by the transition invaria
                 }
             }
             \Case{$\tuple{SAFE, Inv(x)}$} {
-               \label{SNA_TERM:SAFE}
-                \lIf{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
-                    \Return $NONTERM$ \label{SNA_TERM:OLDNONTERM}
-                }
-                \Return UNKNOWN
+            %    \label{SNA_TERM:SAFE}
+                % \lIf{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
+                    \Return $NONTERM$ \label{SNA_TERM:NONTERM}
+                % }
+                % \Return UNKNOWN
             }
         }
     }
 \end{algorithm}
+
+
+The procedure loops, until it is able to either find a recurrent set - proving nontermination, or a disjunctively well-founded Transition Invariant, 
+that allows to conclude the termination.
+During the whole algorithm, the procedure constructs transition invariant, adding well-founded disjuncts and making it weaker.
+Additionally, it alternates initial states, proving termination for particular reachable states in the Transition system.
+Every iteration of the algorithm, similarly to the Algorithm~\ref{Alg:SNA} commences with the safety check at line~\ref{SNA_Term:Safety}.
+The algorithm handles two possible cases:
+
+\paragraph{UNSAFE.} It means there exists a terminating trace in the Transition System. Algorithm then commences, by constructing a formula $T^n$, which encodes all of the states,
+that are guaranteed to reach sink states in $0 \leq i \leq n$ transitions:
+$$\forall x. T^n(x) \implies \forall x^{(1)}, \dots, x^{(n)}. trace(x,x^{(1)}, \dots, x^{(n)}) \implies Sink(x^{(n)})$$
+
+This formula can be constructed by applying the Quantifier elimination on the negated second part of the formula.
 
 % \begin{algorithm}[t!]
 % 	\SetInd{0.5em}{0.5em}
