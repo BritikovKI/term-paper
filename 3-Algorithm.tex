@@ -1,11 +1,14 @@
 \section{Termination Analysis with Interpolation-based Transition Invariant Generation}
 
-In this section, we present our novel approach for termination analysis of transition systems, which leverages interpolation-based transition invariant generation, building on the safety-based nontermination analysis.
-The core idea of this approach is to use the terminating traces, detected by the safety-based nontermination analysis, to generate well-founded transition invariant.
-The key contribution is a post-processing step triggered upon detection of a terminating trace.
-The algorithm then computes an over-approximation of the transition trace, which it transforms into a disjunctively well-founded relation.
-If this formula is a transition invariant over the reachable states, then the transition system is terminating.
-Otherwise, the algorithm identifies states not covered by the transition invariant and recursively analyses them for termination.
+In this section, we present our novel approach for termination analysis of transition systems, which leverages the 
+results of safety checks for the interpolation-based transition invariant generation.
+The core idea of this approach is to use the terminating traces, detected by the safety-based nontermination analysis, 
+to generate well-founded transition invariant.
+An over-approximation of the transition trace is constructed, and then transformed into a disjunctive normal form.
+Then, this formula is filtered, as all disjuncts that are not well-founded are removed from the formula.
+If the remaining, disjunctively well-founded formula is a transition invariant over the reachable states, then the transition system is 
+terminating.
+Otherwise, the algorithm identifies states not covered by the transition invariant and checks if they terminate as well.
 
 
 
@@ -19,50 +22,92 @@ Otherwise, the algorithm identifies states not covered by the transition invaria
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
-    \Output{$\tuple{NONTERM, R(x)}$ | $\tuple{TERM, TInv(x,x')}$}
+    \Output{NONTERM | TERM | UNKNOWN}
     \While{$\top$} {
         $TInv \gets \bot$ \\
-        \Switch{$safetyCheck(\tuple{Init, Tr, Sink, x})$}{
+        $Init' \gets Init$ \\
+        \Switch{$safetyCheck(\tuple{Init', Tr, Sink, x})$}{
             \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(n)})}$} {
-                -- SAME AS IN ALGORITHM 2 -- \\
-                $T^n(x), \forall x. T^n(x) \rightarrow \forall x^{(1)}, \dots, x^{(n)}. trace(x, x^{(1)}, \dots, x^{(n)}) \rightarrow Sink(x^{(n)})$  \\
+                $T^n(x) \gets \lnot QE(\exists x^{(1)}, \dots, x^{(n)} | trace(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}))$  \\
                 $Cs(x,x') \gets DNFIZE(Itp(trace(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x')))$ \\
-                $TInv(x,x') \gets TInv(x,x') \lor \bigvee_i d_i$\tcp*[r]{$\bigvee_i d_i$ are w-f disjuncts $\in Cs$} 
-                $Nc(x) \gets \exists x',x''. Tr(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x'')$ \\
+                $TInv \gets TInv \lor \bigvee_i d_i$\tcp*[r]{$\bigvee_i d_i$ are well-founded disjuncts in $Cs$} 
+                $Nc(x) \gets QE(\exists x',x''|$ $Tr(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x''))$ \\
                 \Switch{$safetyCheck(\tuple{Init, Tr, Nc, x})$}{ 
                     \label{SNA_Term:CheckNc}
                     \Case{$\tuple{SAFE, Inv(x)}$} {
-                         \Return $\tuple{TERM, TInv(x,x')}$\label{SNA_Term:NEWTERM}
+                        \eIf {$Init \neq Init'$} 
+                        { 
+                            $Init' \gets Init$
+                        }{
+                            \Return $TERM$\label{SNA_Term:NEWTERM}
+                        }
                     }
                     \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(m)})}$} {
                         $M \models Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(m)}) \land Sink(x^{(m)})$ \label{SNA_Term:UNSAFE}  \\
-                        $s_m(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(m)}$\\
-                        \Switch{$Analyze(\tuple{s_m(x), Tr, Sink, x})$} {
-                            \Case{$\tuple{NONTERM, R(x)}$} {
-                                \Return $\tuple{NONTERM, R(x)}$ \label{SNA_Term:NEWNONTERM}
-                            }
-                            \Case{$\tuple{TERM, TInv'(x,x')}$} {
-                                $TInv(x,x') \gets TInv(x,x') \lor TInv'(x,x')$ \\
-                            }
-                        }
+                        $Init'(x) \gets $ \textit{variable assigment extracted from} $M$ for $x^{(m)}$\\
                     }       
-                
                 }
             }
             \Case{$\tuple{SAFE, Inv(x)}$} {
-                 \label{SNA_Term:SAFE}
-                \lIf {UNSAT ? $Init(x) \land Tr(x,x')$} {
-                    \Return $\tuple{TERM, TInv(x,x')}$\label{SNA_Term:OLDTERM}
+               \label{SNA_TERM:SAFE}
+                \lIf{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
+                    \Return $NONTERM$ \label{SNA_TERM:OLDNONTERM}
                 }
-                \If{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
-                    \Return $\tuple{NONTERM, Inv(x)}$ \label{SNA_Term:OLDNONTERM}
-                } 
-                $Sink(x) \gets \forall x. Sink'(x) \rightarrow \lnot \exists x'. Tr(x,x')$
+                \Return UNKNOWN
             }
         }
     }
-    
 \end{algorithm}
+
+% \begin{algorithm}[t!]
+% 	\SetInd{0.5em}{0.5em}
+%     \DontPrintSemicolon
+%     \small
+%     \newcommand{\Continue}{\textbf{continue}}
+%     \caption{Analyze(P)}
+%     \label{Alg:SNA_Term}
+%     \SetKwInOut{Input}{Input}
+%     \SetKwInOut{Output}{Output}
+%     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
+%     \Output{$\tuple{NONTERM, R(x)}$ | $\tuple{TERM, TInv(x,x')}$}
+%     \While{$\top$} {
+%         $TInv \gets \bot$ \\
+%         \Switch{$safetyCheck(\tuple{Init, Tr, Sink, x})$}{
+%             \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(n)})}$} {
+%                 $T^n(x), \forall x. T^n(x) \rightarrow \forall x^{(1)}, \dots, x^{(n)}. trace(x, x^{(1)}, \dots, x^{(n)}) \rightarrow Sink(x^{(n)})$  \\
+%                 $Cs(x,x') \gets DNFIZE(Itp(trace(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x')))$ \\
+%                 $TInv \gets TInv \lor \bigvee_i d_i$\tcp*[r]{$\bigvee_i d_i$ are w-f disjuncts in $Cs$} 
+%                 $Nc(x) \gets \exists x',x''. Tr(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x'')$ \\
+%                 \Switch{$safetyCheck(\tuple{Init, Tr, Nc, x})$}{ 
+%                     \label{SNA_Term:CheckNc}
+%                     \Case{$\tuple{SAFE, Inv(x)}$} {
+%                          \Return $\tuple{TERM, TInv(x,x')}$\label{SNA_Term:NEWTERM}
+%                     }
+%                     \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(m)})}$} {
+%                         $M \models Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(m)}) \land Sink(x^{(m)})$ \label{SNA_Term:UNSAFE}  \\
+%                         $s_m(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(m)}$\\
+%                         \Switch{$Analyze(\tuple{s_m(x), Tr, Sink, x})$} {
+%                             \Case{$\tuple{NONTERM, R(x)}$} {
+%                                 \Return $\tuple{NONTERM, R(x)}$ \label{SNA_Term:NEWNONTERM}
+%                             }
+%                             \Case{$\tuple{TERM, TInv'(x,x')}$} {
+%                                 $TInv(x,x') \gets TInv(x,x') \lor TInv'(x,x')$ \\
+%                             }
+%                         }
+%                     }       
+                
+%                 }
+%             }
+%             \Case{$\tuple{SAFE, Inv(x)}$} {
+%                \label{SNA_TERM:SAFE}
+%                 \lIf{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
+%                     \Return $\tuple{NONTERM, Inv(x)}$ \label{SNA_TERM:OLDNONTERM}
+%                 }
+%                 \Return UNKNOWN
+%             }
+%         }
+%     }
+% \end{algorithm}
 
 Algorithm uses the terminating trace to generate states $T^n$, that necessarily lead to termination in up to $n$ steps of transition relation.
 Then, using interpolation, the algorithm construct an over-approximation of the $n \leq i \leq 1$ steps of transition relation.

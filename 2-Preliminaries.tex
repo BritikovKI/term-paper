@@ -89,7 +89,7 @@ The algorithm for proving nontermination of transition system is as follows:
             }
             \Case{$\tuple{SAFE, Inv(x)}$} {
                 \label{SNA:SAFE}
-                \If{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
+                \lIf{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
                     \Return NONTERM \label{SNA:RECURRENT}
                 }
                 \Return UNKNOWN
