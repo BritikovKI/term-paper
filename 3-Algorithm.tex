@@ -43,7 +43,7 @@ As an output, the algorithm returns NONTERM if TS is nonterminating, or TERM if 
                 $Nc(x) \gets QE(\exists x',x''|$ $Tr(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x''))$\label{SNA_Term:NC} \\
                 \label{SNA_Term:CheckNc} \Switch{$safetyCheck(\tuple{Init, Tr, Nc, x})$}{ 
                     \Case{$\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(m)})}$} {
-                        $\tuple{Init, Tr, Sink, x} \gets BlockTerm(\tuple{Init', Tr, Sink, x}, trace)$ \\ 
+                        % $\tuple{Init, Tr, Sink, x} \gets BlockTerm(\tuple{Init', Tr, Sink, x}, trace)$ \\ 
                         $M \models Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(m)}) \land Sink(x^{(m)})$ \label{SNA_Term:UNSAFE}  \\
                         $Init'(x) \gets $ \textit{variable assignment extracted from} $M$ for $x^{(m)}$\\
                     }      
