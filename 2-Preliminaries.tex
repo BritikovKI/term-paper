@@ -2,28 +2,32 @@
 \label{Sec:Preliminaries}
 This section introduces the definitions and formalisms used in the paper. 
 Logical formulas in our approach are defined over the theory of Linear Integer Arithmetic (LIA).
-Conventional primed notation is used to represent ``next-state'' variables.
-We use primed $x,x'$ and superscript notation to distinguish different variable versions, e.g., $x^{(0)}, \dots, x^{(n)}$.
-We use $s(x), s_1(x), s_2(x) \dots$ to denote the encoding of specific states of the system, which is a conjunction in which each variable in $x$ is assigned a specific value.
+We use $x,x'$ to denote set of variables (unprimed and primed), where $x' = {v'| v \in x}$, $x$ is state variables, and $x'$ is next state variables.
+If there are variables of many different states in the formula we use superscript notation, e.g., $x^{(0)}, \dots, x^{(n)}$ .
+We use $s, s_1, s_2 \dots$ to denote the encoding of specific states of the system, which is a conjunction in which each variable in $x$ is assigned a specific value.
 
 %
+
+The formula defined over $x$ is a state formula, and a formula over $x \cup x'$ is a transition formula.
+State formulas represent a set of states where they hold, and transition formulas define binary relations over the state.
+The identity relation $Id(x,x')$ corresponds to the transition formula $x = x'$
 
 \paragraph{Transition systems and Safety Problem.} 
 A \emph{transition system} (TS) is defined as $T = \tuple{ Init, Tr, x }$, where $Init$ is a formula encoding the initial states of the system, $Tr$ is a transition formula, which encodes the transition relation, and $x$ is a set of system's variables.
 With respect to transition system, a \emph{transition trace} is a formula encoding multiple consecutive transitions: $trace(x^{(0)}, \dots, x^{(n)}) = Tr(x^{(0)}, x^{(1)}) \land \dots \land Tr(x^{(n-1)}, x^{(n)})$.
+% $trace(s_0, \dots, s_n) = Tr(s_0, s_1)) \land \dots \land Tr(s_{n-1}, s_n)$
 We write $trace(x,\dots,x')$ for this conjunction throughout the paper.
 A \emph{safety problem} is defined as  $P = \tuple{ Init, Tr, Bad, x }$ where $Bad$ is a formula that represents states that violate the safety property.
 
 %
 
 Safety verification amounts to determining whether there exists a transition trace from the initial states that reaches a $Bad$ state.
-TS is unsafe if there exists a satisfying assignment for the following formula:
-$$Init(x^{(0)}) \land  Tr(x^{(0)}, x^{(1)}) \land \ldots \land Tr(x^{(n-1)}, x^{(n)}) \land Bad(x^{(n)})$$
-
 If TS is safe, then there exists an inductive invariant $Inv(x)$: (1) $Init(x) \rightarrow Inv(x)$, (2) $Inv(x) \land Tr(x,x') \rightarrow Inv(x')$, and (3) $Inv(x) \rightarrow \lnot Bad(x)$.
 We use $safetyCheck(P)$ to denote a safety verification procedure that returns a tuple $\tuple{SAFE, Inv(x)}$ if TS is safe ($Inv(x)$ is inductive invariant).
-Otherwise, if TS is unsafe it returns $\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(n)})}$, such that (where $M$ is a satisfying assignment): 
-$$\exists M. M \models Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(n)}) \land Bad(x^{(n)}).$$
+Otherwise, if TS is unsafe it returns $\tuple{UNSAFE, trace(x^{(0)}, \dots, x^{(n)})}$, such that: 
+% $\tuple{UNSAFE, trace(s_0, \dots, s_n)}$
+$$\exists x^{(0)}, \dots, x^{(n)}. Init(x^{(0)}) \land trace(x^{(0)}, \dots, x^{(n)}) \land Bad(x^{(n)}).$$
+% $$Init(s_0) \land trace(s_0, \dots, s_n) \land Bad(s_n).$$
 
 \paragraph{Nontermination.}
 A transition system is called \textbf{nonterminating} if there exists an initial state, from which it is possible to take any number of transitions:
@@ -51,10 +55,13 @@ Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:c
 
 \emph{Transition invariant}~\cite{DBLP:conf/lics/PodelskiR04} can be used to prove termination.
 If transition invariant is a finite disjunction of well-founded formulas (for example if every separate disjunct has a ranking function), 
-then the Transition System terminates.
+% then the Transition System terminates.
+% If transition invariant is a finite union of well-founded relations (i.e. a disjunction of transition formulas), 
+% then the Transition System terminates.
 \konst{Think more about FOL and the concept of well-foundness}
 \begin{definition}[Disjunctively well-founded transition invariant]
     A transition invariant $TrInv(x,x') = \bigvee_{i = 0}^{n} R_i(x,x')$ is called disjunctively well-founded if every disjunct $R_i(x,x')$ is well-founded. 
+    % A transition invariant $TrInv(x,x') = \bigvee_{i = 0}^{n} R_i(x,x')$ is called disjunctively well-founded if every disjunct $R_i(x,x')$ is a well-founded relation. 
 \end{definition}
 
 \paragraph{Craig Interpolation.} A technique for computing an overapproximation of the formula~\cite{Craig_1957}.
@@ -140,7 +147,7 @@ Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
     \Return $\tuple{Init', Tr, Sink, x}$
 \end{algorithm}
 
-The $BlockTerm$ procedure takes as input a safety problem $P$ and a trace $trace(x^{(0)}, \dots, x^{(n)})$ such that $Init(x) \land trace(x, \dots, x') \land Sink(x')$ is satisfiable.
+The $BlockTerm$ procedure takes as input a safety problem $P$ and a trace formula $trace(x^{(0)}, \dots, x^{(n)})$ such that $Init(x) \land trace(x, \dots, x') \land Sink(x')$ is satisfiable.
 The algorithm iteratively checks if it is possible to take a transition that does not lead to the sink states(at line~\ref{SNA:BLOCK}), using a query to the SMT solver.
 If it is possible, then the algorithm blocks the states that deterministically lead to the sink states at line~\ref{SNA:TRBLOCK}.
 Otherwise, if such states do not exist, then the algorithm blocks the subset of initial states that deterministically lead to the sink states (line ~\ref{SNA:BLOCKINIT}).
