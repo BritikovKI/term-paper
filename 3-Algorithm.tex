@@ -137,6 +137,54 @@ As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it 
 
 
 
+% \begin{algorithm}[t!]
+% 	\SetInd{0.5em}{0.5em}
+%     \DontPrintSemicolon
+%     \small
+%     \newcommand{\Continue}{\textbf{continue}}
+%     \caption{Termination analysis via interpolation-based Transition Invariant generation.}
+%     \label{Alg:SNA_Term}
+%     \SetKwInOut{Input}{Input}
+%     \SetKwInOut{Output}{Output}
+%     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
+%     \Output{TERM | NONTERM}
+%     $TInv \gets \bot$ \\
+%     $Init' \gets Init$ \\
+%     \While{$\top$} {
+%         \label{SNA_Term:Safety} \Switch{$safetyCheck(\tuple{Init', Tr, Sink, x})$}{
+%             \Case{$\tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(n)})}$} {
+%                 $\tuple{Init', Tr, Sink, x} \gets \blockTerm(Tr, Tr^{n})$ \\
+%                 \label{SNA_Term:T} $T^n(x) \gets \lnot QE(\exists x^{(1)}, \dots, x^{(n)} | Tr^{n}(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}))$  \\
+%                 $Cs(x,x') \gets DNFIZE(Itp(Tr^{n}(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x')))$ \label{SNA_Term:Itp}\\
+%                 $TInv \gets TInv \lor \bigvee_i d_i$ \label{SNA_Term:TINV} \tcp*[r]{$\bigvee_i d_i$ are well-founded disjuncts in $Cs$} 
+%                 $C(x) \gets \lnot QE(\exists x',x''|$ $Tr(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x''))$\label{SNA_Term:NC} \\
+%                 \label{SNA_Term:CheckNc} \Switch{$safetyCheck(\tuple{Init, Tr, \lnot C, x})$}{ 
+%                     \Case{$\tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(m)})}$} {
+%                         % $\tuple{Init, Tr, Sink, x} \gets BlockTerm(\tuple{Init', Tr, Sink, x}, Tr^{n})$ \\ 
+%                         $M \models Init(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(m)}) \land Sink(x^{(m)})$ \label{SNA_Term:UNSAFE}  \\
+%                         $Init'(x) \gets $ \textit{variable assignment extracted from} $M$ for $x^{(m)}$\\
+%                     }      
+%                     \Case{$\tuple{SAFE, Inv(x)}$} {
+%                         \eIf {$Init' \neq Init$} 
+%                         { 
+%                             $Init' \gets Init$
+%                         }{
+%                             \Return $TERM$\label{SNA_Term:NEWTERM}
+%                         }
+%                     } 
+%                 }
+%             }
+%             \Case{$\tuple{SAFE, Inv(x)}$} {
+%             %    \label{SNA_TERM:SAFE}
+%                 \lIf{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
+%                     \Return $NONTERM$ \label{SNA_TERM:NONTERM}
+%                 }
+%                 \Return UNKNOWN
+%             }
+%         }
+%     }
+% \end{algorithm}
+
 \begin{algorithm}[t!]
 	\SetInd{0.5em}{0.5em}
     \DontPrintSemicolon
@@ -149,26 +197,23 @@ As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it 
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
     \Output{TERM | NONTERM}
     $TInv \gets \bot$ \\
-    $Init' \gets Init$ \\
+    $Prs \gets [P]$ \\
     \While{$\top$} {
-        \label{SNA_Term:Safety} \Switch{$safetyCheck(\tuple{Init', Tr, Sink, x})$}{
+        $\tuple{Init', Tr', Sink', x} \gets Prs.pop()$ \\
+        \label{SNA_Term:Safety} \Switch{$safetyCheck(\tuple{Init', Tr', Sink', x})$}{
             \Case{$\tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(n)})}$} {
-                $\tuple{Init', Tr, Sink, x} \gets \blockTerm(Tr, Tr^{n})$
-                \label{SNA_Term:T} $T^n(x) \gets \lnot QE(\exists x^{(1)}, \dots, x^{(n)} | Tr^{n}(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}))$  \\
-                $Cs(x,x') \gets DNFIZE(Itp(Tr^{n}(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x')))$ \label{SNA_Term:Itp}\\
+                $Prs.push(\blockTerm(P', Tr^{n}))$ \\
+                \label{SNA_Term:T} $T^n(x) \gets \lnot QE(\exists x^{(1)}, \dots, x^{(n)} | Tr^{n}(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink'(x^{(n)}))$  \\
+                $Cs(x,x') \gets DNFIZE(Itp(Tr^{n}(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink'(x')))$ \label{SNA_Term:Itp}\\
                 $TInv \gets TInv \lor \bigvee_i d_i$ \label{SNA_Term:TINV} \tcp*[r]{$\bigvee_i d_i$ are well-founded disjuncts in $Cs$} 
-                $C(x) \gets \lnot QE(\exists x',x''|$ $Tr(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x''))$\label{SNA_Term:NC} \\
-                \label{SNA_Term:CheckNc} \Switch{$safetyCheck(\tuple{Init, Tr, \lnot C, x})$}{ 
+                $C(x) \gets \lnot QE(\exists x',x''|$ $Tr'(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x''))$\label{SNA_Term:NC} \\
+                \label{SNA_Term:CheckNc} \Switch{$safetyCheck(\tuple{Init', Tr', \lnot C, x})$}{ 
                     \Case{$\tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(m)})}$} {
-                        % $\tuple{Init, Tr, Sink, x} \gets BlockTerm(\tuple{Init', Tr, Sink, x}, Tr^{n})$ \\ 
-                        $M \models Init(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(m)}) \land Sink(x^{(m)})$ \label{SNA_Term:UNSAFE}  \\
-                        $Init'(x) \gets $ \textit{variable assignment extracted from} $M$ for $x^{(m)}$\\
+                        $M \models Init'(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(m)}) \land Sink'(x^{(m)})$ \label{SNA_Term:UNSAFE}  \\
+                        $Prs.push(s_m, Tr', Sink', x)$
                     }      
                     \Case{$\tuple{SAFE, Inv(x)}$} {
-                        \eIf {$Init' \neq Init$} 
-                        { 
-                            $Init' \gets Init$
-                        }{
+                        \lIf {$Prs = \emptyset$} {
                             \Return $TERM$\label{SNA_Term:NEWTERM}
                         }
                     } 
@@ -184,6 +229,7 @@ As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it 
         }
     }
 \end{algorithm}
+
 % Return BlockTerm to algorithm maybe!!!!
 % Use relations when I need to define W-F
 % Don't use relations in the algo description
