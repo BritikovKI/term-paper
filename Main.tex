@@ -2,7 +2,7 @@
 % LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.20 of 2017/10/04
 %
-\documentclass[runningheads]{llncs}
+\documentclass[runningheads]{fmcad}
 %
 \usepackage{graphicx}
 \usepackage{listings}
@@ -14,6 +14,7 @@
 \usepackage{float}
 \usepackage{algorithmic} 
 \usepackage{amssymb}
+\usepackage{amsthm}
  
 \newif\ifbadgeavailable\newif\ifbadgefunctional\newif\ifbadgereusable
 \badgeavailabletrue\badgefunctionaltrue\badgereusablefalse
@@ -30,7 +31,7 @@
 \usepackage[ruled,linesnumbered,noend]{algorithm2e}
 \usepackage{amsmath}
 \usepackage[inline]{enumitem}
-\usepackage[colorlinks=false]{hyperref}
+% \usepackage[colorlinks=false]{hyperref}
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
 \definecolor{codepurple}{rgb}{0.58,0,0.82}
@@ -80,6 +81,11 @@
 % }%
 
 % \theoremstyle{mydef}
+\newtheorem{lemma}{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+\newtheorem{example}{Example}
 
 
 
@@ -97,7 +103,7 @@
 % \title{Summarization-Based Reachability Analysis via Constrained Horn Clauses}
 \title{Safety-based Termination Analysis With Transition Invariant Generation}
 
-\titlerunning{Safety-based Termination Analysis With Transition Invariant Generation}
+% \titlerunning{Safety-based Termination Analysis With Transition Invariant Generation}
 %
 % \titlerunning{Reachability Analysis for Multiloop Programs Using TPA}
 % If the paper title is too long for the running head, you can set
@@ -117,29 +123,29 @@
 % }
 
 
-\author{Konstantin Britikov\inst{1}(\Letter)
- % \orcidID{0009-0005-7843-7290}
+\author{Konstantin Britikov
+% \inst{1}(\Letter)
+%  \orcidID{0009-0005-7843-7290}
 % \and
-\and
-Martin Blicha
-\and
-Grigory Fedyukovich\inst{2}
- % \orcidID{0000-0001-8140-4098}
-\and
-Natasha Sharygina\inst{1}
- % \orcidID{0000-0002-8872-4913}
- % \orcidID{0000-0003-1727-4043}
+\and Martin Blicha
+% \orcidID{0000-0003-1727-4043}
+\and Grigory Fedyukovich
+% \inst{2}
+%  \orcidID{0000-0001-8140-4098}
+\and Natasha Sharygina
+% \inst{1}
+%  \orcidID{0000-0002-8872-4913}
 }
 % \institute{}
-\authorrunning{Britikov K., Blicha M., Fedyukovich G., Sharygina N.}
+% \authorrunning{Britikov K., Blicha M., Fedyukovich G., Sharygina N.}
 % First names are abbreviated in the running head.
 % If there are more than two authors, 'et al.' is used.
 %
-\institute{University of Lugano, Lugano, Switzerland \and
-Florida State University, Tallahassee, FL, United States
+% \institute{University of Lugano, Lugano, Switzerland \and
+% Florida State University, Tallahassee, FL, United States
 % \email{lncs@springer.com}\\
  % \url{http://www.springer.com/gp/computer-science/lncs}
-}
+
 %
 \maketitle              % typeset the header of the contribution
 %

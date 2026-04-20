@@ -12,10 +12,8 @@ The formula defined over $x$ is a state formula, and a formula over $x \cup x'$ 
 State formulas represent a set of states where they hold, and transition formulas define binary relations over the state.
 Using $Id(x,x')$ we denote a transition formula $x = x'$
 
-\paragraph{Transition systems and Safety Problem.} 
+\paragraph{Transition systems and Safety Problem} 
 A \emph{transition system} (TS) is defined as $T = \tuple{ Init, Tr, x }$, where $Init$ is a formula encoding the initial states of the system, $Tr$ is a transition formula, which encodes the transition relation, and $x$ is a set of system's variables.
-\konst{Switch trace for $Tr^n(x,x')$,
-$trace = Tr^{i}(x,x') \land Tr^{j}(x',x'')$}.
 With respect to transition system, a \emph{transition trace} is a formula encoding multiple consecutive transitions: $Tr^{n}(x^{(0)}, \dots, x^{(n)}) = Tr(x^{(0)}, x^{(1)}) \land \dots \land Tr(x^{(n-1)}, x^{(n)})$.
 % $trace(s_0, \dots, s_n) = Tr(s_0, s_1)) \land \dots \land Tr(s_{n-1}, s_n)$
 We write $Tr^{n}(x,\dots,x')$ for this conjunction throughout the paper.
@@ -29,7 +27,7 @@ We use $safetyCheck(P)$ to denote a safety verification procedure that returns a
 Otherwise, if TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(n)})}$, such that: 
 $$\exists x^{(0)}, \dots, x^{(n)}. Init(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(n)}) \land Bad(x^{(n)}).$$
 
-\paragraph{Nontermination.}
+\paragraph{Nontermination}
 A transition system is called \textbf{nonterminating} if there exists an initial state, from which it is possible to take any number of transitions:
 $$\exists x. Init(x) \land \forall n \in \mathbb{N}.  \exists x^{(1)}, \dots, x^{(n)}. Tr^{n}(x, x^{(1)}, \dots, x^{(n)}).$$
 
@@ -41,9 +39,9 @@ Transition System is nonterminating if there exists a \emph{recurrent set}.
 Intuitively, every state in the recurrent set has a successor that also lies in the recurrent set, and the recurrent set contains some of the 
 initial states.
 
-\paragraph{Termination.} A TS is called \textbf{terminating} if for every initial state it is possible to take only limited number of transitions.
+\paragraph{Termination} A TS is called \textbf{terminating} if for every initial state it is possible to take only limited number of transitions.
 For a Transition System $\tuple{ Init, Tr, x }$:
-$$\forall x. Init(x) \implies \exists n \in \mathbb{N}. \lnot \exists x^{(1)}, \dots, x^{(n)}. Tr^{n}(x, x^{(1)}, \dots, x^{(n)}).$$
+$$\forall x. Init(x) \rightarrow \exists n \in \mathbb{N}. \lnot \exists x^{(1)}, \dots, x^{(n)}. Tr^{n}(x, x^{(1)}, \dots, x^{(n)}).$$
 Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, mapping states to a well-founded domain, such that its value strictly decreases along every transition.
 
 % Only relation can be well-founded, not formula!
@@ -56,17 +54,16 @@ Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:c
 \emph{Transition invariant}~\cite{DBLP:conf/lics/PodelskiR04} can be used to prove termination.
 If transition invariant is a finite union of well-founded relations (for example if every separate relation has a ranking function), 
 then the Transition System terminates.
-\konst{Think more about FOL and the concept of well-foundness}
 \begin{definition}[Disjunctively well-founded transition invariant]
     A transition invariant $TrInv(x,x') = \cup_{i = 0}^{n} R_i(x,x')$ is called disjunctively well-founded if every relation $R_i(x,x')$ is well-founded. 
     % A transition invariant $TrInv(x,x') = \bigvee_{i = 0}^{n} R_i(x,x')$ is called disjunctively well-founded if every disjunct $R_i(x,x')$ is a well-founded relation. 
 \end{definition}
 
-\paragraph{Craig Interpolation.} A technique for computing an overapproximation of the formula~\cite{Craig_1957}.
+\paragraph{Craig Interpolation} A technique for computing an overapproximation of the formula~\cite{Craig_1957}.
 Particularly, given two formulas $A$ and $B$ such that $A \land B$ is unsatisfiable, a Craig interpolant for $A$ and $B$ is a formula $I$ such that $A \rightarrow I$, $I \land B$ is unsatisfiable, and $I$ only contains the symbols, common to both $A$ and $B$.
 We use $Itp(A, B)$ to denote the computation of the Craig interpolant for $A$ and $B$.
 
-\paragraph{Proving Nontermination via Safety.}
+\paragraph{Proving Nontermination via Safety}
 Many techniques reduce termination and nontermination analysis to safety verification.
 One notable approach is the reduction of nontermination to safety, which constructs strong recurrent sets via inductive invariants~\cite{DBLP:conf/tacas/ChenCFNO14}.
 It was introduced in the context of proving nontermination of programs with loops, and can be extended for the concept of Transition Systems.
@@ -77,8 +74,16 @@ This extension is described below.
     We use $Sink(x)$ to denote the formula encoding all sink states in the transition system, such that $\forall x. Sink(x) \rightarrow \lnot \exists x'. Tr(x,x')$
 \end{definition}
 
-The Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis takes a safety problem $P = \tuple{Init, Tr, Sink, x}$, where $Sink(x) = QE(\exists x'. \lnot Tr(x,x'))$.
-As an output, it returns NONTERM if the system is nonterminating, and UNKNOWN, if the algorithm cannot conclude the analysis.
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/SNA.pdf}
+    \caption{Execution flow of Safety-based Nontermination analysis.}
+    \label{fig:SNA}
+\end{figure}
+
+The Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis takes a safety problem $P = \tuple{Init, Tr, Sink, x}$, where $Sink(x) = QE(\lnot Tr(x,x'). \tuple{x'})$.
+As an output, it returns NONTERM if the system is nonterminating, and UNKNOWN, if the algorithm cannot conclude the analysis. 
+The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nontermination analysis.
 
 
 \begin{algorithm}[t!]
@@ -140,8 +145,8 @@ Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
     \SetAlgoFuncName{BlockTerm}{autoref name}
         $i \gets n-1$ \\
         \While{$i > 0$}{
-            $Next(x^{(i+1)}) \gets QE(\exists x^{(0)},\dots, x^{(i)},  x^{(i+2)}, \dots | Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$ \\
-            $Curr(x^{(i)}) \gets QE(\exists x^{(0)},\dots, x^{(i-1)},  x^{(i+1)}, \dots | Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$ \\
+            $Next(x^{(i+1)}) \gets QE(Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}), \tuple{x^{(0)},\dots, x^{(i)},  x^{(i+2)}, \dots})$ \\
+            $Curr(x^{(i)}) \gets QE(Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}), \tuple{\exists x^{(0)},\dots, x^{(i-1)},  x^{(i+1)}, \dots })$ \\
             % $s_i(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(i)}$\\
             % $s_{i+1}(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(i+1)}$\\
             \label{SNA:BLOCK} \If{SAT ? $Curr(x) \land Tr(x,x') \land \lnot Next(x')$}{

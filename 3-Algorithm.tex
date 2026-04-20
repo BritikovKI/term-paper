@@ -13,25 +13,37 @@ Goal is to have an heuristic, which would allow to overapproximate the transitio
 as a foundation for the transition invariant (as the core property of transition invariant is that it is an overapproximation of reflexive 
 transitive closure).
 
-\konst{Move to introduction later.} State of the art approaches that attempt to construct transition invariants, are centered
-around the usage of template-bbased synthesis[citations needed]. 
-This significantly limits the capabilities of transition-invariant generation, as it is restricted only to the templates.
-Additionally, this template-based generation is somewhat random, not guided by the conditions necessary for the termination.
-Proposed interpolation-based transition invariant generation allows to direct those two issues.
+% \konst{Move to introduction later.} State of the art approaches that attempt to construct transition invariants, are centered
+% around the usage of template-bbased synthesis[citations needed]. 
+% This significantly limits the capabilities of transition-invariant generation, as it is restricted only to the templates.
+% Additionally, this template-based generation is somewhat random, not guided by the conditions necessary for the termination.
+% Proposed interpolation-based transition invariant generation allows to direct those two issues.
 
+The execution flow of the Interpolation-based Generation of Well-founded Transition Invariants can be seen in the 
+figure~\ref{fig:TrInvGen}. 
+Procedure is constructed from five major steps:
+(1) computing $T^n$, the formula encoding states that are terminate within $n$ transitions; 
+(2) constructing an over-approximation of the terminating trace using interpolation; 
+(3) building a DNF formula that underapproximates the interpolant; 
+(4) filtering the disjuncts in the DNF formula, preserving disjuncts that encode well-founded relation; and 
+(5) verifying that the resulting formula is a transition invariant that covers all reachable states.
 
-The procedure consists of four steps: (1) computing $T^n$, the set of states guaranteed to terminate within $n$ steps; 
-(2) constructing an over-approximation of the terminating trace via interpolation; 
-(3) filtering the resulting candidates for well-foundedness; and 
-(4) verifying that the candidate transition invariant covers all reachable states.
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/TrInv.pdf}
+    \caption{Execution flow of Interpolation-based Generation of well-founded Transition Invariant.}
+    \label{fig:TrInvGen}
+\end{figure}
 
 First, it constructs a formula $T^n$ encoding all states that are guaranteed to reach sink states 
 (terminate) within $n$ transitions:
-$$\forall x^{(0)}. T^{n}(x^{(0)}) \implies \forall x^{(1)}, \dots, x^{(n)}. Tr^{n}(x^{(0)}, \dots, x^{(n)}) \implies Sink(x^{(n)})$$
+$$\forall x^{(0)}, \dots, x^{(n)}. T^{n}(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(n)}) \rightarrow Sink(x^{(n)})$$
 
 $T^n$ is constructed with quantifier elimination, eliminating all variables from the formula except for $x^{(0)}$:
+% Give an example of what is T^n
+% Give definitions
 
-$$T^{n}(x^{(0)}) = \lnot QE(\exists x^{(1)}, \dots, x^{(n)} | Tr^{n}(x^{(0)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}))$$
+$$T^{n}(x^{(0)}) = \lnot QE(Tr^{n}(x^{(0)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}), \tuple{x^{(1)}, \dots, x^{(n)}})$$
 
 Construction of such states enables the construction of an overapproximation of the transition relation, guided by the sink states and focusing on 
 the variables relevant to termination. 
@@ -46,8 +58,12 @@ the particular trace is guaranteed to lead to the termination.
 Next, the algorithm uses this interpolant as a foundation for the construction of the transition invariant.
 For transition invariant to be a proof of termination, it needs to be disjunctively well-founded.
 Our technique, first converts $Cands(x,x')$ to a Disjunctive Normal Form (DNF): $Cands(x,x') = \bigvee_i d_i$.
-The number of disjuncts is bounded by a constant (a tunable parameter depending on the available size of RAM), since DNF 
-conversion can cause an exponential blowup in formula size.
+% The number of disjuncts is bounded by a constant (a tunable parameter depending on the available size of RAM), since DNF 
+% conversion can cause an exponential blowup in formula size.  Move to implementation & evaluation
+% Underapproximation of original formula in DNF
+% Formula processing in this section - not full DNF
+% Give a formal reasoning step
+% Bring citation 3 to background section
 
 The procedure then filters the candidate disjuncts.
 For each disjunct $d(x,x') \in Cands(x,x')$ algorithm checks if $d(x,x')$ corresponds to a well-founded relationvia automated linear ranking function synthesis~\cite{DBLP:conf/vmcai/PodelskiR04}:
@@ -58,12 +74,12 @@ If $TrInv$ is a transition invariant over all reachable states, then TS terminat
 To verify this, procedure computes the formula $C(x)$ encoding the states over which $TrInv$ is a valid transition invariant. 
 Such states holds a following property:
 
-$$\forall x, x',x''. C(x) \land (TrInv(x,x') \lor Id(x,x')) \land Tr(x',x'') \implies TrInv(x,x'')$$
+$$\forall x, x',x''. C(x) \land (TrInv(x,x') \lor Id(x,x')) \land Tr(x',x'') \rightarrow TrInv(x,x'')$$
 
-Similarly to $T^{n}$, this formula can be constructed using the quantifier elimination, negating the states for 
+Similarly to $T^{n}$, $C(x)$ can be constructed using the quantifier elimination, negating the states for 
 which $TrInv$ is not a transition invariant:
 
-$$C(x) = \lnot QE(\exists x',x'' | (TrInv(x,x') \lor Id(x,x')) \land Tr(x',x'') \land \lnot TrInv(x,x''))$$
+$$C(x) = \lnot QE((TrInv(x,x') \lor Id(x,x')) \land Tr(x',x'') \land \lnot TrInv(x,x''), \tuple{x',x''})$$
 
 The algorithm then performs a safety check of a problem $P = \tuple{Init, Tr, \lnot C, x}$, to determine whether $\lnot C(x)$ 
 is reachable from $Init$.
@@ -71,13 +87,12 @@ If $\lnot C(x)$ is not reachable, then $TrInv(x,x')$ is a disjunctively well-fou
 states, witnessing the termination of transition system.
 Otherwise, if $\lnot C(x)$ is reachable, the algorithm commences a refinement procedure, which is described in more detail below.
 
-\begin{lemma}
+\begin{lemma}\label{Lem:Term}
     Let $T = \tuple{Init, Tr, x}$ be a transition system and let 
     $C(x)$ be a formula such that $\lnot C(x)$ is unreachable in 
     $T$. If $TrInv(x,x')$ is a union of well-founded 
     relations and satisfies:
-    $$\forall x,x',x''.\ C(x) \land (TrInv(x,x') \lor Id(x,x')) 
-      \land Tr(x',x'') \implies TrInv(x,x'')$$
+    $$\forall x,x',x''.\ C(x) \land (TrInv(x,x') \lor Id(x,x')) \land Tr(x',x'') \rightarrow TrInv(x,x'')$$
     then $T$ is terminating.
 \end{lemma}
 \begin{proof}
@@ -92,30 +107,30 @@ Otherwise, if $\lnot C(x)$ is reachable, the algorithm commences a refinement pr
     Hence $TrInv$ is disjunctively well-founded.
 
     \textbf{Transition invariant condition.} We show that 
-    $\forall x,x'.\ R(x) \land Tr^*(x,x') \implies TrInv(x,x')$,
+    $\forall x,x'.\ R(x) \land Tr^*(x,x') \rightarrow TrInv(x,x')$,
     where $R(x)$ denotes the reachable states of $T$, by induction 
     on the number of steps $n$ in $Tr^*(x,x')$.
 
    \emph{Base case} ($n = 0$): $Tr^0(x,x') \equiv Id(x,x')$. 
-    Since $\lnot C(x)$ is unreachable, $R(x) \implies C(x)$. 
+    Since $\lnot C(x)$ is unreachable, $R(x) \rightarrow C(x)$. 
     Instantiating the hypothesis with $Id(x,x')$:
-    $$C(x) \land Id(x,x') \land Tr(x',x'') \implies TrInv(x,x'')$$
+    $$C(x) \land Id(x,x') \land Tr(x',x'') \rightarrow TrInv(x,x'')$$
     Simplifying the formula since $Id(x,x')$ is an identity relation gives 
-    $C(x) \land Tr(x,x') \implies TrInv(x,x')$, and since 
-    $R(x) \implies C(x)$, the base case holds.
+    $C(x) \land Tr(x,x') \rightarrow TrInv(x,x')$, and since 
+    $R(x) \rightarrow C(x)$, the base case holds.
 
-   \emph{Inductive step}: Assume $R(x) \land Tr^n(x,x') \implies 
+   \emph{Inductive step}: Assume $R(x) \land Tr^n(x,x') \rightarrow 
     TrInv(x,x')$ for some $n \geq 0$. 
     Let $Tr^{n+1}(x,x'')$ hold, so there exists $x', x''$ with $R(x) \land Tr^n(x,x') \land Tr(x',x'')$. By 
     the inductive hypothesis, $TrInv(x,x')$ holds. 
-    Since $R(x) \land Tr^n(x,x') \implies R(x) \land TrInv(x,x')$, then
-    $R(x) \land Tr^n(x,x') \land Tr(x',x'') \implies R(x) \land TrInv(x,x') \land Tr(x',x'')$.
-    Now, due to the fact that $R(x) \implies C(x)$, the following formula is implied
+    Since $R(x) \land Tr^n(x,x') \rightarrow R(x) \land TrInv(x,x')$, then
+    $R(x) \land Tr^n(x,x') \land Tr(x',x'') \rightarrow R(x) \land TrInv(x,x') \land Tr(x',x'')$.
+    Now, due to the fact that $R(x) \rightarrow C(x)$, the following formula is implied
     $C(x) \land TrInv(x,x') \land Tr(x',x'')$.
-    And by claim in the lemma, $C(x) \land TrInv(x,x') \land Tr(x',x'') \implies TrInv(x,x'')$.
+    And by claim in the lemma, $C(x) \land TrInv(x,x') \land Tr(x',x'') \rightarrow TrInv(x,x'')$.
 
     Therefore:
-    $$R(x) \land Tr^{n+1}(x,x') \implies TrInv(x,x')$$
+    $$R(x) \land Tr^{n+1}(x,x') \rightarrow TrInv(x,x')$$
 
     Thus $TrInv$ is a disjunctively well-founded transition 
     invariant over all reachable states, and $T$ is 
@@ -135,7 +150,8 @@ $Tr$ encode the initial states and transition relation, $Sink$ is the formula en
 a set of variables over which the Transition System is defined.
 As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it is terminating, and UNKNOWN if the procedure cannot determin the final result.
 
-
+% Switch algorithm to if/else
+% Procedure is described, define it as a function
 
 % \begin{algorithm}[t!]
 % 	\SetInd{0.5em}{0.5em}
@@ -190,7 +206,7 @@ As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it 
     \DontPrintSemicolon
     \small
     \newcommand{\Continue}{\textbf{continue}}
-    \caption{Termination analysis via interpolation-based Transition Invariant generation.}
+    \caption{Interpolation-based Termination Analysis.}
     \label{Alg:SNA_Term}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
@@ -199,25 +215,25 @@ As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it 
     $TInv \gets \bot$ \\
     $Prs \gets [P]$ \\
     \While{$\top$} {
-        $\tuple{Init', Tr', Sink', x} \gets Prs.pop()$ \\
+        \label{SNA_Term:Extension} $\tuple{Init', Tr', Sink', x} \gets Prs.pop()$ \\
         \label{SNA_Term:Safety} \Switch{$safetyCheck(\tuple{Init', Tr', Sink', x})$}{
             \Case{$\tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(n)})}$} {
-                $Prs.push(\blockTerm(P', Tr^{n}))$ \\
-                \label{SNA_Term:T} $T^n(x) \gets \lnot QE(\exists x^{(1)}, \dots, x^{(n)} | Tr^{n}(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink'(x^{(n)}))$  \\
+                \label{SNA_Term:T} $T^n(x) \gets \lnot QE(Tr^{n}(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink'(x^{(n)}, \tuple{x^{(1)}, \dots, x^{(n)}}))$  \\
                 $Cs(x,x') \gets DNFIZE(Itp(Tr^{n}(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink'(x')))$ \label{SNA_Term:Itp}\\
                 $TInv \gets TInv \lor \bigvee_i d_i$ \label{SNA_Term:TINV} \tcp*[r]{$\bigvee_i d_i$ are well-founded disjuncts in $Cs$} 
                 $C(x) \gets \lnot QE(\exists x',x''|$ $Tr'(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x''))$\label{SNA_Term:NC} \\
-                \label{SNA_Term:CheckNc} \Switch{$safetyCheck(\tuple{Init', Tr', \lnot C, x})$}{ 
-                    \Case{$\tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(m)})}$} {
-                        $M \models Init'(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(m)}) \land Sink'(x^{(m)})$ \label{SNA_Term:UNSAFE}  \\
-                        $Prs.push(s_m, Tr', Sink', x)$
-                    }      
+                \label{SNA_Term:CheckNc} \Switch{$safetyCheck(\tuple{Init', Tr', \lnot C, x})$}{
                     \Case{$\tuple{SAFE, Inv(x)}$} {
                         \lIf {$Prs = \emptyset$} {
                             \Return $TERM$\label{SNA_Term:NEWTERM}
                         }
-                    } 
+                    }
+                    \Case{$\tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(m)})}$} {
+                        $M \models Init'(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(m)}) \land Sink'(x^{(m)})$ \label{SNA_Term:UNSAFE}  \\
+                        $Prs.push(\tuple{x = s_m, Tr', Sink', x})$, $s_m$ is a state for $x^{(m)}$ extracted from $M$
+                    }
                 }
+                $Prs.push(\blockTerm(P', Tr^{n}))$ \\
             }
             \Case{$\tuple{SAFE, Inv(x)}$} {
             %    \label{SNA_TERM:SAFE}
@@ -234,51 +250,37 @@ As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it 
 % Use relations when I need to define W-F
 % Don't use relations in the algo description
 
-The procedure iterates until it either finds a recurrent set - proving nontermination, or a disjunctively well-founded Transition Invariant, 
-that allows to conclude the termination.
-During the whole algorithm, the procedure constructs transition invariant, progressively extending the transition invariant by adding well-founded disjuncts.
-Additionally, it updates the initial states, proving termination for particular reachable states in the Transition system.
-Every iteration, similarly to the Algorithm~\ref{Alg:SNA}, begins with the safety check at line~\ref{SNA_Term:Safety}.
+The procedure maintains two important variables: $TInv$ - formula that serves as a transition invariant candidate, it is  progressively extended
+ by adding well-founded disjuncts. 
+$Prs$ is a vector of safety problems, which contains the safety problems that need to be analized within the algorithm to complete
+the termination proof.
+
+Algorithm commences by analyzing the original safety problem.
+It iterates until it either finds a recurrent set - proving nontermination, or finds a disjunctively well-founded Transition Invariant, 
+that covers the reachable state space.
+Every iteration, similarly to the Algorithm~\ref{Alg:SNA}, begins with the safety check at line~\ref{SNA_Term:Safety}, extracting the last 
+element from the list of safety problem (which also decreases the size of $Prs$).
 The algorithm handles two possible cases:
 
-\paragraph{UNSAFE.} It means there exists a terminating trace in the Transition System. 
+\paragraph{UNSAFE.} It means there exists a terminating trace in the Transition System.
+First, algorithm executes a \blockTerm procedure, blocking the determenistically terminating states.
+It adds a constructed problem into the list of safety problems.
 At the lines~\ref{SNA_Term:T}-\ref{SNA_Term:CheckNc} algorithm executes the interpolation-based generation of transition invariant 
 candidate, following the approach described above - generating $T^n$, constructing an overappproximation of transition trace and
 transforming it into union of well-founded relations.
 
-% $$\forall x. T^n(x) \implies \forall x^{(1)}, \dots, x^{(n)}. trace(x,x^{(1)}, \dots, x^{(n)}) \implies Sink(x^{(n)})$$
 
-% This formula can be constructed by applying the quantifier elimination (QE) on the second part of the formula:
-% $\lnot QE(\exists x^{(1)}, \dots, x^{(n)} | trace(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}))$. 
-% Afterwards, algorithm proceeds to use $T^n$ to construct an overapproximation of the terminating trace, using the interpolation over:
-
-% $$T^n(x) \land trace(x, x^{(1)}, \dots, x') \land \lnot Sink(x')$$
-
-% This formula is unsatisfiable by construction, as $T^n$ cannot reach states outside of $Sink(x')$ after n transitions, and this formula is used for 
-% the interpolation at the line~\ref{SNA_Term:CheckNc}.
-% After the overappproximation of trace is constructed, it is transformed into disjunctive normal form. 
-% Any possible technique for dnfization can be used.
-% At the line~\ref{SNA_Term:TINV} our algorithm filters disjuncts, adding well-founded disjuncts from the interpolant to the transition invariant candidate.
-% The filtering is done based on the synthesis of the linear ranking function~\cite{DBLP:conf/lics/PodelskiR04}.
-% If it is possible to synthesise a linear real function for specific disjunct, it is added to the $TInv$, otherwise it is dropped.
-% After the filtering, algorithm constructs the states that are not covered by the current transition invariant candidate.
-% The core property for transition invariant is\footnote{In the formula below, $Id(x',x'') : x' = x''$ is an identity formula preserving the variable values}:
-% $$Tr(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \implies TInv(x,x'')$$ 
-
-% Based on this it is possible to construct formula encoding all states that are not covered by the current transition invariant candidate:
-% $$\forall x. Nc(x) \implies \lnot \forall x',x'' Tr(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \implies TInv(x,x'')$$
-
-% At the line~\ref{SNA_Term:NC} algorithm constructs the formula $Nc(x)$ using quantifier elimination.
-% Afterwards, our technique checks if $Nc(x)$ is reachable.
 If it is possible to reach state in $\lnot C(x)$ from the initial states, then our approach tries to prove termination of this state, not covered by 
 transition invariant, by updating $Init'(x)$ to this state.
-Otherwise, if $C(c)$ is not reachable from the original Initial states $Init(x)$ - algorithms concludes that TS terminates.
-If $C(x)$ is not reachable from the updated Initial states $Init'(x) \neq Init(x)$, then algorithm resets to the original initial states, and attemtps to prove termination with an updated transition invariant. 
+If $C(x)$ is not reachable from the updated Initial states $Init'(x) \neq Init(x)$, then algorithm checks, if $Prs$ is empty,
+meaning that the termination of original transition system was proven, and if it is the case - it concludes that TS is terminating. 
+Otherwise, if $C(x)$ is reachable from the original Initial states $Init(x)$ - algorithms constructs the formula, encoding some 
+states noncovered by the transition invariant, reachable from the initial states - $s_m$. 
+Afterwards is adds a safety problem $\tuple{x = s_m, Tr', Sink', x}$ to $Prs$, attempting
+to either extend transition invariant, proving the termination of $s_m$, or to find a recurrent set.
 
-
-\paragraph{SAFE.} In case $Sink$ states are not reachable, the algorithm terminates.
-In this case the invariant is a recurrent set by default, as the transition formula is not changed.
-Therefore, the transition system is nonterminating.
+\paragraph{SAFE.} In case $Sink$ states are not reachable, and $Inv(x)$ is a recurrent set - TS is nonterminating.
+Otherwise, $NONDET$ as the procedure cannot conclude the result.
 
 \begin{example}
     Consider a terminating transition system $T$ in which:
@@ -289,7 +291,7 @@ Therefore, the transition system is nonterminating.
     \end{itemize}
 
     Initially, before the algorithm execution, preprocessing constructs the sink states: 
-    $$Sink(x) = QE(\exists x'|\lnot Tr(x,x')) = v \leq 0.$$
+    $$Sink(x) = QE(\lnot Tr(x,x'),\tuple{x'}) = v \leq 0.$$
     For any state with $v \leq 0$ it is impossible to do a transition in the TS.
     Additonally, algorithm would update initial states: 
     $$Init'(x) = Init(x) \land \lnot Sink(x) = v > 0.$$
@@ -299,11 +301,11 @@ Therefore, the transition system is nonterminating.
 
     The algorithm is called with $P=\tuple{Init', Tr, Sink, x}$.
     First, it executes the safety check, detecting the trace that leads to the sink states.
-    For example, it detects a trace of length 2:  $ Init(x) \land Tr(x,x') \land Tr(x',x'') \land Sink(x)$.
-    Then, it first constructs $T^n(x)$, formula for all of the states that are guaranteed to terminate in one or less transitions:
-    $$T^n(x) = v \leq 2$$
+    For example, it detects a trace of length 2:  $ Init(x) \land Tr^2(x,x',x'') \land Sink(x)$.
+    Then, it first constructs $T^2(x)$, formula for all of the states that are guaranteed to terminate in one or less transitions:
+    $$T^2(x) = v \leq 2$$
     Then, it constructs an interpolant:
-    $$Itp(Tr(x,x^{(1)}) \land Tr(x^{(1)},x'), T^n(x) \land Sink(x')) = v' \leq v - 1 \land v' > 0.$$
+    $$Itp(Tr^{2}(x,x^{(1)},x'), T^2(x) \land \lnot Sink(x')) = v' \leq v - 1 \land v' > 0.$$
 
     This interpolant is a conjunction, therefore the dnfization returns the same formula in the line~\ref{SNA_Term:Itp}.
     Using the linear ranking function synthesis method, it is proven that $v' \leq v - 1 \land v > 0$ is well-founded, and the 
@@ -320,14 +322,20 @@ Therefore, the transition system is nonterminating.
 
 This subsection proves the soundness of the introduced approach. We first prove that when algorithm returns TERM, the transition system is nonterminating,
 and then we prove the correctnessof the nontermination.
-
+%  Add well-foundness definition
 
 \begin{lemma}
     If Algorithm~\ref{Alg:SNA_Term} returns $TERM$, then the transition system $\tuple{Init, Tr, x}$ is terminating.
 \end{lemma}
 \begin{proof}
-    Algorithm~\ref{Alg:SNA_Term} returns $TERM$ only at the line~\ref{SNA_Term:NEWTERM}.
+    Algorithm~\ref{Alg:SNA_Term} returns $TERM$ at the line~\ref{SNA_Term:NEWTERM}.
     If algorithm returns $TERM$ then the safety check at line~\ref{SNA_Term:CheckNc} returns SAFE.
+    The termination of the transition system $T = \tuple{Init', Tr', x}$ follows from the lemma~\ref{Lem:Term}.
+    Based on the construction (line~\ref{SNA_Term:Extension}), the last system is:
+    $Init'(x) = Init(x) \land \bigwedge_{i=0}^{m} c_m(x)$, where every $c_m(x)$ encodes states in initial states formula,
+    which determenistically terminate (due to the \blockTerm).
+
+
     It implies that $Nc(x)$ is unreachable from $Init(x)$ under $Tr'$. 
     Additionally, by construction, $Nc(x)$ captures all states for which $TInv$ is not a transition invariant.
     It means that for states satisfying $\lnot Nc(x)$ $TInv$ is a transition invariant under $Tr'$:
@@ -352,8 +360,8 @@ and then we prove the correctnessof the nontermination.
     \emph{First condition:} For $Inv(x)$ the following holds: $\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$.
     This is the case as two properties below hold:
     \begin{itemize}
-        \item $\lnot Sink(x) \implies \exists x'. Tr(x,x')$ (by construction of $Sink(x)$)
-        \item $Inv(x) \implies \lnot Sink(x)$ (As a result of safety check)
+        \item $\lnot Sink(x) \rightarrow \exists x'. Tr(x,x')$ (by construction of $Sink(x)$)
+        \item $Inv(x) \rightarrow \lnot Sink(x)$ (As a result of safety check)
     \end{itemize}
 
     \emph{Second condition.} For any safety problem $\tuple{Init', Tr, Sink}$, $Init'$ is reachable from the initial states $Init$ by construction.
