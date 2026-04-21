@@ -101,17 +101,18 @@ The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nonterminat
     % \SetKwProg{Fn}{Function}{:}{}
     % \nonl\Fn{\FAnalyze{$P$}}{
         \While{$\top$}{
-            \Switch{$safetyCheck(P)$}{
-                \label{SNA:UNSAFE}\Case{$\tuple{UNSAFE, Tr^{n}}$} {
-                    $P \gets \blockTerm(P, Tr^{n})$ \label{SNA:BLOCKTERM}
-                }
-                \label{SNA:SAFE}\Case{$\tuple{SAFE, Inv(x)}$} {
-                    \lIf{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
-                        \Return NONTERM \label{SNA:RECURRENT}
-                    }
-                    \Return UNKNOWN
-                }
+            $\tuple{res,\phi = Tr^{n}\ or\ Inv} \gets safetyCheck(P)$\\
+            \label{SNA:UNSAFE}\eIf{$\tuple{res,\phi} = \tuple{UNSAFE, Tr^{n}}$} {
+                $P \gets \blockTerm(P, Tr^{n})$ \label{SNA:BLOCKTERM}
             }
+            {
+                \label{SNA:SAFE}
+                \If{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
+                    \Return NONTERM \label{SNA:RECURRENT}
+                }
+                \Return UNKNOWN
+            }
+            
         }
     % }
     
