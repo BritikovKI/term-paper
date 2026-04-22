@@ -10,19 +10,19 @@ The interpolation-based approach enables efficient property-directed transition 
 
 \subsection{Interpolation-based Generation of Well-Founded Transition Invariants}
 
-The core of our approach is the procedure for automated, interpolation-based generation of well-founded transition invariants.
-This procedure overapproximates the transition relations, and uses the constructed overapproximation
-as a foundation for the transition invariant.
-Using this overapproximation, the algorithm constructs disjunctive formula, where every disjunct corresponds to 
-some well-founded relation.
-If this formula constitutes a transition invariant, it proves the termination of transition system.
+The core of our approach is the automated, interpolation-based generation of 
+well-founded transition invariants. Given a terminating trace, the procedure 
+constructs an over-approximation of the transition relation, guided by the sink 
+states, and filters it into a disjunction of well-founded relations. If the 
+resulting formula constitutes a transition invariant over all reachable states, 
+it witnesses termination of the transition system.
 
-The Procedure consists from five major steps:
-(1) computing $T^n$, the formula encoding states which terminate within $n$ transitions; 
-(2) constructing an over-approximation of the terminating trace using interpolation; 
-(3) building a DNF formula that underapproximates the interpolant; 
+The Procedure consists of five major steps:
+(1) computing $T^n$, the formula encoding states that terminate within $n$ transitions; 
+(2) constructing an over-approximation of the terminating trace via interpolation; 
+(3) converting the interpolant into a underapproximating DNF formula; 
 (4) filtering disjuncts to retain only those encoding well-founded relations; and 
-(5) synthesizing the formula encoding the states for which transition invariant is valid.
+(5) computing the formula encoding states for which the produced formula is a valid transition invariant.
 The overall flow of the procedure can be seen in the figure~\ref{fig:TrInvGen}.
 
 \begin{figure}[t]
@@ -45,23 +45,24 @@ The overall flow of the procedure can be seen in the figure~\ref{fig:TrInvGen}.
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$, transition trace $Tr^n(x^{(0)}, x^{(1)}, \dots, x^{(n)})$, candidate transition invariant $TInv(x,x')$}
     \Output{$\tuple{TInv, C}$, where $TInv(x,x')$ - transition invariant, $C(x)$ - state, covered by
     transition invariant}
-    \label{SNA_Term:T} $T^n(x) \gets \lnot QE(\exists x^{(1)}, \dots, x^{(n)}. Tr^{n}(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}))$  \\
-    \label{SNA_Term:Itp} $itp(x,x') \gets Itp(Tr^{n}(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x'))$\\
+    \label{SNA_Term:T} $T^n(x) \gets \lnot QE\!\left(\exists x^{(1)}, \dots, x^{(n)}. Tr^{n}(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)})\right)$  \\
+    \label{SNA_Term:Itp} $itp(x,x') \gets Itp\!\left(Tr^{n}(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x')\right)$\\
     $Cs(x,x') \gets toDNF(itp)$ \label{SNA_Term:toDNF}\\
     $TInv \gets TInv \lor \bigvee_i \{d_i \in Cs| \text{$\exists$ ranking function $f(x,x')$} \}$\label{SNA_Term:TINV} \\
-    $C(x) \gets \lnot QE(\exists x',x''. Tr'(x,x') \land (Id(x',x'') \lor TInv(x',x'')) \land \lnot TInv(x,x''))$\label{SNA_Term:NC} \\
+    $C(x) \gets \lnot QE\!\left(\exists x',x''.\;
+        Tr(x,x') \land \bigl(Id(x',x'') \lor TInv(x',x'')\bigr) 
+        \land \lnot TInv(x,x'')\right)$ \label{SNA_Term:NC} \\
     \Return $\tuple{TInv, C}$
 \end{algorithm}
 
-Algorithm~\ref{Alg:SNA_TrInv} recieves a safety problem $P = \tuple{Init, Tr, Sink, x}$, a 
+Algorithm~\ref{Alg:SNA_TrInv} takes as an input a safety problem $P = \tuple{Init, Tr, Sink, x}$, a 
 transition trace $Tr^n(x^{(0)}, x^{(1)}, \dots, x^{(n)})$, and a transition invariant formula $TInv(x,x')$. 
-It returns a tuple of formulas $\tuple{TInv, C}$, where $TInv$ is a transition invariant formula, and $C$ is
+It returns a tuple of formulas $\tuple{TInv, C}$, where $TInv(x,x')$ is a transition invariant formula, and $C(x)$ is
 a formula encoding the states for which $TInv$ is a valid transition invariant. 
 It proceeds in the following steps:
 
-\paragraph{Step 1} Construction of a formula $T^n$ encoding all states that reach termination within $n$ transitions. 
-This step corresponds to the line~\ref{SNA_Term:T} in the Algorithm~\ref{Alg:SNA_Term}.
-Formula $T^n$ is defined via the following property:
+\paragraph{Step 1} \textit{Computing $T^n$ (line~\ref{SNA_Term:T}).} 
+Formula $T^n$ is defined by the following property:
 $$\forall x^{(0)}, \dots, x^{(n)}. T^{n}(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(n)}) \rightarrow Sink(x^{(n)})$$
 
 $T^n$ is constructed with quantifier elimination, eliminating all variables from the formula except for $x^{(0)}$, $T^{n}(x^{(0)}) =$
@@ -69,8 +70,7 @@ $T^n$ is constructed with quantifier elimination, eliminating all variables from
 % Give definitions
 $$\lnot QE(\exists x^{(1)}, \dots, x^{(n)}. Tr^{n}(x, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}))$$
 
-Construction of such states enables the construction of an overapproximation of the transition relation, guided by the sink states and focusing on 
-the variables relevant to termination. 
+Construction of such states enables the interpolation over the transition relation. 
 \begin{example}\label{Ex:Tn}
     Consider a terminating transition system $TS = \tuple{Init, Tr, x}$ in which:
     \begin{itemize}
@@ -79,48 +79,45 @@ the variables relevant to termination.
         \item $x \triangleq  \{v\}$
     \end{itemize}
     For example, for $n = 2$, $T^2(x) = v \leq 2$.
-    Even though $TS$ can reach termination in 2 transitions with $v=3 \lor v=4$, those states are not included in $T^n$, since they are not guaranteed to terminate within 2 transitions.
+    Even though $TS$ can reach termination in 2 transitions with $v=3 \lor v=4$, those states are not included in $T^n$, since they do not necessarily terminate within 2 transitions.
     $v=1 \lor v=2$ on the other hand do terminate in 1 or 2 transitions.
 \end{example}
 
-\paragraph{Step 2} Overapproximation of the terminating trace (line ~\ref{SNA_Term:Itp}). 
+\paragraph{Step 2} \textit{Interpolation (line ~\ref{SNA_Term:Itp}).}
 We construct an overapproximation of the trace via Craig interpolation. The following formula is unsatisfiable by construction:
 
 $$T^{n}(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)})$$
 
-This allows to compute the \textbf{interpolant} $itp(x, x') = Itp(Tr^{n}(x^{(0)}, \dots, x^{(n)}), T^{n}(x^{(0)}) \land \lnot Sink(x^{(n)}))$, 
-which over-approximates the trace $Tr^{n}$.
+This allows to compute the \textbf{interpolant}, which over-approximates the trace $Tr^{n}$.
 The key intuition is that the usage of the sink states for interpolant construction allows the interpolant to capture the reason \textbf{why} 
 the particular trace is leading to the termination.
 
 
-\paragraph{Step 3} Synthesis of DNF formula, underapproximating the transition invariant (line ~\ref{SNA_Term:toDNF}).
+\paragraph{Step 3} \textit{DNF underapproximation (line ~\ref{SNA_Term:toDNF}).}
 For transition invariant to be a proof of termination, it needs to be disjunctively well-founded, meaning every disjunct must 
 correspond to a well-founded relation.
 Full conversion to a DNF format is expensive and can cause an exponential blowup in formula size. 
 Instead of full conversion, our algorithm uses a
 heuristic approach to construct a DNF formula, which underapproximates the interpolant.
-It constructs disjuncts from the interpolant using the syntactic analysis, until a certain bound, and then returns the constructed formula.
-Candidate disjuncts are then saved: $Cands(x,x') = \bigvee_i d_i$.
+It constructs disjuncts from the interpolant using the syntactic analysis, bounded by a constant to avoid exponential blowup.
+It does not violate the correctness of the approach, as in the worst case the resulting formula would not be a transition invariant.
 
 % The number of disjuncts is bounded by a constant (a tunable parameter depending on the available size of RAM), since DNF 
 % conversion can cause an exponential blowup in formula size.  Move to implementation & evaluation
 
-% Underapproximation of original formula in DNF
-% Formula processing in this section - not full DNF
-% Give a formal reasoning step
+% Underapproximation of original formula in DNF +
+% Formula processing in this section - not full DNF +
+% Give a formal reasoning step +
 % Bring citation 3 to background section
-% Define well-foundedness
+% Define well-foundedness +
 
-\paragraph{Step 4} The filtering of disjuncts encoding well-founded relations.
+\paragraph{Step 4} \textit{Filtering Well-Founded Disjuncts (line ~\ref{SNA_Term:TINV}).}
 For each disjunct $d(x,x') \in Cands(x,x')$ algorithm checks if $d(x,x')$ corresponds to a well-founded relation.
-It does so by checking if there exists a ranking function for specific disjunct $d(x,x')$.
+Our technique uses automated linear ranking function synthesis~\cite{DBLP:conf/vmcai/PodelskiR04} for checking the existence of a ranking function.
 The disjuncts for which a ranking function exists are preserved, and the rest are discarded.
-Our technique uses automated linear ranking function synthesis~\cite{DBLP:conf/vmcai/PodelskiR04} for checking the existence of a ranking function:
+The resulting formula is disjoined with the input candidate transition invariant $TInv$.
 
-$$TrInv(x,x') = \bigvee_i \{d_i \in Cands| \text{for $d_i\ \exists$ ranking function $f(x)$} \}$$
-
-\paragraph{Step 5} Synthesis of the states for which transition invariant is valid.
+\paragraph{Step 5} \textit{Synthesis of the states for which transition invariant is valid (line ~\ref{SNA_Term:NC}).}
 If $TrInv$ is a transition invariant over all reachable states, then TS terminates, since every disjunct corresponds to well-founded relation.
 To verify this, procedure computes the formula $C(x)$ encoding the states over which $TrInv$ is a valid transition invariant. 
 The formula $C(x)$ is defined by the following property:
@@ -130,25 +127,19 @@ The formula $C(x)$ is defined by the following property:
     \rightarrow& TrInv(x,x'')
 \end{align*}
 
-Similarly to $T^{n}$, $C(x)$ can be constructed using the quantifier elimination, negating the states for 
-which $TrInv$ is not a transition invariant:
-
-\begin{align*}
-    C(x) = \lnot QE(\exists x',x''. (TrInv(x,x') \lor& Id(x,x')) \land Tr(x',x'') \\
-    \land& \lnot TrInv(x,x''))
-\end{align*}
+Similarly to $T^{n}$, $C(x)$ is constructed using the quantifier elimination, negating the states for 
+which $TrInv$ is not a transition invariant.
 
 \begin{example}~\label{Ex:C}
     Consider the transition system from the Example~\ref{Ex:Tn}.
     Let's assume that the procedure was able to construct a transition invariant $TrInv(x,x') \triangleq v' < v \land v' \geq 0$.
-    Then the quantifier elimination would produce $C(x) \triangleq v \geq 0$
-    (as $Tr(x,x') = ((v' = v - 1 \lor v' = v - 2) \land v > 0) \lor (v < -10 \land v' = v - 1)$).
-
+    Then the quantifier elimination would produce $C(x) \triangleq v \geq 0$, as transition invariant is defined only for 
+    the states that satisfy $C(x)$.
 \end{example}
 
-\emph{Note.} Important to note that if $\lnot C(x)$ is not reachable, then $TrInv(x,x')$ is a disjunctively well-founded
+\emph{Note.} If $\lnot C(x)$ is not reachable, then $TrInv(x,x')$ is a disjunctively well-founded
 transition invariant over all reachable states, and it witnesses the termination of transition system.
-For illustration, in the Example~\ref{Ex:C} transition invariant is sufficient to prove termination, since 
+For illustration, transition invariant in the Example~\ref{Ex:C} is sufficient to prove termination, since 
 $\lnot C(x) \triangleq v < 0$ is not reachable in the transition system.
 
 \begin{lemma}\label{Lem:Term}
