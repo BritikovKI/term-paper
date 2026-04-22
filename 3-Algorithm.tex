@@ -1,6 +1,6 @@
 \section{Termination Analysis via Interpolation-based Transition Invariant Generation}
 
-We propose a new procedure for proving termination that leverages safety verification to generate a well-founded transition invariant via interpolation.
+We propose a new procedure \trInvSynthesis for proving termination that leverages safety verification to generate a well-founded transition invariant via interpolation.
 At each iteration, our procedure constructs a trace from the initial states to a sink state.
 A well-founded transition invariant is then constructed based on the overapproximation of the terminating trace.
 This transition invariant proves termination if it is valid for all reachable states.
@@ -23,7 +23,7 @@ The Procedure consists of five major steps:
 (3) converting the interpolant into a underapproximating DNF formula; 
 (4) filtering disjuncts to retain only those encoding well-founded relations; and 
 (5) computing the formula encoding states for which the produced formula is a valid transition invariant.
-The overall flow of the procedure can be seen in the figure~\ref{fig:TrInvGen}.
+The overall flow of the procedure can be seen in the Figure~\ref{fig:TrInvGen}.
 
 \begin{figure}[t]
     \centering
@@ -38,7 +38,7 @@ The overall flow of the procedure can be seen in the figure~\ref{fig:TrInvGen}.
     \DontPrintSemicolon
     \small
     \newcommand{\Continue}{\textbf{continue}}
-    \caption{$TrInvSynthesis(P, Tr^n, TInv)$.}
+    \caption{$\trInvSynthesis(P, Tr^n, TInv)$.}
     \label{Alg:SNA_TrInv}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
@@ -199,23 +199,25 @@ then $T$ is terminating.
 
 \subsection{Interpolation-based Termination Analysis}
 
-
-The algorithm description is given in Algorithm~\ref{Alg:SNA_Term}. 
-Below, we explain the steps of the algorithm in detail.
-Then, provide an algorithm execution example.
-Afterwards, we prove the correctness of the introduced approach.
-
-Our technique, similarly to the Algorithm~\ref{Alg:SNA} takes as input a Safety Problem $P=\tuple{Init, Tr, Sink, x}$, where $Init$ and 
-$Tr$ encode the initial states and transition relation, $Sink$ is the formula encoding sink states, and $x$ is 
-a set of variables over which the Transition System is defined.
-As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it is terminating, and UNKNOWN if the procedure cannot determin the final result.
-
+This subsection presents the full procedure for the termination analysis using the interpolation-based transition invariant generation.
+It follows the overall flow of the Algorithm~\ref{Alg:SNA}, but it not only blocks the terminating states, it also constructs a 
+transition invariant candidates, that allow to prove termination.
+Transition invariant candidates are constructed iteratively, using \trInvSynthesis procedure, which is described in the previous subsection.
+The overall flow of the procedure can be seen in the Figure~\ref{fig:SNATrInv}. 
+The introduced changes are highlighted in a grey block.
+ 
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{Figures/SNA+T.pdf}
     \caption{Execution Flow of Interpolation-based Transition Invariant Generation.}
     \label{fig:SNATrInv}
 \end{figure}
+
+The Algorithm~\ref{Alg:SNA_Term} takes as input a Safety Problem $P=\tuple{Init, Tr, Sink, x}$, where $Init$ and 
+$Tr$ encode the initial states and transition relation, $Sink$ is the formula encoding sink states, and $x$ is 
+a set of variables over which the Transition System is defined.
+As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it is terminating, and UNKNOWN if the procedure cannot determin the final result.
+
 
 \begin{algorithm}[t!]
 	\SetInd{0.5em}{0.5em}
@@ -232,7 +234,7 @@ As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it 
     \While{$\top$} {
         \label{SNA_Term:Safety} $\tuple{res, \phi} \gets safetyCheck(P)$ \\
         \eIf{$\tuple{res, \phi} = \tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(n)})}$} {
-            $\tuple{TInv, C} \gets TrInvSynthesis(P, Tr^n, TInv)$ \\
+            $\tuple{TInv, C} \gets \trInvSynthesis(P, Tr^n, TInv)$ \label{SNA_TERM:Synth} \\
             \label{SNA_Term:CheckNc} $\tuple{res', \phi'} \gets safetyCheck(\tuple{Init', Tr', \lnot C, x})$ \\
             \eIf{$\tuple{SAFE, Inv(x)}$} {
                \Return $TERM$\label{SNA_Term:NEWTERM}
@@ -251,37 +253,26 @@ As an output, the algorithm returns NONTERM if TS is nonterminating, TERM if it 
 \end{algorithm}
 
 
-The procedure maintains two important variables: $TInv$ - formula that serves as a transition invariant candidate, it is  progressively extended
- by adding well-founded disjuncts. 
-$Prs$ is a vector of safety problems, which contains the safety problems that need to be analized within the algorithm to complete
-the termination proof.
+The procedure additionally maintains a formula $TInv(x,x')$ - this is formula that maintains the candidate transition invariant.
+During the execution, $TInv$ is extended with new disjuncts, which are generated by the \trInvSynthesis procedure, and encode well-founded relations. 
+
 
 Algorithm commences by analyzing the original safety problem.
-It iterates until it either finds a recurrent set - proving nontermination, or finds a disjunctively well-founded Transition Invariant, 
-that covers the reachable state space.
-Every iteration, similarly to the Algorithm~\ref{Alg:SNA}, begins with the safety check at line~\ref{SNA_Term:Safety}, extracting the last 
-element from the list of safety problem (which also decreases the size of $Prs$).
+It iterates until it either finds an inductive invariant or a disjunctively well-founded Transition Invariant.
+Every iteration, similarly to the Algorithm~\ref{Alg:SNA}, begins with the safety check at line~\ref{SNA_Term:Safety}.
 The algorithm handles two possible cases:
 
 \paragraph{UNSAFE.} It means there exists a terminating trace in the Transition System.
-First, algorithm executes a \blockTerm procedure, blocking the determenistically terminating states.
-It adds a constructed problem into the list of safety problems.
-At the lines~\ref{SNA_Term:T}-\ref{SNA_Term:CheckNc} algorithm executes the interpolation-based generation of transition invariant 
-candidate, following the approach described above - generating $T^n$, constructing an overappproximation of transition trace and
-transforming it into union of well-founded relations.
+First, algorithm executes a \trInvSynthesis procedure, expanding the transition invariant with well-founded disjuncts and constructing
+formula $C(x)$ encoding states over which transition invariant is valid (line~\ref{SNA_TERM:Synth}).
+Then, it checks if $\lnot C(x)$ is reachable from the initial states (line~\ref{SNA_Term:CheckNc}).
+If it is not reachable, then $TInv$ is a transition invariant over all reachable states, and algorithm concludes termination.
 
-
-If it is possible to reach state in $\lnot C(x)$ from the initial states, then our approach tries to prove termination of this state, not covered by 
-transition invariant, by updating $Init'(x)$ to this state.
-If $C(x)$ is not reachable from the updated Initial states $Init'(x) \neq Init(x)$, then algorithm checks, if $Prs$ is empty,
-meaning that the termination of original transition system was proven, and if it is the case - it concludes that TS is terminating. 
-Otherwise, if $C(x)$ is reachable from the original Initial states $Init(x)$ - algorithms constructs the formula, encoding some 
-states noncovered by the transition invariant, reachable from the initial states - $s_m$. 
-Afterwards is adds a safety problem $\tuple{x = s_m, Tr', Sink', x}$ to $Prs$, attempting
-to either extend transition invariant, proving the termination of $s_m$, or to find a recurrent set.
+Otherwise, if $\lnot C(x)$ is reachable, algorithm refines the safety problem by blocking the terminating trace (line~\ref{SNA_Term:CheckNc}), 
+and continues to the next iteration.
 
 \paragraph{SAFE.} In case $Sink$ states are not reachable, and $Inv(x)$ is a recurrent set - TS is nonterminating.
-Otherwise, $NONDET$ as the procedure cannot conclude the result.
+Otherwise, algorithm returns $NONDET$ as the procedure cannot conclude the result.
 
 \begin{example}
     Consider a terminating transition system $T$ in which:
@@ -395,7 +386,7 @@ In this section, we present our Transition System-based extensions for safety-ba
         \label{SNA_Refined:Extension} $\tuple{Init', Tr', Sink', x} \gets Prs.pop()$ \\
         \label{SNA_Refined:Safety} $\tuple{res, \phi} \gets safetyCheck(\tuple{Init', Tr', Sink', x})$ \\
         \eIf{$\tuple{res, \phi} = \tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(n)})}$} {
-            $\tuple{TInv, C} \gets TrInvSynthesis(P, Tr^n, TInv)$ \\
+            $\tuple{TInv, C} \gets \trInvSynthesis(P, Tr^n, TInv)$ \\
             \label{SNA_Refined:CheckNc} $\tuple{res', \phi'} \gets safetyCheck(\tuple{Init', Tr', \lnot C, x})$ \\
             \eIf{$\tuple{SAFE, Inv(x)}$} {
                 \lIf {$Prs = \emptyset$} {\Return $TERM$\label{SNA_Refined:NEWTERM}}
