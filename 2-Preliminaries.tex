@@ -44,12 +44,19 @@ For a Transition System $\tuple{ Init, Tr, x }$:
 $$\forall x. Init(x) \rightarrow \exists n \in \mathbb{N}. \lnot \exists x^{(1)}, \dots, x^{(n)}. Tr^{n}(x, x^{(1)}, \dots, x^{(n)}).$$
 Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, mapping states to a well-founded domain, such that its value strictly decreases along every transition.
 
-% Only relation can be well-founded, not formula!
-
 \begin{definition}[Transition invariant]
     For a Transition System $\tuple{ Init, Tr, x }$, $TrInv(x,x')$ is a transition invariant if: $\forall x,x'. R(x) \land Tr^*(x,x') \rightarrow TrInv(x,x')$, where $Tr^*(x,x')$ is the reflexive transitive closure of $Tr(x,x')$
     and $R(x)$ is a formula encoding all the states, reachable within transition system.
 \end{definition}
+
+\begin{definition}[Well-founded Relation]
+    A binary relation $R \subseteq D \times D$ over a domain $D$ is \emph{well-founded} if there exists no infinite descending chain:
+    $$\nexists\, d_0, d_1, d_2, \dots \in D.\ 
+      \forall i \in \mathbb{N}.\ (d_i, d_{i+1}) \in R$$
+\end{definition}
+
+A relation $R(x,x')$ can be proven to be well-founded by synthesizing a ranking function $f(x)$, such that
+ $\forall x,x'. R(x,x') \rightarrow f(x) > f(x')$.
 
 \emph{Transition invariant}~\cite{DBLP:conf/lics/PodelskiR04} can be used to prove termination.
 If transition invariant is a finite union of well-founded relations (for example if every separate relation has a ranking function), 
@@ -63,7 +70,7 @@ then the Transition System terminates.
 Particularly, given two formulas $A$ and $B$ such that $A \land B$ is unsatisfiable, a Craig interpolant for $A$ and $B$ is a formula $I$ such that $A \rightarrow I$, $I \land B$ is unsatisfiable, and $I$ only contains the symbols, common to both $A$ and $B$.
 We use $Itp(A, B)$ to denote the computation of the Craig interpolant for $A$ and $B$.
 
-\paragraph{Proving Nontermination via Safety}
+\subsection{Proving Nontermination via Safety}
 Many techniques reduce termination and nontermination analysis to safety verification.
 One notable approach is the reduction of nontermination to safety, which constructs strong recurrent sets via inductive invariants~\cite{DBLP:conf/tacas/ChenCFNO14}.
 It was introduced in the context of proving nontermination of programs with loops, and can be extended for the concept of Transition Systems.
@@ -146,10 +153,8 @@ Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
     \SetAlgoFuncName{BlockTerm}{autoref name}
         $i \gets n-1$ \\
         \While{$i > 0$}{
-            $Next(x^{(i+1)}) \gets QE(Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}), \tuple{x^{(0)},\dots, x^{(i)},  x^{(i+2)}, \dots})$ \\
-            $Curr(x^{(i)}) \gets QE(Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}), \tuple{\exists x^{(0)},\dots, x^{(i-1)},  x^{(i+1)}, \dots })$ \\
-            % $s_i(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(i)}$\\
-            % $s_{i+1}(x) \gets $ \textit{variable assigment extracted from } $M$ for $x^{(i+1)}$\\
+            $Next(x^{(i+1)}) \gets QE(\exists x^{(0)},\dots, x^{(i)},  x^{(i+2)}, \dots, x^{(n)}.$ $Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$ \\
+            $Curr(x^{(i)}) \gets QE(\exists x^{(0)},\dots, x^{(i-1)},  x^{(i+1)}, \dots, x^{(n)}.$ $Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$ \\
             \label{SNA:BLOCK} \If{SAT ? $Curr(x) \land Tr(x,x') \land \lnot Next(x')$}{
                 $Tr'(x,x') \gets Tr(x,x') \land \lnot Next(x')$ \label{SNA:TRBLOCK}  \\
                 \Return $\tuple{Init, Tr', Sink, x}$
