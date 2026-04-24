@@ -153,7 +153,21 @@
 
 
 \begin{abstract}
-    Termination analysis is difficult.
+Termination analysis of infinite-state systems is a fundamental problem in 
+formal methods. Existing techniques are predominantly based on ranking function 
+synthesis, which can be insufficient when the transition relation is too complex 
+to admit a ranking function directly, even for terminating systems.
+We present a new approach to termination analysis based on the interpolation-based 
+construction of well-founded transition invariants. By leveraging Craig interpolation, 
+our approach guides transition invariant synthesis with respect to the conditions 
+relevant to termination, enabling property-directed invariant generation that 
+naturally handles complex transition relations. Our technique is integrated with 
+safety-based nontermination analysis, allowing it to prove both termination and 
+nontermination within a unified framework.
+We implemented our approach and evaluated it on benchmarks from the 
+ Termination Competition (TermComp). Our tool demonstrates 
+competitive performance against state-of-the-art termination provers, solving 
+a significant number of instances not solved by any existing tool.
 \end{abstract}
 
 %

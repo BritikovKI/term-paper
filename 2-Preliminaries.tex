@@ -103,7 +103,7 @@ The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nonterminat
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
-    \Output{NONTERM | UNKNOWN}
+    \Output{NONTERM $\mid$ UNKNOWN}
     % \SetKwFunction{FAnalyze}{Analyze}
     % \SetKwProg{Fn}{Function}{:}{}
     % \nonl\Fn{\FAnalyze{$P$}}{
@@ -153,15 +153,15 @@ Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
     \SetAlgoFuncName{BlockTerm}{autoref name}
         $i \gets n-1$ \\
         \While{$i > 0$}{
-            $Next(x^{(i+1)}) \gets QE(\exists x^{(0)},\dots, x^{(i)},  x^{(i+2)}, \dots, x^{(n)}.$ $Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$ \\
-            $Curr(x^{(i)}) \gets QE(\exists x^{(0)},\dots, x^{(i-1)},  x^{(i+1)}, \dots, x^{(n)}.$ $Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$ \\
-            \label{SNA:BLOCK} \If{SAT ? $Curr(x) \land Tr(x,x') \land \lnot Next(x')$}{
-                $Tr'(x,x') \gets Tr(x,x') \land \lnot Next(x')$ \label{SNA:TRBLOCK}  \\
+            $S_{i+1}(x^{(i+1)}) \gets QE(\exists x^{(0)},\dots, x^{(i)},  x^{(i+2)}, \dots, x^{(n)}.$ $Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$ \\
+            $S_{i}(x^{(i)}) \gets QE(\exists x^{(0)},\dots, x^{(i-1)},  x^{(i+1)}, \dots, x^{(n)}.$ $Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$ \\
+            \label{SNA:BLOCK} \If{SAT ? $S_i(x) \land Tr(x,x') \land \lnot S_{i+1}(x')$}{
+                $Tr'(x,x') \gets Tr(x,x') \land \lnot S_{i+1}(x')$ \label{SNA:TRBLOCK}  \\
                 \Return $\tuple{Init, Tr', Sink, x}$
             }
             $i \gets i - 1$   
         }
-        $Init'(x^{(0)}) \gets Init(x^{(0)}) \land \lnot QE(\exists x^{(1)}, \dots, x^{(n)} | Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$  \label{SNA:BLOCKINIT} \\
+        $Init'(x^{(0)}) \gets Init(x^{(0)}) \land \lnot QE(\exists x^{(1)}, \dots, x^{(n)}. Init(x^{(0)}) \land Tr^{n} \land Sink(x^{(n)}))$  \label{SNA:BLOCKINIT} \\
         \Return $\tuple{Init', Tr, Sink, x}$
     % }
 \end{algorithm}
