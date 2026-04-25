@@ -2,26 +2,25 @@
 \label{Sec:Preliminaries}
 This section introduces the definitions and formalisms used in the paper. 
 Logical formulas in our approach are defined over the theory of Linear Integer Arithmetic (LIA).
-We use $x,x'$ to denote set of variables (unprimed and primed), where $x' = \{v'| v \in x\}$, $x$ is state variables, and $x'$ is next state variables.
+We use $x,x'$ to denote set of variables (unprimed and primed), where $x' = \{v'| v \in x\}$, $x$ is a set of state variables, and $x'$ is a set of next state variables.
 If there are variables of many different states in the formula we use superscript notation, e.g., $x^{(0)}, \dots, x^{(n)}$ .
-We use $s, s_1, s_2 \dots$ to denote the specific states in the system.
+$s, s'$ are used to denote the specific states in the system.
 
 %
 
 The formula defined over $x$ is a state formula, and a formula over $x \cup x'$ is a transition formula.
-State formulas represent a set of states where they hold, and transition formulas define binary relations over the state.
+State formulas encode a set of states, and transition formulas define binary relations over the state.
 Using $Id(x,x')$ we denote a transition formula $x = x'$
 
 \paragraph{Transition systems and Safety Problem} 
 A \emph{transition system} (TS) is defined as $T = \tuple{ Init, Tr, x }$, where $Init$ is a formula encoding the initial states of the system, $Tr$ is a transition formula, which encodes the transition relation, and $x$ is a set of system's variables.
 With respect to transition system, a \emph{transition trace} is a formula encoding multiple consecutive transitions: $Tr^{n}(x^{(0)}, \dots, x^{(n)}) = Tr(x^{(0)}, x^{(1)}) \land \dots \land Tr(x^{(n-1)}, x^{(n)})$.
-% $trace(s_0, \dots, s_n) = Tr(s_0, s_1)) \land \dots \land Tr(s_{n-1}, s_n)$
-We write $Tr^{n}(x,\dots,x')$ for this conjunction throughout the paper.
+We write $Tr^{n}(x^{(0)},\dots,x^{(n)})$ for this conjunction throughout the paper.
 A \emph{safety problem} is defined as  $P = \tuple{ Init, Tr, Bad, x }$ where $Bad$ is a formula that represents states that violate the safety property.
 
 %
 
-Safety verification amounts to determining whether there exists a transition trace from the initial states that reaches a $Bad$ state.
+Safety verification amounts to determining whether there exists a transition trace that reaches a $Bad$ state from the initial states.
 If TS is safe, then there exists an inductive invariant $Inv(x)$ s.t. (1) $\forall x. Init(x) \rightarrow Inv(x)$, (2) $\forall x. Inv(x) \land Tr(x,x') \rightarrow Inv(x')$, and (3) $\forall x. Inv(x) \rightarrow \lnot Bad(x)$.
 We use $safetyCheck(P)$ to denote a safety verification procedure that returns a tuple $\tuple{SAFE, Inv(x)}$ if TS is safe ($Inv(x)$ is inductive invariant).
 Otherwise, if TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(x^{(0)}, \dots, x^{(n)})}$, such that: 
@@ -42,7 +41,7 @@ initial states.
 \paragraph{Termination} A TS is called \textbf{terminating} if for every initial state it is possible to take only limited number of transitions.
 For a Transition System $\tuple{ Init, Tr, x }$:
 $$\forall x. Init(x) \rightarrow \exists n \in \mathbb{N}. \lnot \exists x^{(1)}, \dots, x^{(n)}. Tr^{n}(x, x^{(1)}, \dots, x^{(n)}).$$
-Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, mapping states to a well-founded domain, such that its value strictly decreases along every transition.
+% Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, mapping states to a well-founded domain, such that its value strictly decreases along every transition.
 
 \begin{definition}[Transition invariant]
     For a Transition System $\tuple{ Init, Tr, x }$, $TrInv(x,x')$ is a transition invariant if: $\forall x,x'. R(x) \land Tr^*(x,x') \rightarrow TrInv(x,x')$, where $Tr^*(x,x')$ is the reflexive transitive closure of $Tr(x,x')$
@@ -55,15 +54,14 @@ Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:c
       \forall i \in \mathbb{N}.\ (d_i, d_{i+1}) \in R$$
 \end{definition}
 
-A relation $R(x,x')$ can be proven to be well-founded by synthesizing a ranking function $f(x)$, such that
+A relation $R(x,x')$ can be proven to be well-founded~\cite{DBLP:conf/vmcai/PodelskiR04} by synthesizing a ranking function $f(x)$, such that
  $\forall x,x'. R(x,x') \rightarrow f(x) > f(x')$.
 
 \emph{Transition invariant}~\cite{DBLP:conf/lics/PodelskiR04} can be used to prove termination.
 If transition invariant is a finite union of well-founded relations (for example if every separate relation has a ranking function), 
 then the Transition System terminates.
-\begin{definition}[Disjunctively well-founded transition invariant]
-    A transition invariant $TrInv(x,x') = \cup_{i = 0}^{n} R_i(x,x')$ is called disjunctively well-founded if every relation $R_i(x,x')$ is well-founded. 
-    % A transition invariant $TrInv(x,x') = \bigvee_{i = 0}^{n} R_i(x,x')$ is called disjunctively well-founded if every disjunct $R_i(x,x')$ is a well-founded relation. 
+\begin{definition}[Disjunctively well-founded relation]
+    A relation $D(x,x') = \cup_{i = 0}^{n} R_i(x,x')$ is called disjunctively well-founded if every relation $R_i(x,x')$ is well-founded. 
 \end{definition}
 
 \paragraph{Craig Interpolation} A technique for computing an overapproximation of the formula~\cite{Craig_1957}.
@@ -73,12 +71,12 @@ We use $Itp(A, B)$ to denote the computation of the Craig interpolant for $A$ an
 \subsection{Proving Nontermination via Safety}
 Many techniques reduce termination and nontermination analysis to safety verification.
 One notable approach is the reduction of nontermination to safety, which constructs strong recurrent sets via inductive invariants~\cite{DBLP:conf/tacas/ChenCFNO14}.
-It was introduced in the context of proving nontermination of programs with loops, and can be extended for the concept of Transition Systems.
-This extension is described below.
+It was introduced in the context of proving nontermination of programs with loops, and can be extended for the Transition Systems.
+This approach is described below.
 
 \begin{definition}[Sink states]
     For a Transition System $\tuple{ Init, Tr, x }$, a state $s$ is a sink state, if $\lnot \exists s'. Tr(s,s')$.
-    We use $Sink(x)$ to denote the formula encoding all sink states in the transition system, such that $\forall x. Sink(x) \rightarrow \lnot \exists x'. Tr(x,x')$
+    We use $Sink(x)$ to denote the formula encoding all sink states in the transition system, such that $\forall x. Sink(x) \leftrightarrow \lnot \exists x'. Tr(x,x')$
 \end{definition}
 
 \begin{figure}[t]
@@ -88,7 +86,7 @@ This extension is described below.
     \label{fig:SNA}
 \end{figure}
 
-The Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis takes a safety problem $P = \tuple{Init, Tr, Sink, x}$, where $Sink(x) = QE(\lnot Tr(x,x'). \tuple{x'})$.
+The Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis takes a safety problem $P = \tuple{Init, Tr, Sink, x}$, where $Sink(x) = QE(\exists x'. \lnot Tr(x,x'))$.
 As an output, it returns NONTERM if the system is nonterminating, and UNKNOWN, if the algorithm cannot conclude the analysis. 
 The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nontermination analysis.
 
@@ -113,8 +111,7 @@ The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nonterminat
                 $P \gets \blockTerm(P, Tr^{n})$ \label{SNA:BLOCKTERM}
             }
             {
-                \label{SNA:SAFE}
-                \If{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
+                \label{SNA:SAFE} \If{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
                     \Return NONTERM \label{SNA:RECURRENT}
                 }
                 \Return UNKNOWN
@@ -126,12 +123,11 @@ The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nonterminat
 \end{algorithm}
 
 The approach executes a safety check of $P$ in a loop.
-At line~\ref{SNA:UNSAFE}, the algorithm handles the case when $P$ is unsafe (i.e., a trace reaching a sink state exists).
-In this case, the algorithm calls the $\blockTerm$ procedure (Algorithm~\ref{Alg:SNABlock}), which refines the safety problem $P$ by blocking the states that are determenistically
-leading to the sink states, updating the Safety problem.
+At line~\ref{SNA:UNSAFE}, the algorithm handles the case when $P$ is unsafe (i.e., exists a trace reaching sink states).
+In this case, the algorithm calls the $\blockTerm$ procedure (Algorithm~\ref{Alg:SNABlock}), which refines the safety problem $P$ by blocking the states that determenistically
+lead to the sink states, updating the Safety problem.
 $\blockTerm$ is described in detail below.
-In the case when $P$ is safe, checks if inductive invariant $Inv(x)$ is a recurrent set (line~\ref{SNA:SAFE}).
-The algorithm checks whether $Inv(x)$ is a recurrent set at line~\ref{SNA:RECURRENT}, meaning that it is possible to take a transition from every state within the invariant to another state.
+In the case when $P$ is safe, algorithm checks if inductive invariant $Inv(x)$ is a recurrent set (line~\ref{SNA:SAFE}).
 If $Inv(x)$ is a recurrent set, then the transition system is nonterminating.
 Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
 
@@ -167,7 +163,8 @@ Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
 \end{algorithm}
 
 The $\blockTerm$ procedure takes as input a safety problem $P$ and a trace formula $Tr^{n}(x^{(0)}, \dots, x^{(n)})$ such that $Init(x) \land Tr^{n}(x, \dots, x') \land Sink(x')$ is satisfiable.
-The algorithm iteratively checks if it is possible to take a transition that does not lead to the sink states(at line~\ref{SNA:BLOCK}), using a query to the SMT solver.
+The algorithm iteratively analyses the transition trace from the sink. 
+It checks if it is possible to take a transition that does not lead to the sink states(at line~\ref{SNA:BLOCK}), using a query to the SMT solver.
 If it is possible, then the algorithm blocks the states that deterministically lead to the sink states at line~\ref{SNA:TRBLOCK}.
 Otherwise, if such states do not exist, the algorithm blocks the subset of initial states that deterministically lead to the sink states (line ~\ref{SNA:BLOCKINIT}).
 
