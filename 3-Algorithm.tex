@@ -125,15 +125,13 @@ The disjuncts are constructed via syntactic processing of the formula, unwrappin
 It allows to significantly reduce the size of the resulting formula and speed up the DNF conversion, while preserving correctness: in the worst case, the resulting formula fails to be a transition invariant.
 Empirically, we observed that limiting the number of disjuncts results in more size-efficient and quick termination proofs.
 
+% Rwrite and fix the writing.
+% Say why we are still better compared to
+% Add formulas!!! - at least what is expected and how it is produced
 
 % The number of disjuncts is bounded by a constant (a tunable parameter depending on the available size of RAM), since DNF 
 % conversion can cause an exponential blowup in formula size.  Move to implementation & evaluation
-
-% Underapproximation of original formula in DNF +
-% Formula processing in this section - not full DNF +
-% Give a formal reasoning step +
 % Bring citation 3 to background section
-% Define well-foundedness +
 
 \paragraph{Step 4} \textit{Filtering Well-Founded Disjuncts (line ~\ref{SNA_TrInv:TINV}).}
 For each disjunct $d(x,x') \in Cands(x,x')$ algorithm checks if $d(x,x')$ encodes a well-founded relation.
@@ -252,8 +250,10 @@ The overall flow is shown in Figure~\ref{fig:SNATrInv}.
     \label{Alg:SNA_Term}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
+    \SetKwInOut{Data}{Data}
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
     \Output{TERM $\mid$ NONTERM $\mid$ UNKNOWN}
+    \Data{$TInv$ - formula that encodes transition invariant}
     $TInv \gets \bot$ \\
     \While{$\top$} {
         \label{SNA_Term:Safety} $\tuple{res, \phi = Tr^n\ or\ Inv} \gets safetyCheck(P)$ \\
@@ -423,8 +423,11 @@ those states in particular, or to detect a recurrent set otherwise.
     \label{Alg:SNA_Refined}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
+    \SetKwInOut{Data}{Data}
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
     \Output{TERM $\mid$ NONTERM}
+    \Data{$TInv$ - formula that encodes transition invariant, $Prs$ - list of Safety Problems to be
+    analyzed for termination}
     $TInv \gets \bot$ \\
     $Prs \gets [P]$ \label{SNA_Refined:Prs} \\
     \While{$\top$} {

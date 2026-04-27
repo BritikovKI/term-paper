@@ -64,8 +64,8 @@ then the Transition System terminates.
     A relation $D(x,x') = \cup_{i = 0}^{n} R_i(x,x')$ is called disjunctively well-founded if every relation $R_i(x,x')$ is well-founded. 
 \end{definition}
 
-\paragraph{Craig Interpolation} A technique for computing an overapproximation of the formula~\cite{Craig_1957}.
-Particularly, given two formulas $A$ and $B$ such that $A \land B$ is unsatisfiable, a Craig interpolant for $A$ and $B$ is a formula $I$ such that $A \rightarrow I$, $I \land B$ is unsatisfiable, and $I$ only contains the symbols, common to both $A$ and $B$.
+\paragraph{Craig Interpolation} An abstraction technique~\cite{Craig_1957}, such that
+given two formulas $A$ and $B$ such that $A \land B$ is unsatisfiable, a Craig interpolant for $A$ and $B$ is a formula $I$ such that $A \rightarrow I$, $I \land B$ is unsatisfiable, and $I$ only contains the symbols, common to both $A$ and $B$.
 We use $Itp(A, B)$ to denote the computation of the Craig interpolant for $A$ and $B$.
 
 \subsection{Proving Nontermination via Safety}
@@ -82,21 +82,21 @@ This approach is described below.
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{Figures/SNA.pdf}
-    \caption{Execution flow of Safety-based Nontermination analysis.}
+    \caption{Execution flow of Safety-based Nontermination analysis, cf~\cite{DBLP:conf/tacas/ChenCFNO14}}
     \label{fig:SNA}
 \end{figure}
 
 The Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis takes a safety problem $P = \tuple{Init, Tr, Sink, x}$, where $Sink(x) = QE(\exists x'. \lnot Tr(x,x'))$.
 As an output, it returns NONTERM if the system is nonterminating, and UNKNOWN, if the algorithm cannot conclude the analysis. 
 The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nontermination analysis.
-
+% c.f
 
 \begin{algorithm}[t!]
 	\SetInd{0.5em}{0.5em}
     \DontPrintSemicolon
     \small
     \newcommand{\Continue}{\textbf{continue}}
-    \caption{Nontermination analysis using Safety.~\cite{DBLP:conf/tacas/ChenCFNO14}}
+    \caption{Nontermination analysis using Safety, cf~\cite{DBLP:conf/tacas/ChenCFNO14}}
     \label{Alg:SNA}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
@@ -107,11 +107,11 @@ The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nonterminat
     % \nonl\Fn{\FAnalyze{$P$}}{
         \While{$\top$}{
             $\tuple{res,\phi = Tr^{n}\ or\ Inv} \gets safetyCheck(P)$\\
-            \label{SNA:UNSAFE}\eIf{$\tuple{res,\phi} = \tuple{UNSAFE, Tr^{n}}$} {
-                $P \gets \blockTerm(P, Tr^{n})$ \label{SNA:BLOCKTERM}
+            \label{SNA:UNSAFE}\eIf{$res = UNSAFE$} {
+                $P \gets \blockTerm(P, \phi)$ \label{SNA:BLOCKTERM}
             }
             {
-                \label{SNA:SAFE} \If{$\forall x. Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$} {
+                \label{SNA:SAFE}\If{$\forall x. \phi(x) \rightarrow \exists x'. Tr(x,x') \land \phi(x')$} {
                     \Return NONTERM \label{SNA:RECURRENT}
                 }
                 \Return UNKNOWN
@@ -121,6 +121,7 @@ The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nonterminat
     % }
     
 \end{algorithm}
+% A
 
 The approach executes a safety check of $P$ in a loop.
 At line~\ref{SNA:UNSAFE}, the algorithm handles the case when $P$ is unsafe (i.e., exists a trace reaching sink states).
@@ -136,12 +137,14 @@ Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
     \DontPrintSemicolon
     \small
     \newcommand{\Continue}{\textbf{continue}}
-    \caption{\blockTerm(P, $Tr^{n}$).~\cite{DBLP:conf/tacas/ChenCFNO14}}
+    \caption{\blockTerm(P, $Tr^{n}$), cf~\cite{DBLP:conf/tacas/ChenCFNO14}}
     \label{Alg:SNABlock}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
+    \SetKwInOut{Data}{Data}
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$, terminating trace $Tr^{n}(x^{(0)}, \dots, x^{(n)}) = Tr(x^{(0)}, x^{(1)}) \land \dots \land Tr(x^{(n-1)}, x^{(n)})$}
     \Output{Refined safety problem $P' = \tuple{Init', Tr', Sink', x}$}
+    \Data{$S_0,\dots,S_n$ - formulas which encode states within trace reachable in 0, ..., n transitions}
 
     % \SetKwFunction{FBlock}{BlockTerm}
     % \SetKwProg{Fn}{Function}{:}{}
@@ -170,21 +173,32 @@ Otherwise, if such states do not exist, the algorithm blocks the subset of initi
 
 
 \begin{lemma}\label{Lem:NONTERM}
-    If Algorithm~\ref{Alg:SNA} returns NONTERM, then the transition system is nonterminating.
+    If Algorithm~\ref{Alg:SNA} returns NONTERM, then the transition system is nonterminating, cf~\cite{DBLP:conf/vmcai/PodelskiR04}.
 \end{lemma}
-% \begin{proof}
-%     Suppose Algorithm~\ref{Alg:SNA} returns NONTERM, refined the system to $\tuple{Init', Tr', x}$. 
-%     Then, based on the line~\ref{SNA:SAFE} there exists an inductive invariant $Inv(x)$ such that:
-%     \begin{enumerate}[label=\Roman*.]
-%         \item $\forall x.\ Inv(x) \rightarrow \exists x'. Tr'(x,x') \land Inv(x')$.
-%     \end{enumerate}
-%     We show that $Inv(x)$ is also a recurrent set for the original system $\tuple{Init, Tr, x}$.
 
-%     \textbf{Reachability from $Init$.} Since original $Init$ is updated as follows: $Init'(x) = Init(x) \land \bigwedge_i \lnot B_i(x)$ 
-%     (where $\bigwedge_i \lnot B_i(x)$ denotes states blocked by $\blockTerm$),  we have $Init'(x) \rightarrow Init(x)$. 
-%     By definition of inductive invariant, $Init'(x) \rightarrow Inv(x)$, and therefore some states from $Init$ are in the recurrent set.
+\begin{example}\label{Ex:SNA}
+    Consider a transition system $TS = \tuple{Init, Tr, x}$ with 
+    boolean variables $x = \{a, b, c\}$ and: $Init(x)  \triangleq a$,
+        $Tr(x, x') \triangleq (a \land b') \lor (a \land c') \lor (b \land c')$. 
+    The sink states are computed as 
+    $Sink(x) \triangleq c$.
+    The initial safety problem is $P = \tuple{Init, Tr, Sink, x}$.
 
-%     \textbf{Closure under $Tr$.} Since $Tr'(x,x') = Tr(x,x') \land \bigwedge_i \lnot B_i(x')$, we have $Tr'(x,x') \rightarrow Tr(x,x')$. 
-%     Therefore, $\forall x.\ Inv(x) \rightarrow \exists x'. Tr(x,x') \land Inv(x')$. 
-%     Thus $Inv(x)$ satisfies both conditions of a recurrent set for $\tuple{Init, Tr, x}$, which is therefore nonterminating.
-% \end{proof}
+    \textbf{Iteration 1.} $safetyCheck(P)$ returns UNSAFE with the 
+    trace $Tr^1(x^{(0)}, x^{(1)})$ corresponding to the path 
+    $a \to c$, i.e., $Init(x^{(0)}) \land Tr(x^{(0)}, x^{(1)}) 
+    \land Sink(x^{(1)})$.
+    \blockTerm\ analyses the trace and detects that from state $a$ 
+    there exists an alternative successor, namely $b$, that does not 
+    lead directly to $Sink$. Formally, the check 
+    $S_0(x) \land Tr(x, x') \land \lnot S_1(x')$ is satisfiable 
+    (with $S_1 \equiv c$), so the transition relation is refined:
+    $$Tr'(x, x') \;\gets\; Tr(x, x') \land \lnot c'$$
+
+    \textbf{Iteration 2.} $safetyCheck(\tuple{Init, Tr', Sink, x})$ 
+    returns SAFE with an inductive invariant $Inv(x)$. The algorithm 
+    checks whether $Inv(x)$ is a recurrent set.
+    Since $Tr'$ blocks the transition to $c$, state $b$ has no 
+    outgoing transition under $Tr'$, so $Inv$ is not a recurrent set.
+    As no recurrent set was found, Algorithm~\ref{Alg:SNA} returns $UNKNOWN$.
+\end{example}
