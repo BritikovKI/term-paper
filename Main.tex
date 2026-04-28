@@ -154,9 +154,15 @@
 
 \begin{abstract}
 Termination analysis of infinite-state systems is a fundamental problem in 
-formal methods. Existing techniques are predominantly based on ranking function 
-synthesis, which can be insufficient when the transition relation is too complex 
-to admit a ranking function directly.
+formal methods. 
+% Existing techniques are predominantly based on ranking function 
+% synthesis, which can be insufficient when the transition relation is too complex 
+% to admit a ranking function directly.
+Existing techniques for termination and nontermination are usually separated,
+concentrating on a single particular problem, however theoretically they are 
+interdependent.
+Core intuition of this paper is that the learned artifacts during termination and nontermination
+analysis can be used to guide the analysis.
 We present a new approach to termination analysis based on the interpolation-based 
 construction of well-founded transition invariants. By leveraging Craig interpolation, 
 our approach guides transition invariant generation with respect to the conditions 
@@ -175,7 +181,7 @@ a significant number of instances not solved by any existing tool.
 
 %
 
-% \input{1-Introduction}
+\input{1-Introduction}
 
 %
 

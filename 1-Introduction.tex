@@ -1,163 +1,50 @@
 \section{Introduction}
 \label{Sec:Introduction}
 
+Termination analysis of infinite-state systems is a fundamental problem in 
+formal verification, with applications in static analysis, compiler 
+optimisation, and the verification of safety-critical software.
+Proving termination and nontermination over LIA is generally undecidable, 
+yet many practical techniques succeed on large classes of real-world 
+programs, though the problem remains challenging in general.
+Modern techniques typically treat termination and nontermination as separate 
+problems, since each requires a fundamentally different witness.
 
-Termination analysis of infinite-state systems is a fundamental problem in formal verification, underpinning compiler optimisation, 
-static analysis, and the correctness of safety-critical software.
+State-of-the-art termination techniques centre around the synthesis of 
+ranking functions for the transition relation~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19}.
+The existence of a ranking function for the transition relation witnesses 
+termination by providing a measure that strictly decreases along every 
+execution.
+Alternative approaches are based on the computability of closed forms~\cite{DBLP:conf/sas/FrohnHG20,DBLP:journals/fmsd/HarkFG25}, 
+fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23} and the synthesis of disjunctively well-founded 
+transition invariants~\cite{Transition-Invariants-Revisited-CAV26,DBLP:conf/pldi/CookPR06,DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
 
-% Reachability analysis is a foundational technique providing a rigorous and systematic means of analyzing software with respect to specified safety properties.
-% %Model checking is a fundamental part of software verification. 
-% While it is undecidable in general, recent advances in Satisfiability Modulo Theories (SMT) and Constrained Horn Clause (CHC) solvers 
-% have enabled the development of efficient symbolic analysis techniques. 
-% However, when the program of interest has a complicated loop structure, 
-% the search space for possible property violations explodes quickly.
-% Thus, the reachability analysis remains challenging even for advanced modern techniques. 
-
-% %
-% State-of-the-art techniques such as 
-% Counter-Example Guided Abstraction Refinement (CEGAR)~\cite{DBLP:conf/cav/ClarkeGJLV00,DBLP:conf/fmcad/HojjatR18,DBLP:conf/fmcad/BeyerKW10},
-% IC3/Spacer~\cite{DBLP:journals/fmsd/KomuravelliGC16,DBLP:journals/fac/BradleyM08},  
-% Accelerated Bounded Model Checking (ABMC)~\cite{DBLP:journals/corr/abs-2401-09973}, 
-% and Transition Power Abstraction (TPA)~\cite{DBLP:conf/tacas/BlichaFHS22,DBLP:conf/fm/BritikovBSF24} 
-%  often struggle with nested loops and complex control flows. 
-% Although capable of some acceleration, approaches based on IC3/Spacer and CEGAR usually perform reachability analysis one step at a time, which is particularly taxing in the presence of deep loops.
-% %They can be inefficient for reachability analysis that involves traversing deep loops.
-% A recent \tpa technique instead makes larger steps and handles deep loops more efficiently. 
-% However, it applies only to the analysis of a single loop. 
-% To analyze nested loops, \tpa relies on a preprocessing to merge them into a single loop, losing important 
-% structural information. 
-% ABMC underapproximates loop behavior and is more suited for bug finding than for proving safety. 
-% Specifically, ABMC attempts to generate blocking clauses to prove safety, but it can be challenging for programs with nested loops and complex execution flow.
-
-% %
-
-% We introduce a new approach of Cycle Summarization-based Reachability Analysis (CSRA) to target programs with nested loops and complex structures. 
-% Our algorithm operates within the framework of CHC solving, in which the program is modeled by logical implications over uninterpreted predicates. 
-% CHCs serve as an intermediate software representation, which enables reasoning about programs independently of their programming language. 
-% This paradigm is employed in a wide range of model checkers, such as 
-% \textsc{SeaHorn}~\cite{DBLP:conf/cav/GurfinkelKKN15}, \textsc{JayHorn}~\cite{DBLP:conf/cav/KahsaiRSS16}, 
-% \textsc{RustHorn}~\cite{DBLP:conf/esop/0002T020}, and \textsc{Korn}~\cite{DBLP:conf/tacas/Ernst23}.
-
-% %
-
-% Our approach decomposes reachability analysis into the exploration of different cycle-free paths 
-% through the CHC system. 
-% The algorithm traverses each path independently, analyzing cycles and constructing cycle 
-% unrollings when needed. 
-% The core procedure of our approach is the computation and refinement of cycle summaries. 
-% \solveCHC uses \tpa engine \emph{modularly}, to analyze cycles, produce cycle summaries 
-% and unrollings. 
-% %The use of \tpa also enables efficient deep reachability checks. 
-% The constructed cycle summaries serve as abstractions that describe any possible cycle 
-% unrolling and as components for the construction of other cycle summaries. 
-% % This allows inner cycle summaries to be used in the construction of the overapproximation 
-% % of any possible cycle iteration. 
-% The use of cycle summaries enables efficient reasoning about potentially infinite sets of 
-% paths in the system and facilitates safety verification. 
-% Additionally, once learned, these summaries can be reused in the analysis of other paths 
-% through the CHC system. 
-% %\solveCHC enables efficient handling of programs with nested loops, as demonstrated by our experiments.
-
-% %
-
-% A prototype of our technique has been implemented in the \textsc{Golem}~\cite{DBLP:conf/cav/BlichaBS23} CHC solver and 
-% evaluated on benchmarks from CHC-Comp-2024~\cite{DBLP:journals/corr/abs-2404-14923}, 
-% aeval-bench-marks~\cite{DBLP:conf/cav/FedyukovichPMG19}, and a set of instances synthesized from 
-% real C++ code from repositories of \textsc{Z3}~\cite{DBLP:conf/birthday/BjornerGMR15}, \textsc{SeaHorn}~\cite{DBLP:conf/cav/GurfinkelKKN15}, 
-% \textsc{OpenSMT}~\cite{DBLP:conf/sat/HyvarinenMAS16} and \textsc{Golem}. 
-% Our results show that the approach is competitive with other state-of-the-art reachability 
-% analysis techniques. 
-% Specifically, \solveCHC solved a significant number of instances uniquely.
-% On average, \solveCHC is 2.5$\times$ faster than 
-% \textsc{Eldarica} and 1.9$\times$ faster than \textsc{Spacer}. 
-
-% The main contributions of this paper are: (1) a novel CHC-based reachability analysis approach 
-% for nested-loop programs, (2) a new TPA-based compositional approach for the generation and refinement of cycle summaries
-% that uses inner cycle summaries to produce outer cycle summaries, 
-% (3) a technique for decomposing CHC reachability analysis into the exploration of cycle-free paths through the CHC system, 
-% (4) formalization and proof of soundness for our method, and 
-% (5) an extensive empirical evaluation of CSRA in comparison with other state-of-the-art approaches for reachability analysis.
+Nontermination analysis typically relies on different verification 
+techniques. One of the most prominent is the construction of recurrent 
+sets — sets of states from which execution cannot 
+escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14}.
+An alternative family of techniques detects nontermination by identifying 
+lasso-shaped executions — finite paths leading to a loop that can be 
+repeated indefinitely~\cite{DBLP:journals/entcs/BiereAS02,DBLP:conf/popl/GuptaHMRX08,DBLP:conf/tacas/LeikeH18}.
 
 
-% % is a novel CHC-based reachability analysis algorithm 
-% % for nested-loop programs. 
-% % Our method introduces a compositional approach for constructing and refining cycle 
-% % summaries within the CHC system, enabling efficient safety verification. 
-% % Modular usage of TPA allows the algorithm to find deep counterexamples and prove the 
-% % safety of the system using the constructed summaries. 
-% % Additionally, decomposing reachability analysis into exploration of separate simple paths 
-% % simplifies the verification process and creates potential for the 
-% % parallelization. \konst{Make it into items}
+State of the art techniques are separated between termination and nontermination.
+This is adressed by some approaches~\cite{DBLP:conf/sas/Ben-AmramDG19}, but is still a dominant approach in the termination analysis.
+We propose a new, novel approach for termination analysis via interpolation-based synthesis of well-founded transition invariants.
+Our technique extends and optimizes the safety-based nontermination analysis~\cite{DBLP:conf/tacas/ChenCFNO14}, allowing it to 
+prove termination and nontermination of transition systems.
+Termination technique uses terminating traces, produced by the safety-based nontermination analysis to construct an approximations
+over the transition relation.
+These approximations serve are processed into disjunctively well-founded form and are used as the candidate for transition invariant.
+In return, the constructed transition invariant candidates are used to detect potentially terminating states that are 
+reachable within the original system.
+And the algorithm is then concentrated on the analysis of such, potentially nonterminating traces.
 
 
-% % \konst{Write a paragraph here}
-% % \begin{itemize}
-% %     \item A novel CHC-solving algorithm for the verification of nested-loop programs.
-% %     \item A compositional cycle summarization and refinement procedure.
-% % \end{itemize}
-
-
-% \subsection*{Motivating example}
-
-% Figure~\ref{fig:ex} gives a C program with a nested loop structure. 
-% The outer loop increments \texttt{x1} by the value of \texttt{x2} and assigns 0 to \texttt{x2}, 
-% while the inner loop increments \texttt{x2} by 2 until \texttt{x2} $\geq$ 32. 
-% When execution of the loops is finished, \texttt{x1} equals 512, so the program is safe.
-
-% % 
-% % Rename looping clause to inductive clause
-% % 
-% \begin{subfigures}
-% \begin{figure}[t!]
-% \begin{lstlisting}[language=C++,label={lst:multi},escapechar=|]
-% int x1 = 0, x2 = 0;
-% while (x1 < 512) { |\label{line:Cloop1}|
-%  while(x2 < 32) { x2 = x2 + 2; } |\label{line:Cloop2}|
-%  x1 = x1 + x2; x2 = 0;
-% }
-% assert(x1 == 512);
-% \end{lstlisting}
-% 	\caption{A C program with nested loops.}
-% 	\label{fig:ex}
-% \end{figure}
-% %
-
-% \begin{figure}[t!]
-%     \centering
-%     {
-%         \scriptsize
-%         \begin{align*}
-%             &x_1=0 \land x_2 = 0 &&\implies \pred_1(x_1,x_2)&&(\clause_1)\\
-%             &\pred_1(x_1,x_2) \land x_1 < 512 \land x_1' = x_1 \land x_2'=x_2 &&\implies \pred_2(x_1', x_2')&&(\clause_2)\\
-%             &\pred_2(x_1,x_2) \land x_2 < 32 \land x_1' = x_1 \land x_2'=x_2+2 &&\implies \pred_2(x_1', x_2')&&(\clause_3)\\
-%             &\pred_2(x_1,x_2) \land x_2 \geq 32 \land x_1' = x_1+x_2 \land x_2'=0 &&\implies \pred_1(x_1', x_2')&&(\clause_4)\\
-%             &\pred_1(x_1,x_2) \land x_1 \geq 512 \land x_1 \neq 512 &&\implies \bot&&(\clause_5)
-%         \end{align*}
-%     }
-
-%     \caption{CHC representation of the program in Figure~\ref{fig:ex}.}
-%     \label{fig:chcs}
-% \end{figure}
-
-
-% \end{subfigures}
- 
-% When applied to this program, state-of-the-art reachability analysis techniques behave as follows.
-% In the worst-case scenario, CEGAR and Spacer/IC3 would need to traverse all 16 outer and 256 inner loop iterations one by one to 
-% synthesize \emph{inductive invariants} for both inner and outer loops. 
-% In contrast, TPA would proceed using \emph{transition invariant} generation, but in order to apply it, one would need to merge both loops into a single one, losing structural information of the program and thus degrading efficiency. 
-% For this specific example, ABMC would underapproximate inner and outer loop behavior, successfully deriving 
-% blocking clauses that prove the safety of the program. 
-% However, as shown by our evaluation, it often struggles, especially if the control flow is more complex or the program contains multiple nested loops.
-
-% %
-
-
-% In contrast, \solveCHC leverages the program's structural information to efficiently prove safety 
-% and handle deep loops. 
-% First, \solveCHC constructs a cycle summary that overapproximates the 
-% behavior of the inner loop. 
-% Then, using this summary as an abstraction of any possible inner loop traversal, \solveCHC employs
-% \tpa to analyze the outer loop and prove the safety of the system. 
-% The use of the inner cycle summary eliminates the need to produce exact traces through the loop, 
-% making our approach significantly more efficient compared to classical \tpa.
+Our new technique was implemented within the Golem CHC solver. 
+We evaluated our technique over the Integer Transition Systems benchmarks from the Termination Competition. 
+The combination of termination and nontermination approaches demonstrated significant improvement for nontermination analysis, 
+compared to the original approach, while being able to solve a large number of terminating instances.
+The comparison with winners of Termination Competition 2025 (KoAT, LoAT~\cite{10.1007/978-3-031-90660-2_13}, T2~\cite{DBLP:conf/tacas/BrockschmidtCIK16}) also demonstrated that the developed approach
+is competitive with the state-of-the-art tools, and is able to solve unique instances, including instances
+that were never solved in the history of Termination competition.
