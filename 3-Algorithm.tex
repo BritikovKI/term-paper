@@ -77,7 +77,7 @@ It returns a tuple of formulas $\tuple{TInv, C}$, where $TInv(x,x')$ is a disjun
 candidate, and $C(x)$ is a formula encoding the states for which $TInv$ is a valid transition invariant. 
 It proceeds in the following steps:
 
-\paragraph{Step 1} \textit{Computing $T^n$ (line~\ref{SNA_TrInv:T}).} 
+\textbf{Step 1}: \textit{Computing $T^n$ (line~\ref{SNA_TrInv:T}).} 
 $T^n(x)$ encodes all states guaranteed to reach a sink state within $n$ 
 transitions, is defined by the following property:
 $$\forall x^{(0)}, \dots, x^{(n)}. T^{n}(x^{(0)}) \land Tr^{n}(x^{(0)}, \dots, x^{(n)}) \rightarrow Sink(x^{(n)})$$
@@ -93,7 +93,7 @@ Construction $T^{(n)}$ enables the overapproximation of the trace.
     States with $v \in \{1,2\}$ terminate in 1 or 2 transitions.
 \end{example}
 
-\paragraph{Step 2} \textit{Interpolation (line ~\ref{SNA_TrInv:Itp}).}
+\textbf{Step 2}: \textit{Interpolation (line ~\ref{SNA_TrInv:Itp}).}
 The following formula is unsatisfiable by construction, since any state in 
 $T^n$ must reach $Sink$ within $n$ steps:
 
@@ -112,7 +112,7 @@ the particular trace is leading to the termination.
 % Theoretically we can do the full DNFization, but practically it is not 
 % Key insight - funding underapproximating DNF using Model Based Projection, limiting the number of disjuncts by a bound.
 
-\paragraph{Step 3} \textit{DNF underapproximation (line ~\ref{SNA_TrInv:toDNF}).}
+\textbf{Step 3}: \textit{DNF underapproximation (line ~\ref{SNA_TrInv:toDNF}).}
 For transition invariant to be a proof of termination, it must be disjunctively well-founded, meaning every disjunct must 
 encode a well-founded relation.
 Full conversion to a DNF format is expensive and can cause an exponential blowup in formula size. 
@@ -133,13 +133,13 @@ Empirically, we observed that limiting the number of disjuncts results in more s
 % conversion can cause an exponential blowup in formula size.  Move to implementation & evaluation
 % Bring citation 3 to background section
 
-\paragraph{Step 4} \textit{Filtering Well-Founded Disjuncts (line ~\ref{SNA_TrInv:TINV}).}
+\textbf{Step 4}: \textit{Filtering Well-Founded Disjuncts (line ~\ref{SNA_TrInv:TINV}).}
 For each disjunct $d(x,x') \in Cands(x,x')$ algorithm checks if $d(x,x')$ encodes a well-founded relation.
 Our technique uses automated linear ranking function synthesis~\cite{DBLP:conf/vmcai/PodelskiR04} for checking the existence of a ranking function.
 The disjuncts for which a ranking function exists are preserved, and the rest are discarded.
 The resulting formula is disjoined with the input candidate transition invariant $TInv$.
 
-\paragraph{Step 5} \textit{Synthesis of the states for which transition invariant is valid (line ~\ref{SNA_TrInv:NC}).}
+\textbf{Step 5}: \textit{Synthesis of the states for which transition invariant is valid (line ~\ref{SNA_TrInv:NC}).}
 If $TrInv$ is a transition invariant over all reachable states, then TS terminates, since every disjunct corresponds to well-founded relation.
 To verify this, procedure computes the formula $C(x)$ encoding the states over which $TrInv$ is a valid transition invariant. 
 \begin{definition}[Coverage formula]

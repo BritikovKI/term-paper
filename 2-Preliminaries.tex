@@ -167,7 +167,8 @@ Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
 
 The $\blockTerm$ procedure takes as input a safety problem $P$ and a trace formula $Tr^{n}(x^{(0)}, \dots, x^{(n)})$ such that $Init(x) \land Tr^{n}(x, \dots, x') \land Sink(x')$ is satisfiable.
 The algorithm iteratively analyses the transition trace from the sink. 
-It checks if it is possible to take a transition that does not lead to the sink states(at line~\ref{SNA:BLOCK}), using a query to the SMT solver.
+It checks if it is possible to take a transition that does not lead to the sink states.
+Line~\ref{SNA:BLOCK} checks if $S_i(x) \land Tr(x,x') \land \lnot S_{i+1}(x')$ is satisfiable, sending a query to the SMT solver.
 If it is possible, then the algorithm blocks the states that deterministically lead to the sink states at line~\ref{SNA:TRBLOCK}.
 Otherwise, if such states do not exist, the algorithm blocks the subset of initial states that deterministically lead to the sink states (line ~\ref{SNA:BLOCKINIT}).
 
@@ -184,7 +185,7 @@ Otherwise, if such states do not exist, the algorithm blocks the subset of initi
     $Sink(x) \triangleq c$.
     The initial safety problem is $P = \tuple{Init, Tr, Sink, x}$.
 
-    \textbf{Iteration 1.} $safetyCheck(P)$ returns UNSAFE with the 
+    \textit{Iteration 1.} $safetyCheck(P)$ returns UNSAFE with the 
     trace $Tr^1(x^{(0)}, x^{(1)})$ corresponding to the path 
     $a \to c$, i.e., $Init(x^{(0)}) \land Tr(x^{(0)}, x^{(1)}) 
     \land Sink(x^{(1)})$.
@@ -195,7 +196,7 @@ Otherwise, if such states do not exist, the algorithm blocks the subset of initi
     (with $S_1 \equiv c$), so the transition relation is refined:
     $$Tr'(x, x') \;\gets\; Tr(x, x') \land \lnot c'$$
 
-    \textbf{Iteration 2.} $safetyCheck(\tuple{Init, Tr', Sink, x})$ 
+    \textit{Iteration 2.} $safetyCheck(\tuple{Init, Tr', Sink, x})$ 
     returns SAFE with an inductive invariant $Inv(x)$. The algorithm 
     checks whether $Inv(x)$ is a recurrent set.
     Since $Tr'$ blocks the transition to $c$, state $b$ has no 
