@@ -4,7 +4,7 @@
 Termination analysis of infinite-state systems is a fundamental problem in 
 formal verification, with applications in static analysis, compiler 
 optimisation, and the verification of safety-critical software.
-Proving termination and nontermination over LIA is generally undecidable, 
+Proving termination and nontermination over LIA is generally undecidable~\cite{DBLP:conf/cav/Braverman06}, 
 yet many practical techniques succeed on large classes of real-world 
 programs, though the problem remains challenging in general.
 Modern techniques typically treat termination and nontermination as separate 
@@ -28,17 +28,21 @@ lasso-shaped executions — finite paths leading to a loop that can be
 repeated indefinitely~\cite{DBLP:journals/entcs/BiereAS02,DBLP:conf/popl/GuptaHMRX08,DBLP:conf/tacas/LeikeH18}.
 
 
-State of the art techniques are separated between termination and nontermination.
-This is adressed by some approaches~\cite{DBLP:conf/sas/Ben-AmramDG19}, but is still a dominant approach in the termination analysis.
-We propose a new, novel approach for termination analysis via interpolation-based synthesis of well-founded transition invariants.
-Our technique extends and optimizes the safety-based nontermination analysis~\cite{DBLP:conf/tacas/ChenCFNO14}, allowing it to 
+Most existing approaches treat termination and nontermination in isolation, 
+and transition invariant synthesis has received comparatively less attention 
+than ranking function methods despite its greater generality. 
+In this work, we address both limitations: we present a unified procedure 
+that proves both termination and nontermination.
+This is done by extending and optimizing the safety-based nontermination analysis~\cite{DBLP:conf/tacas/ChenCFNO14}, allowing it to 
 prove termination and nontermination of transition systems.
-Termination technique uses terminating traces, produced by the safety-based nontermination analysis to construct an approximations
-over the transition relation.
-These approximations serve are processed into disjunctively well-founded form and are used as the candidate for transition invariant.
-In return, the constructed transition invariant candidates are used to detect potentially terminating states that are 
+For this, we develop a new  interpolation-based method for synthesising disjunctively well-founded 
+transition invariants.
+This approach constructs invariants based on the termination conditions.
+Algorithm detects terminating traces, and constructs an interpolant, that captures the reason why the trace necessarily terminates.
+Additionally, constructed transition invariant candidates are used to detect potentially nonterminating states that are 
 reachable within the original system.
-And the algorithm is then concentrated on the analysis of such, potentially nonterminating traces.
+These potentially nonterminating states guide the termination analysis, for more efficient construction of transition invariants 
+and detection of recurrent sets.
 
 
 Our new technique was implemented within the Golem CHC solver. 

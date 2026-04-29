@@ -1,94 +1,131 @@
-\section{Evaluation}
+\section{Implementation and Evaluation}
 \label{Sec:Eval}
 
 
 \newcommand{\golem}{\textsc{Golem}\xspace}
-\newcommand{\golemNested}{\textsc{CSRA}\xspace}
-\newcommand{\golemTPA}{\textsc{Golem-TPA}\xspace}
-\newcommand{\golemSpacer}{\textsc{Golem-Spacer}\xspace}
-\newcommand{\zspacer}{\textsc{Spacer}\xspace}
-\newcommand{\eldarica}{\textsc{Eldarica}\xspace}
-\newcommand{\abmc}{\textsc{LoAT - ABMC}\xspace}
+\newcommand{\opensmt}{\textsc{OpenSMT}\xspace}
+\newcommand{\sna}{\textsc{SNA}\xspace}
+\newcommand{\snaTerm}{\textsc{SNAterm}\xspace}
+\newcommand{\snaOpt}{\textsc{SNAopt}\xspace}
+\newcommand{\LoAT}{\textsc{LoAT}\xspace}
+\newcommand{\KoAT}{\textsc{KoAT}\xspace}
+\newcommand{\Tt}{\textsc{T2}\xspace}
 
-We implemented Algorithm~\ref{Alg:solveCHC} in the \golem CHC 
-solver~\cite{DBLP:conf/cav/BlichaBS23}; we refer to this implementation as \golemNested. 
-We compare \golemNested\ to several state-of-the-art tools: 
-\zspacer~\cite{DBLP:journals/fmsd/KomuravelliGC16} (implemented in \textsc{Z3}, v4.13.1), \eldarica~\cite{DBLP:conf/fmcad/HojjatR18} 
-(v2.2.0), \abmc~\cite{DBLP:conf/fm/FrohnG24} (v0.7.0), and to existing \golem engines, namely \golemTPA 
-and \golemSpacer. 
-Evaluation focuses on complex linear CHC instances encoding programs with nested loops. 
-Experiments were conducted on Ubuntu 20.04 machine with an AMD EPYC 7452 32-core processor and 8x32 GiB RAM (the artifact is in open access\footnote{\href{https://doi.org/10.5281/zenodo.17055558}
-{https://doi.org/10.5281/zenodo.17055558}}). 
+This section presents implementation details and describes the experimental evaluation of 
+our termination approach.
+
+~\subsection{Implementation}
+
+
+We implemented Algorithms~\ref{Alg:SNA},\ref{Alg:SNA_Term} and \ref{Alg:SNA_Refined} in the \golem CHC 
+solver~\cite{DBLP:conf/cav/BlichaBS23}; we refer to this implementations as \sna, \snaTerm and \snaOpt.
+\golem is a well-known CHC solver which we extended to be able to analyse termination of systems.
+Particularly we picked \golem, as it supports multiple different safety verification procedures,
+such as Property Directed Reachability, Transition Power Abstraction and Interpolation-based Model Checking.
+Interestingly, \snaOpt with different safety verification engines was able to solve different 
+termination problems uniquely.
+Additionally, \golem has its own procedures for Quantifier Elimination and Model Based Projection,
+which we were able to use natively for our technique.
+% Quantifier Elimination is produced by executing Model Based Projections, untill the whole formula is covere
+
+For SMT queries used in the algorithm and the construction of interpolants our algorithm uses  \opensmt SMT solver~\cite{DBLP:conf/sat/HyvarinenMAS16}.
+According to the SMT Competition, it is one of the best SMT solvers in LIA-Lin category, and 
+additionally, \opensmt supports multiple different interpolation procedures with different strength of interpolant, which 
+slightly influence the termination analysis.
+
+
+
+~\subsection{Evaluation}
+
+
+We compare \snaOpt to \sna and \snaTerm algorithms, evaluating the benefit of combining
+the termination and nontermination techniques.
+Additionally, we evaluate \snaOpt against several state-of-the-art tools: 
+\LoAT~\cite{10.1007/978-3-031-90660-2_13} (version eacb74b), \KoAT~\cite{10.1007/978-3-031-90660-2_13} 
+(version 41cb681), \Tt~\cite{DBLP:conf/tacas/BrockschmidtCIK16} (version 10f1373). 
+Evaluation focuses on termination analysis of Integer Transition Systems. 
+Experiments were conducted on Ubuntu 20.04 machine with an AMD EPYC 7452 32-core processor and 8x32 GiB RAM. 
 Our evaluation addresses the following research questions:
 \begin{itemize}
-\item \textbf{RQ1:} How does the new algorithm compare to other engines in \golem?
-\item \textbf{RQ2:} How does \golemNested perform against state-of-the-art tools?
+\item \textbf{RQ1:} How does the extension of SNA with Termination procedure influences the performance of the verification?
+\item \textbf{RQ2:} How does \snaOpt perform against state-of-the-art tools?
 \end{itemize}
 
-The benchmark suite\footnote{\href{https://github.com/BritikovKI/pretzel-benchmarks/tree/main}
-{https://github.com/BritikovKI/pretzel-benchmarks/tree/main}} is composed of nested-loop instances 
-selected from the LIA category of CHC-COMP 2024~\cite{DBLP:journals/corr/abs-2404-14923} and 
-aeval-benchmarks~\cite{DBLP:conf/cav/FedyukovichPMG19}. 
-Additionally, we extracted nested-loop functions from the source code of several tools: \textsc{Z3}~\cite{DBLP:conf/tacas/MouraB08}, 
-\textsc{OpenSMT}~\cite{DBLP:conf/sat/HyvarinenMAS16}, \textsc{SeaHorn}~\cite{DBLP:conf/cav/GurfinkelKKN15}, and \golem 
-and encoded them as LIA CHC instances using \textsc{Korn}~\cite{DBLP:conf/tacas/Ernst23} and \textsc{SeaHorn}. 
-Benchmark selection is based on the presence of nested loops in the original program, 
-for the instances without nested loops \golemNested performs similar to \golemTPA (for example on LIA-lin
-benchmarks from CHC-Comp which mainly contain single loops, \golemNested is on average 20\% faster
-compared to \golemTPA and solves 20 more instances).
-The final set contains 130 CHC instances (68 SAT, 62 UNSAT).
+The benchmark suite of Integer Transition Systems is taken from the Termination Competition. 
+Overall there are 1222 benchmarks (538 nonterminating, 665 terminating and 19 unknown).
 
 
 \begin{figure}[t]
     \centering
-    \includegraphics[width=0.7\linewidth]{Figures/CHCEvalGolem.pdf}
-    \caption{Comparison of \golemNested with other engines in \golem.}
+    \includegraphics[width=1\linewidth]{Figures/TermCompCMP.pdf}
+    \caption{Comparison of \snaOpt with \sna and \snaTerm. The left plot is solved terminating instances, the right is nonterminating.}
     \label{fig:golemComp}
 \end{figure}
 
-Figure~\ref{fig:golemComp} gives scatter plots comparing \golemNested to \golemTPA and \golemSpacer. 
-Each point $(x, y)$ in the plots represents the solving times of a particular CHC instance, with $x$ being 
-the execution time of \golemNested and $y$ the execution time of the competitor. 
-Green squares are SAT, and red circles are UNSAT instances. 
-Points above the diagonal indicate cases where \golemNested outperformed the competitor. 
-Points beyond 300s are timeouts for at least one of the engines.
+Figure~\ref{fig:golemComp} gives two plots comparing \snaOpt to \sna and \snaTerm. 
+Our results indicate that \snaOpt consistently outperforms both \sna and \snaTerm for Terminating 
+and Nonterminating instances. 
+We contribute this to the usefuleness of creating "subproblems" in the \snaOpt, that allows
+to concentrate on the termination of specific subproblem instead of considering the whole system.
+This is benefitial in finding a recurrent set, as it allows to concentrate on some
+specific state not covered by transition invariant.
+And it is also benefitial for the purposes of the termination, as it allows to diversify
+and enrich the transition invariant with additional disjuncts, covering some different 
+subspace of the reachable state space.
+To answer \textbf{RQ1}, we conclude that the combination of termination and nontermination 
+techniques in \snaOpt leads to significantly improved performance, both for termination and 
+nontermination.
+Overall, the results of the evaluation are presented in the Table~\ref{tab:internal}.
 
-%
-
-Our results indicate that \golemNested consistently outperforms both \golemSpacer and \golemTPA for SAT 
-and UNSAT instances. 
-We attribute this to the modular nature of our algorithm, which decomposes the reachability 
-analysis task into multiple, smaller subproblems—thereby reducing the overall complexity of reasoning. 
-\golemNested leverages structural information and explicitly analyzes cycles separately, which benefits 
-both SAT and UNSAT performance. 
-In contrast, \golemTPA merges the entire CHC system into a CHC cycle composed from a single clause, 
-losing structural information. 
-\golemSpacer, while effective in many scenarios, struggles with deep nested loops. 
-In particular, as the number of loop iterations increases, \golemSpacer frequently times out. 
-Overall, \golemNested solved 118/130 instances, compared to 78 for \golemTPA and 93 for \golemSpacer. 
-To answer \textbf{RQ1}, we conclude that the compositional strategy of \golemNested leads to better performance.
-We attribute this to the \emph{modular} summarization-based approach, which uses \tpa for fast deep 
-reachability checks and summarization, while maintaining structural information about the system.
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Algorithm} & \textbf{Terminating} & \textbf{Nonterminating} & \textbf{Solved Uniquely} \\
+        \hline
+        \sna & 27 & 377 & 17 \\
+        \hline
+        \snaTerm & 140 & 377 & 17 \\
+        \hline
+        \snaOpt & 343 & 442 & 283 \\
+        \hline
+    \end{tabular}
+    \caption{Comparison of \snaOpt with \sna and \snaTerm.}
+    \label{tab:internal}
+\end{table}
 %
 
 \begin{figure}[t!]
     \centering
-    \includegraphics[width=\linewidth]{Figures/CHCEvalCompetitors.pdf}
-    \caption{Comparison of \golemNested with state-of-the-art.}
+    \includegraphics[width=1\linewidth]{Figures/fullcmp.jpg}
+    \caption{Comparison of \snaOpt with state-of-the-art tools.}
     \label{fig:stateOfArtComp}
 \end{figure}
 
-%
-Figure~\ref{fig:stateOfArtComp} gives comparison charts for \golemNested to other state-of-the-art CHC solvers. 
-\golemNested solves the most benchmarks (118), followed by \eldarica (111), \zspacer (91), and \abmc (55). 
-The listed approaches are somewhat orthogonal, as \eldarica solves 6 SAT and 
-1 UNSAT instance uniquely, and \zspacer solves 3 unique SAT problems. 
-\golemNested significantly outperforms all competitors for the UNSAT systems.
-In analysis of SAT instances \golemNested is competitive with other techniques, it
-is only slightly outperformed by \eldarica, which solves 6 more SAT problems.
-To address \textbf{RQ2}, our evaluation shows that \golemNested not only solves the highest number of 
-benchmarks but also does so more efficiently. 
-On average, for instances solved by both solvers, 
-\golemNested is 2.5$\times$ faster than \eldarica and 1.9$\times$ faster than \zspacer.
-In summary, the proposed algorithm achieves strong performance on both SAT and UNSAT CHC instances, 
-outperforming existing \golem engines and other state-of-the-art solvers.
+Figure~\ref{fig:stateOfArtComp} gives comparison of \snaOpt with other state-of-the-art Termination analyzers,
+\snaOpt is able to solve 796 benchmarks, with \Tt solving 1044, \KoAT 604, and \LoAT 527 instances.
+As it can be seen in the graphs, \snaOpt is competitive with other state of the art techniques 
+for the termination analysis.
+Compared to other state-of-the-art tools \snaOpt is able to analyse 8 instances uniquely, importantly
+verifying 2 instances (juLinkedListCreateAddAll.jar-obl-11, juLinkedListCreateAddAllAt.jar-obl-17)
+out of 19 which were never verified before by any other tool that participated in Termination Competition,
+finding recurrent sets that prove nontermination of those benchmarks.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Algorithm} & \textbf{Terminating} & \textbf{Nonterminating} & \textbf{Solved Uniquely} \\
+        \hline
+        \LoAT & 2 & 525 & ? \\
+        \hline
+        \KoAT & 604 & 0 & ? \\
+        \hline
+        \Tt & 614 & 430 & ? \\
+        \hline
+        \snaOpt & 343 & 442 & 8 \\
+        \hline
+    \end{tabular}
+    \caption{Comparison af \snaOpt with state of the art techniques}
+    \label{tab:external}
+\end{table}

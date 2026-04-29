@@ -2,44 +2,33 @@
 \label{Sec:Related}
 %Loop summarization and loop reachability analysis are active areas of research. 
 %We discuss techniques related to \solveCHC below.
+Termination and nontermination analysis are very active areas of research. We will discuss techniques,
+related to Interpolation-based Termination Analysis below.
 
-\textbf{Invariant generation.} Inductive invariant generation is a widely used technique for 
-reasoning about loops by producing an overapproximation of program states, 
-such that any loop iteration remains within the same overapproximation. 
-Multiple approaches include CEGAR and predicate 
-abstraction~\cite{DBLP:conf/fmcad/HojjatR18,mcmillan2013computing}, 
-IC3/PDR~\cite{DBLP:journals/fmsd/KomuravelliGC16}, 
-program transformation-based methods~\cite{DBLP:conf/cav/KafleGM16}, 
-syntax-guided synthesis~\cite{DBLP:journals/fmsd/FedyukovichKB20}, and machine learning/neural 
-networks~\cite{DBLP:conf/iclr/RyanWYGJ20,DBLP:journals/corr/abs-2311-07948}. 
-One of the most popular approaches, used in a wide variety of algorithms, is 
-interpolation-based invariant generation~\cite{DBLP:conf/cav/McMillan06,DBLP:conf/kbse/LinSXLSH17,DBLP:conf/fmcad/BlichaFHS22,mcmillan2013computing,DBLP:conf/cav/McMillan03,DBLP:journals/fmsd/KomuravelliGC16,DBLP:conf/fmcad/HojjatR18}. 
-A recent advancement in this direction is Multiloop TPA~\cite{DBLP:conf/fm/BritikovBSF24}, which 
-specifically targets multi-loop programs. 
-However, unlike \solveCHC, this method does not support software with nested loops or gotos 
-and cannot be applied to general linear CHC systems.
+\textbf{Termination.} There exist many different techniques for the termination analysis of software.
+One of the most developed and used techniques iss the synthesis of the ranking functions for the transition
+relation, which allows to prove termination~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19}. 
+State of the art techniques are centered on the construction of multiphase or lexicographic ranking functions.
+These complex techniques significantly broaden the class of programs that ranking functions can handle.
+However, since they reason on the original transitions, the complexity of original system can make construction of ranking 
+function significantly more complex, or even impossible. 
 
-\textbf{Single-loop transformation.} A common strategy for analyzing complex 
-systems is to transform them into a single-loop representation~\cite{DBLP:journals/fmsd/DonaldsonKR11,DBLP:books/aw/AhoSU86,bueno2020horn2vmt}. 
-This enables the application of techniques such as IMC or TPA, optimized for 
-single-loop analysis~\cite{DBLP:journals/corr/abs-2208-05046}, allowing them 
-to reason over the original complex structure.
+Another techniques, which allows to efficiently prove termination are fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23} and 
+the computation of closed forms~\cite{DBLP:conf/sas/FrohnHG20,DBLP:journals/fmsd/HarkFG25}.
 
-\textbf{Loop acceleration.} Techniques~\cite{DBLP:conf/cav/BozgaIK10,DBLP:journals/sttt/BardinFLP08,DBLP:conf/tacas/Frohn20,DBLP:conf/cade/FrohnG22,DBLP:journals/corr/abs-1905-11187,DBLP:conf/fm/FrohnG24} 
-aim to produce quantifier-free first-order formulas that are equivalent to or underapproximate a loop's behaviour. 
-These methods are motivated by improving the scalability of safety verification, attempting to replace a 
-loop with a concrete formula. 
-State-of-the-art acceleration approaches predominantly rely on underapproximation and can struggle 
-with proving safety.
+However, there exists another set of techniques which can prove termination that are based on the construction of well-founded transition
+invariants~\cite{DBLP:conf/pldi/CookPR06,DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
+These approaches allow to approximate the behaviour of the transition system, and to significantly simplify the transition relation,
+overapproximating any possible transition trace.
+However, these approaches have a core problem, which is the approach for the synthesis of transition invariant.
+Listed techniques were based on the synthesis of transition invariants via template synthesis, not centered around actual termination constraints
+or terminating traces.
 
-\textbf{Loop summarization.} A group of approaches overapproximating loop execution 
-by constructing a symbolic relation between loop inputs and outputs, allowing the loop to be 
-abstracted away in subsequent analysis. 
-Common methods include symbolic abstraction~\cite{DBLP:conf/sac/BlichaKT22,DBLP:conf/cav/SilvermanK19,DBLP:conf/atva/KroeningSTTW08} 
-and symbolic execution~\cite{DBLP:conf/issta/StrejcekT12,DBLP:journals/tse/XieCZLLL19,DBLP:conf/issta/GodefroidL11}. 
-However, such approaches are typically property-agnostic and unaware of the surrounding system, 
-which can reduce their effectiveness. 
-Some of the approaches above also do not support summarization of nested loops. 
-In contrast, our method performs property-guided summary generation and handles nested loops.
+\textbf{Nontermination.} Nontermination analysis typically relies on different verification 
+techniques. One of the most prominent is the construction of recurrent 
+sets — sets of states from which execution cannot 
+escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14}.
+An alternative family of techniques detects nontermination by identifying 
+lasso-shaped executions — finite paths leading to a loop that can be 
+repeated indefinitely~\cite{DBLP:journals/entcs/BiereAS02,DBLP:conf/popl/GuptaHMRX08,DBLP:conf/tacas/LeikeH18}.
 
-\vspace{-1em}

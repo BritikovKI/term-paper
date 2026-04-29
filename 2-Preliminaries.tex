@@ -86,7 +86,7 @@ This approach is described below.
     \label{fig:SNA}
 \end{figure}
 
-The Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis takes a safety problem $P = \tuple{Init, Tr, Sink, x}$, where $Sink(x) = QE(\exists x'. \lnot Tr(x,x'))$.
+The Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis (SNA) takes a safety problem $P = \tuple{Init, Tr, Sink, x}$, where $Sink(x) = QE(\exists x'. \lnot Tr(x,x'))$.
 As an output, it returns NONTERM if the system is nonterminating, and UNKNOWN, if the algorithm cannot conclude the analysis. 
 The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nontermination analysis.
 % c.f
@@ -96,7 +96,7 @@ The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nonterminat
     \DontPrintSemicolon
     \small
     \newcommand{\Continue}{\textbf{continue}}
-    \caption{Nontermination analysis using Safety, cf~\cite{DBLP:conf/tacas/ChenCFNO14}}
+    \caption{Nontermination analysis using Safety (SNA), cf~\cite{DBLP:conf/tacas/ChenCFNO14}}
     \label{Alg:SNA}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
@@ -111,7 +111,7 @@ The Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nonterminat
                 $P \gets \blockTerm(P, \phi)$ \label{SNA:BLOCKTERM}
             }
             {
-                \label{SNA:SAFE}\If{$\forall x. \phi(x) \rightarrow \exists x'. Tr(x,x') \land \phi(x')$} {
+                \label{SNA:SAFE}\If{$\forall x. \phi(x) \rightarrow \exists x'. Tr(x,x')$} {
                     \Return NONTERM \label{SNA:RECURRENT}
                 }
                 \Return UNKNOWN
@@ -129,6 +129,9 @@ In this case, the algorithm calls the $\blockTerm$ procedure (Algorithm~\ref{Alg
 lead to the sink states, updating the Safety problem.
 $\blockTerm$ is described in detail below.
 In the case when $P$ is safe, algorithm checks if inductive invariant $Inv(x)$ is a recurrent set (line~\ref{SNA:SAFE}).
+The check at line~\ref{SNA:SAFE} can be done, using quantifier elimination to eliminate $x'$, checking if the following formula
+is unsatisfiable:
+$$\exists x. \phi(x) \land \lnot QE(\exists x'. Tr(x,x')).$$
 If $Inv(x)$ is a recurrent set, then the transition system is nonterminating.
 Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
 

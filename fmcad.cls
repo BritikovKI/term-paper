@@ -151,7 +151,7 @@
 \def\@evenfoot{\hbox{}\footnotesize\hfil\fmcad@thepage\hfil}\relax
 
 \def\ps@IEEEtitlepagestyle{% Override IEEE titlepage with FMCAD titlepage
-  \def\@oddhead{\hbox{}\normalfont\hfil\href{https://fmcad.org/FMCAD\fmcad@year}{\raisebox{-.25em}{\resizebox{1.5em}{!}{\fmcadsymbol}} \color{black}{Formal Methods in Computer-Aided Design 20\fmcad@year}} \hfil}\relax
+  \def\@oddhead{\hbox{}\normalfont\hfil\href{https://fmcad.org/FMCAD26}{\raisebox{-.25em}{\resizebox{1.5em}{!}{\fmcadsymbol}} \color{black}{Formal Methods in Computer-Aided Design 2026}} \hfil}\relax
   \def\@oddfoot{%
     \begin{minipage}[b]{\textwidth}
       \raisebox{\baselineskip}{\rule{.25\textwidth}{.5pt}}\newline

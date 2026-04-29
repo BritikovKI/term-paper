@@ -63,7 +63,7 @@ The overall flow of the procedure is illustrated in the Figure~\ref{fig:TrInvGen
     \Output{Updated transition invariant $TInv(x,x')$ and formula $C(x)$ encoding states covered by
     transition invariant}
     $T^n(x^{(0)}) \gets \lnot QE(\exists x^{(1)}, \dots, x^{(n)}.$ $Tr^{n}(x^{(0)}, x^{(1)}, \dots, x^{(n)}) \land \lnot Sink(x^{(n)}))$ \label{SNA_TrInv:T} \\
-    $itp(x,x') \gets Itp(Tr^{n}(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x'))$ \label{SNA_TrInv:Itp}\\
+    $itp(x,x') \gets Itp(Tr^{n}(x, x^{(1)}, \dots, x'), T^n(x) \land \lnot Sink(x'))$\label{SNA_TrInv:Itp}\\
     $Cs(x,x') \gets toDNF(itp)$ \label{SNA_TrInv:toDNF}\\
     $TInv \gets TInv \lor \bigvee_i \{d_i \in Cs| \text{$\exists$ ranking function $f(x)$} \}$\label{SNA_TrInv:TINV} \\
     $C(x) \gets \lnot QE(\exists x',x''.$ $Tr(x,x') \land \bigl(Id(x',x'') \lor TInv(x',x'')\bigr) 
