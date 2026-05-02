@@ -1,14 +1,16 @@
 \section{Conclusion}
 \label{Sec:Conclusion}
-This paper introduces Cycle Summarization-based Reachability Analysis (CSRA), a new CHC-based 
-reachability analysis approach designed for software with diverging control flow and nested loops. 
-The key insight is to analyze cycles modularly and construct/reuse cycle summaries on the fly. 
-\solveCHC decomposes the reachability analysis of a system into the exploration of separate simple 
-paths through the CHC system. 
-Applying \tpa modularly allows our approach to efficiently 
-unroll cycle paths and produce property-specific cycle summaries. 
-Modular application of \tpa together with maintaining the structural information about the CHC system, 
-enables our technique to efficiently verify complex programs. 
-We proved the algorithm's correctness and conducted an extensive experimental evaluation that 
-demonstrates the efficiency of \solveCHC compared to state-of-the-art competitors and reachability 
-analysis engines in Golem on challenging nested-loop systems.
+
+This paper introduces Termination Analysis via Interpolation-based Synthesis of Transition Invariants.
+A novel approach for the termination analysis that extends Safety-based Nontermination Analysis technique.
+The key insight of our approach is to use interpolation for the construction of termination witnesses,
+that allows the transition invariant to be guided by termination condition.
+Additionally, our technique refines the state space, reusing the intermediate results of 
+termination and nontermination analysis, concentrating on states that can be potentially
+nonterminating.
+We also optimized and adapted the original Nontermination analysis technique.
+Usage of safety verifiers provides a strong background for the analysis, allowing to 
+quickly check termination and nontermination.
+We proved the soundness of the algorihtm and conducted an extensive experimental evaluation, 
+which demonstrates both the eficiency of the combination of termination and nontermination techniques,
+and the competitive  performance compared to other state-of-the-art termination analysis tools.

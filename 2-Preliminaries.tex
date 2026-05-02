@@ -6,6 +6,7 @@ We use $x,x'$ to denote set of variables (unprimed and primed), where $x' = \{v'
 If there are variables of many different states in the formula we use superscript notation, e.g., $x^{(0)}, \dots, x^{(n)}$ .
 $s, s'$ are used to denote the specific states in the system.
 
+% Make x,x' - capital everywhere
 %
 
 The formula defined over $x$ is a state formula, and a formula over $x \cup x'$ is a transition formula.
@@ -179,7 +180,12 @@ Otherwise, if such states do not exist, the algorithm blocks the subset of initi
 \begin{lemma}\label{Lem:NONTERM}
     If Algorithm~\ref{Alg:SNA} returns NONTERM, then the transition system is nonterminating, cf~\cite{DBLP:conf/vmcai/PodelskiR04}.
 \end{lemma}
-
+% Example can be as a core for the gap that you need to feel in the paper
+% Mention why do we need recurrent sets and why it is important!!!
+% One var instead of 3 - integer or smth... 
+% Motivation example!!!! - why the original algorithm is problematic!!!
+% Concentrate example on section 3!
+% Make an example for section 4
 \begin{example}\label{Ex:SNA}
     Consider a transition system $TS = \tuple{Init, Tr, x}$ with 
     boolean variables $x = \{a, b, c\}$ and: $Init(x)  \triangleq a$,

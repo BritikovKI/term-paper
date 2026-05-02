@@ -6,49 +6,46 @@ formal verification, with applications in static analysis, compiler
 optimisation, and the verification of safety-critical software.
 Proving termination and nontermination over LIA is generally undecidable~\cite{DBLP:conf/cav/Braverman06}, 
 yet many practical techniques succeed on large classes of real-world 
-programs, though the problem remains challenging in general.
+programs.
 Modern techniques typically treat termination and nontermination as separate 
 problems, since each requires a different witness.
 
 State-of-the-art termination techniques centre around the synthesis of 
 ranking functions for the transition relation~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19}.
-The existence of a ranking function for the transition relation witnesses 
-termination by providing a measure that strictly decreases along every 
+The existence of a ranking function witnesses termination by providing a measure that strictly decreases along every 
 execution.
 Alternative approaches are based on the computability of closed forms~\cite{DBLP:conf/sas/FrohnHG20,DBLP:journals/fmsd/HarkFG25}, 
-fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23} and the synthesis of disjunctively well-founded 
+fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23}, and the synthesis of disjunctively well-founded 
 transition invariants~\cite{Transition-Invariants-Revisited-CAV26,DBLP:conf/pldi/CookPR06,DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
+Nontermination analysis is usually executed separately from termination analysis. 
+The most prevalent nontermination analysis technique is the detection of recurrent 
+sets — sets of states from which execution cannot escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14,DBLP:journals/entcs/BiereAS02}.
+There also exist alternative approaches based on Hoare-style reasoning~\cite{DBLP:conf/pldi/LeQC15}, safety proving~\cite{DBLP:conf/tacas/ChenCFNO14,DBLP:journals/entcs/BiereAS02,DBLP:conf/tacas/UrbanGK16}, or representing infinite runs as sums of geometric series~\cite{DBLP:conf/tacas/LeikeH18}.
 
-Nontermination analysis typically relies on different verification 
-techniques. One of the most prominent is the construction of recurrent 
-sets — sets of states from which execution cannot 
-escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14}.
-An alternative family of techniques detects nontermination by identifying 
-lasso-shaped executions — finite paths leading to a loop that can be 
-repeated indefinitely~\cite{DBLP:journals/entcs/BiereAS02,DBLP:conf/popl/GuptaHMRX08,DBLP:conf/tacas/LeikeH18}.
-
-
-Most existing approaches treat termination and nontermination in isolation, 
-and transition invariant synthesis has received comparatively less attention 
-than ranking function methods despite its greater generality. 
-In this work, we address both limitations: we present a unified procedure 
+Most existing approaches treat termination and nontermination in isolation. 
+In this work, we present a unified procedure 
 that proves both termination and nontermination.
 This is done by extending and optimizing the safety-based nontermination analysis~\cite{DBLP:conf/tacas/ChenCFNO14}, allowing it to 
 prove termination and nontermination of transition systems.
-For this, we develop a new  interpolation-based method for synthesising disjunctively well-founded 
+
+
+For termination analysis we implemented a new interpolation-based method for synthesising disjunctively well-founded 
 transition invariants.
 This approach constructs invariants based on the termination conditions.
-Algorithm detects terminating traces, and constructs an interpolant, that captures the reason why the trace necessarily terminates.
+The algorithm detects terminating traces, and constructs an interpolant that captures the reason why the trace necessarily terminates.
 Additionally, constructed transition invariant candidates are used to detect potentially nonterminating states that are 
 reachable within the original system.
 These potentially nonterminating states guide the termination analysis, for more efficient construction of transition invariants 
 and detection of recurrent sets.
 
-
 Our new technique was implemented within the Golem CHC solver. 
 We evaluated our technique over the Integer Transition Systems benchmarks from the Termination Competition. 
 The combination of termination and nontermination approaches demonstrated significant improvement for nontermination analysis, 
-compared to the original approach, while being able to solve a large number of terminating instances.
+while also solving a large number of terminating instances.
 The comparison with winners of Termination Competition 2025 (KoAT, LoAT~\cite{10.1007/978-3-031-90660-2_13}, T2~\cite{DBLP:conf/tacas/BrockschmidtCIK16}) also demonstrated that the developed approach
 is competitive with the state-of-the-art tools, and is able to solve unique instances, including instances
 that were never solved in the history of Termination competition.
+
+Overall, this paper presents following contributions: (1) a new interpolation-based method for the synthesis of disjunctively well-founded transition invariants, 
+(2) a unified termination/nontermination procedure, which utilises the intermediate results of analysis for self-guidance and (3) an implementation of the described 
+procedure in Golem CHC solver and evaluation of proposed approach.

@@ -159,20 +159,22 @@ formal methods.
 % synthesis, which can be insufficient when the transition relation is too complex 
 % to admit a ranking function directly.
 Existing techniques for termination and nontermination are usually separated,
-concentrating on a single particular problem, however theoretically they are 
-interdependent.
-Core intuition of this paper is that the learned artifacts during termination and nontermination
-analysis can be used to guide the analysis.
+concentrating on a particular problem. 
+However the two are theoretically interdependent.
+The core intuition of this paper is that the intermediate artifacts of termination and nontermination
+analysis can be used to mutually guide each other.
+% Additionally, the usage of interpolation can be very efficient to synthesise well-founded transition invariant,
+% as the synthesis would be guided by the termination conditions.
 We present a new approach to termination analysis based on the interpolation-based 
-construction of well-founded transition invariants. By leveraging Craig interpolation, 
-our approach guides transition invariant generation with respect to the conditions 
-relevant to termination, enabling property-directed synthesis. 
-Our technique extends the safety-based nontermination analysis, allowing it to prove both termination and 
+construction of well-founded transition invariants. 
+Our approach leverages Craig interpolation to guide transition invariant generation with respect to the conditions 
+relevant to termination. 
+Our technique extends safety-based nontermination analysis, allowing it to prove both termination and 
 nontermination within a unified framework.
-We implemented our approach and evaluated it on benchmarks from the 
- Termination Competition (TermComp). Our tool demonstrates 
-competitive performance against state-of-the-art termination provers, solving 
-a significant number of instances not solved by any existing tool.
+We implemented our approach in Golem CHC solver and evaluated it on benchmarks from the 
+Termination Competition (TermComp). 
+Our tool demonstrates competitive performance against state-of-the-art termination provers, 
+solving uniquely instances not solved by any existing tool.
 \end{abstract}
 
 %
@@ -201,7 +203,7 @@ a significant number of instances not solved by any existing tool.
 
 %
 
-% \input{6-Conclusion}
+\input{6-Conclusion}
 
 
 

@@ -76,7 +76,7 @@ a transition trace $Tr^n(x^{(0)}, x^{(1)}, \dots, x^{(n)})$, and a transition in
 It returns a tuple of formulas $\tuple{TInv, C}$, where $TInv(x,x')$ is a disjunctively well-founded transition invariant 
 candidate, and $C(x)$ is a formula encoding the states for which $TInv$ is a valid transition invariant. 
 It proceeds in the following steps:
-
+% Define from the negation, not the itself
 \textbf{Step 1}: \textit{Computing $T^n$ (line~\ref{SNA_TrInv:T}).} 
 $T^n(x)$ encodes all states guaranteed to reach a sink state within $n$ 
 transitions, is defined by the following property:
@@ -142,6 +142,8 @@ The resulting formula is disjoined with the input candidate transition invariant
 \textbf{Step 5}: \textit{Synthesis of the states for which transition invariant is valid (line ~\ref{SNA_TrInv:NC}).}
 If $TrInv$ is a transition invariant over all reachable states, then TS terminates, since every disjunct corresponds to well-founded relation.
 To verify this, procedure computes the formula $C(x)$ encoding the states over which $TrInv$ is a valid transition invariant. 
+% Split this thing into 2 properties
+% Make it consistent with the code
 \begin{definition}[Coverage formula]
     Consider a transition system $TS = \tuple{Init, Tr, x}$ and a formula $TrInv(x,x')$. 
     We say that $C(x)$ is a coverage formula, if the following property holds:
@@ -154,7 +156,7 @@ To verify this, procedure computes the formula $C(x)$ encoding the states over w
 
 Similarly to $T^{n}$, $C(x)$ is constructed using the quantifier elimination, negating the states for 
 which $TrInv$ is not a transition invariant.
-
+% example has an issue!
 \begin{example}~\label{Ex:C}
     Continuing Example~\ref{Ex:Tn}, suppose the procedure constructs 
     $TrInv \triangleq v' < v \land v' \geq 0$. Quantifier elimination then
@@ -240,7 +242,8 @@ The overall flow is shown in Figure~\ref{fig:SNATrInv}.
     \label{fig:SNATrInv}
 \end{figure}
 
-
+%  Notation is confusing, replace everything with phis, no need for phi'
+%  On the second safety check use *
 \begin{algorithm}[t!]
 	\SetInd{0.5em}{0.5em}
     \DontPrintSemicolon
@@ -377,6 +380,9 @@ The overall flow of the optimized algorithm is shown in Figure~\ref{fig:SNA++}.
     \label{fig:SNA++}
 \end{figure}
 
+
+% Mention that A and B can be used for Algo 1
+% Make people understand that C is much more important!!! Example to motivate each section!!!
 \subsection{Termination Check}
 
 When the safety check returns SAFE and $Inv(x)$ is not a recurrent set, 
@@ -413,6 +419,7 @@ those states in particular, or to detect a recurrent set otherwise.
 % Main differences are the refinement of the safety problem, and the check for trivial termination.
 % These changes allow to significantly improve the overall power and performance of the algorithm.
 % In the description, we would concentrate particularly on the changes in the flow, as the rest of the algorithm is quite similar.
+% Description in the line 10 - maybe explicit else - continue.
 
 \begin{algorithm}[t!]
 	\SetInd{0.5em}{0.5em}
@@ -426,7 +433,7 @@ those states in particular, or to detect a recurrent set otherwise.
     \SetKwInOut{Data}{Data}
     \Input{Safety problem $P = \tuple{Init, Tr, Sink, x}$}
     \Output{TERM $\mid$ NONTERM}
-    \Data{$TInv$ - formula that encodes transition invariant, $Prs$ - list of Safety Problems to be
+    \Data{$TInv$ - formula that encodes transition invariant, $Prs$ - stack of Safety Problems to be
     analyzed for termination}
     $TInv \gets \bot$ \\
     $Prs \gets [P]$ \label{SNA_Refined:Prs} \\
