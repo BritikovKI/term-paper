@@ -22,16 +22,14 @@ solver~\cite{DBLP:conf/cav/BlichaBS23}; we refer to this implementations as \sna
 \golem is a well-known CHC solver which we extended to be able to analyse termination of systems.
 Particularly we picked \golem, as it supports multiple different safety verification procedures,
 such as Property Directed Reachability, Transition Power Abstraction and Interpolation-based Model Checking.
-Interestingly, \snaOpt with different safety verification engines was able to solve different 
+\snaOpt with different safety verification engines was able to solve different 
 termination problems uniquely.
 Additionally, \golem has its own procedures for Quantifier Elimination and Model Based Projection,
 which we were able to use natively for our technique.
 % Quantifier Elimination is produced by executing Model Based Projections, untill the whole formula is covere
 
-For SMT queries used in the algorithm and the construction of interpolants our algorithm uses  \opensmt SMT solver~\cite{DBLP:conf/sat/HyvarinenMAS16}.
-According to the SMT Competition, it is one of the best SMT solvers in LIA-Lin category, and 
-additionally, \opensmt supports multiple different interpolation procedures with different strength of interpolant, which 
-slightly influence the termination analysis.
+For SMT queries used in the algorithm and the construction of interpolants our algorithm uses \opensmt SMT solver~\cite{DBLP:conf/sat/HyvarinenMAS16}.
+\opensmt is used within \golem, it has a support of the interpolation procedure.
 
 
 
