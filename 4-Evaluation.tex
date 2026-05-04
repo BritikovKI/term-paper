@@ -5,8 +5,8 @@
 \newcommand{\golem}{\textsc{Golem}\xspace}
 \newcommand{\opensmt}{\textsc{OpenSMT}\xspace}
 \newcommand{\sna}{\textsc{SNA}\xspace}
-\newcommand{\snaTerm}{\textsc{SNAterm}\xspace}
-\newcommand{\snaOpt}{\textsc{SNAopt}\xspace}
+\newcommand{\snaTerm}{\textsc{ItpTig}\xspace}
+\newcommand{\snaOpt}{\textsc{ItpTig+}\xspace}
 \newcommand{\LoAT}{\textsc{LoAT}\xspace}
 \newcommand{\KoAT}{\textsc{KoAT}\xspace}
 \newcommand{\Tt}{\textsc{T2}\xspace}
@@ -14,29 +14,28 @@
 This section presents implementation details and describes the experimental evaluation of 
 our termination approach.
 
-~\subsection{Implementation}
+\subsection{Implementation}
 
 
-We implemented Algorithms~\ref{Alg:SNA},\ref{Alg:SNA_Term} and \ref{Alg:SNA_Refined} in the \golem CHC 
-solver~\cite{DBLP:conf/cav/BlichaBS23}; we refer to this implementations as \sna, \snaTerm and \snaOpt.
-\golem is a well-known CHC solver which we extended to be able to analyse termination of systems.
-Particularly we picked \golem, as it supports multiple different safety verification procedures,
-such as Property Directed Reachability, Transition Power Abstraction and Interpolation-based Model Checking.
-\snaOpt with different safety verification engines was able to solve different 
-termination problems uniquely.
-Additionally, \golem has its own procedures for Quantifier Elimination and Model Based Projection,
-which we were able to use natively for our technique.
+We implemented Algorithms~\ref{Alg:SNA}, \ref{Alg:SNA_Term}, and \ref{Alg:SNA_Refined} inside of the \golem~\cite{DBLP:conf/cav/BlichaBS23}; 
+we refer to these implementations as \sna, \snaTerm and \snaOpt.
+\sna handles trivial termination cases during preprocessing, such as the absence of initial states or the 
+absence of transitions from initial states.
+\golem supports multiple different safety verification procedures,
+such as Property Directed Reachability~\cite{DBLP:journals/fac/BradleyM08} (PDR), Transition Power Abstraction~\cite{DBLP:conf/tacas/BlichaFHS22} (TPA) and Interpolation-based Model Checking~\cite{DBLP:conf/cav/McMillan03}.
+Additionally, we use quantifier elimination, already implemented in \golem.
+% \snaOpt with different safety verification engines was able to solve different 
+% termination problems uniquely.
 % Quantifier Elimination is produced by executing Model Based Projections, untill the whole formula is covere
 
-For SMT queries used in the algorithm and the construction of interpolants our algorithm uses \opensmt SMT solver~\cite{DBLP:conf/sat/HyvarinenMAS16}.
-\opensmt is used within \golem, it has a support of the interpolation procedure.
+For SMT queries and interpolant construction, our implementation uses the \opensmt SMT solver~\cite{DBLP:conf/sat/HyvarinenMAS16}.
+\opensmt is integrated within \golem and provides native support for interpolation.
 
 
+\subsection{Evaluation}
 
-~\subsection{Evaluation}
 
-
-We compare \snaOpt to \sna and \snaTerm algorithms, evaluating the benefit of combining
+We compare \snaOpt against \sna and \snaTerm, to evaluate the effect of combination of
 the termination and nontermination techniques.
 Additionally, we evaluate \snaOpt against several state-of-the-art tools: 
 \LoAT~\cite{10.1007/978-3-031-90660-2_13} (version eacb74b), \KoAT~\cite{10.1007/978-3-031-90660-2_13} 
@@ -45,85 +44,86 @@ Evaluation focuses on termination analysis of Integer Transition Systems.
 Experiments were conducted on Ubuntu 20.04 machine with an AMD EPYC 7452 32-core processor and 8x32 GiB RAM. 
 Our evaluation addresses the following research questions:
 \begin{itemize}
-\item \textbf{RQ1:} How does the extension of SNA with Termination procedure influences the performance of the verification?
-\item \textbf{RQ2:} How does \snaOpt perform against state-of-the-art tools?
+\item \textbf{RQ1:} How does extending \sna with the termination procedure affect verification performance?
+\item \textbf{RQ2:} How does \snaOpt perform compared to state-of-the-art tools?
 \end{itemize}
 
 The benchmark suite of Integer Transition Systems is taken from the Termination Competition. 
-Overall there are 1222 benchmarks (538 nonterminating, 665 terminating and 19 unknown).
-
-
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=1\linewidth]{Figures/TermCompCMP.pdf}
-    \caption{Comparison of \snaOpt with \sna and \snaTerm. The left plot is solved terminating instances, the right is nonterminating.}
-    \label{fig:golemComp}
-\end{figure}
-
-Figure~\ref{fig:golemComp} gives two plots comparing \snaOpt to \sna and \snaTerm. 
-Our results indicate that \snaOpt consistently outperforms both \sna and \snaTerm for Terminating 
-and Nonterminating instances. 
-We contribute this to the usefuleness of creating "subproblems" in the \snaOpt, that allows
-to concentrate on the termination of specific subproblem instead of considering the whole system.
-This is benefitial in finding a recurrent set, as it allows to concentrate on some
-specific state not covered by transition invariant.
-And it is also benefitial for the purposes of the termination, as it allows to diversify
-and enrich the transition invariant with additional disjuncts, covering some different 
-subspace of the reachable state space.
-To answer \textbf{RQ1}, we conclude that the combination of termination and nontermination 
-techniques in \snaOpt leads to significantly improved performance, both for termination and 
-nontermination.
-Overall, the results of the evaluation are presented in the Table~\ref{tab:internal}.
+Overall there are 1180 benchmarks (538 nonterminating, 623 terminating, and 19 unknown).
+The evaluation was run with 120 seconds timeout (increase of the timeout almost does not influence the evaluation).
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|c|c|c|c|}
         \hline
-        \textbf{Algorithm} & \textbf{Terminating} & \textbf{Nonterminating} & \textbf{Solved Uniquely} \\
+        \textbf{Algorithm} & \textbf{Total} & \textbf{Terminating} & \textbf{Nonterminating} & \textbf{Uniquely} \\
         \hline
-        \sna & 27 & 377 & 17 \\
+        \sna & 343 & 0 & 343 & 7 \\
         \hline
-        \snaTerm & 140 & 377 & 17 \\
+        \snaTerm & 521 & 186 & 335 & 7 \\
         \hline
-        \snaOpt & 343 & 442 & 283 \\
+        \snaOpt & 743 & 301 & 442 & 230 \\
         \hline
     \end{tabular}
     \caption{Comparison of \snaOpt with \sna and \snaTerm.}
     \label{tab:internal}
 \end{table}
+% \begin{figure}[t]
+%     \centering
+%     \includegraphics[width=1\linewidth]{Figures/TermCompCMP.pdf}
+%     \caption{Comparison of \snaOpt with \sna and \snaTerm. The left plot is solved terminating instances, the right is nonterminating.}
+%     \label{fig:golemComp}
+% \end{figure}
+
+Table~\ref{tab:internal} gives the experimental results for \snaOpt, \sna, and \snaTerm. 
+Our results indicate that \snaOpt consistently outperforms both \sna and \snaTerm for Terminating 
+and Nonterminating instances. 
+We attribute this to the usefulness of creating "subproblems" in the \snaOpt, that allows the algorithm to focus
+on the termination of specific subproblem instead of considering the whole system.
+This benefits recurrent set detection, by focusing the analysis on specific states not covered by the transition invariant.
+It also benefits termination proving, by enriching the transition invariant with additional disjuncts 
+that cover different regions of the reachable state space.
+In answer to \textbf{RQ1}, the combination of termination and nontermination reasoning in 
+\snaOpt yields significantly improved performance across both problem classes.
+Notably, during experimentation we noticed that \snaOpt produces different outputs depending on the underlying 
+Safety Verification engine.
+For example, the most efficient results were produced using TPA \snaOpt - 785 instances solved. 
+\snaOpt with PDR solves less instances (781), however it can solve 17 benchmarks uniquely compared to the TPA.
 %
 
 \begin{figure}[t!]
     \centering
-    \includegraphics[width=1\linewidth]{Figures/fullcmp.jpg}
+    \includegraphics[width=1\linewidth]{Figures/scatter.pdf}
     \caption{Comparison of \snaOpt with state-of-the-art tools.}
     \label{fig:stateOfArtComp}
 \end{figure}
 
-Figure~\ref{fig:stateOfArtComp} gives comparison of \snaOpt with other state-of-the-art Termination analyzers,
-\snaOpt is able to solve 796 benchmarks, with \Tt solving 1044, \KoAT 604, and \LoAT 527 instances.
-As it can be seen in the graphs, \snaOpt is competitive with other state of the art techniques 
-for the termination analysis.
-Compared to other state-of-the-art tools \snaOpt is able to analyse 8 instances uniquely, importantly
-verifying 2 instances (juLinkedListCreateAddAll.jar-obl-11, juLinkedListCreateAddAllAt.jar-obl-17)
-out of 19 which were never verified before by any other tool that participated in Termination Competition,
-finding recurrent sets that prove nontermination of those benchmarks.
+Figure~\ref{fig:stateOfArtComp} shows a scatter plot comparing \snaOpt against state-of-the-art termination analysers.
+Orange squares denote nonterminating instances; blue crosses denote terminating instances.
+Points above the diagonal indicate instances where \snaOpt is faster than the competitor.
+\snaOpt is able to solve 785 benchmarks, with \Tt solving 1044, \KoAT 604, and \LoAT 527 instances.
+As shown in Figure~\ref{fig:stateOfArtComp}, \snaOpt is competitive with state-of-the-art termination analysers.
+Among all tools, \snaOpt uniquely solves 8 instances.
+Notably, 2 of these — \texttt{juLinkedListCreateAddAll.jar-obl-11} and \texttt{juLinkedListCreateAddAllAt.jar-obl-17} — belong to the 
+19 previously unsolved instances in the Termination Competition, for which \snaOpt finds recurrent sets proving nontermination.
+In answer to \textbf{RQ2}, \snaOpt is competitive with state-of-the-art tools overall and uniquely solves instances previously unsolved in the Termination Competition, 
+demonstrating the practical value of the interpolation-based transition invariant approach.
 
 \begin{table}[h]
     \centering
-    \begin{tabular}{|c|c|c|c|}
+    \begin{tabular}{|c|c|c|c|c|}
         \hline
-        \textbf{Algorithm} & \textbf{Terminating} & \textbf{Nonterminating} & \textbf{Solved Uniquely} \\
+        \textbf{Algorithm} & \textbf{Total} & \textbf{Terminating} & \textbf{Nonterminating} & \textbf{Uniquely} \\
         \hline
-        \LoAT & 2 & 525 & ? \\
+        \LoAT & 525 & 0 & 525 & 48 \\
         \hline
-        \KoAT & 604 & 0 & ? \\
+        \KoAT & 562 & 562 & 0 & 26 \\
         \hline
-        \Tt & 614 & 430 & ? \\
+        \Tt & 1002 & 572 & 430 & 40 \\
         \hline
-        \snaOpt & 343 & 442 & 8 \\
+        \snaOpt & 743 & 301 & 442 & 8 \\
         \hline
     \end{tabular}
-    \caption{Comparison af \snaOpt with state of the art techniques}
+    \caption{Comparison of \snaOpt with state-of-the-art  tools}
     \label{tab:external}
 \end{table}
