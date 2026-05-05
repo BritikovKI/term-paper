@@ -187,27 +187,27 @@ Otherwise, if such states do not exist, the algorithm blocks the subset of initi
 % Make an example for section 4
 % \begin{example}\label{Ex:SNA}
 %     Consider a transition system $TS = \tuple{Init, Tr, X}$ with 
-%     boolean variables $X = \{x\}$ and: $Init(X)  \triangleq \top$,
-%         $Tr(X, X') \triangleq x' = x - 2 \land x \neq 0 \land x < 10$. 
+%     boolean variables $X = \{X\}$ and: $Init(X)  \triangleq \top$,
+%         $Tr(X, X') \triangleq X' = X - 2 \land X \neq 0 \land X < 10$. 
 %     The sink states are computed as 
-%     $Sink(X) \triangleq x = 0 \lor x \geq 10$.
+%     $Sink(X) \triangleq X = 0 \lor X \geq 10$.
 %     The initial safety problem is $P = \tuple{Init, Tr, Sink, X}$.
 %     This transition system is nonterminating and algorithm would proceed as follows.
 
-%     First, SNA would detect that sink states are the part of initial states $x = 0$,
-%     and would call \blockTerm, updating initial states: $Init(x) \triangleq x \neq 0$.
+%     First, SNA would detect that sink states are the part of initial states $X = 0$,
+%     and would call \blockTerm, updating initial states: $Init(X) \triangleq X \neq 0$.
 %     Afterwards, SNA would detect a counterexample $Tr^1$, detecting that sink states 
 %     can be reached within 1 iteration.
 %     \blockTerm will once again block the initial states that reach termination: 
-%     $Init(x) \triangleq x \neq 0 \land x \neq 2$.
+%     $Init(X) \triangleq X \neq 0 \land X \neq 2$.
 %     Execution of the SNA would proceed, until it blocks all of the initial states that lead to 
-%     termination: $Init(x) \triangleq x \neq 0 \land \dots \land x \neq 8$.
+%     termination: $Init(X) \triangleq X \neq 0 \land \dots \land X \neq 8$.
 %     Afterwards, SNA safety check would conclude safety, returning safety invariant:
-%     $Inv(x) = x<10 \land x \neq 0 \land \dots \land x \neq 8$.
+%     $Inv(X) = X<10 \land X \neq 0 \land \dots \land X \neq 8$.
 %     This is recurrent set, so SNA would conclude nontermination.
 
 %     However, consider a small change to the Transition System.
-%     Particularly, $Tr(X, X') \triangleq x' = x - 2 \land x > 0 \land x < 10$.
+%     Particularly, $Tr(X, X') \triangleq X' = X - 2 \land X > 0 \land X < 10$.
 %     This change would render transition system is terminating, but, 
 %     Algorithm~\ref{Alg:SNA} is unable to detect termination.
 %     It would loop infinitely, blocking initial states that lead to termination.
@@ -216,64 +216,86 @@ Otherwise, if such states do not exist, the algorithm blocks the subset of initi
 %     Intuition is to use such traces to prove the termination of transition systems.
 %     If such traces are overapproximated, it is possible to construct a transition invariant,
 %     which will witness the termination.
-%     Particularly, in the case of example the well-founded transition invariant $TrInv(X,X') = x' < x \land x > 0$
+%     Particularly, in the case of example the well-founded transition invariant $TrInv(X,X') = X' < X \land X > 0$
 %     would witness termination.
 % \end{example} 
-\begin{example}\label{Ex:SNA}
-    Consider a transition system $TS = \tuple{Init, Tr, X}$ with 
-    boolean variables $X = \{x\}$ and: $Init(X)  \triangleq \top$,
-        $Tr(X, X') \triangleq (x' = x - 1 \lor x' = x - 2) \land x \neq 0$. 
-    The sink states are computed as 
-    $Sink(X) \triangleq x = 0$.
-    The initial safety problem is $P = \tuple{Init, Tr, Sink, X}$.
-    This transition system is nonterminating and algorithm would proceed as follows.
-
-    First, SNA would detect that sink states are the part of initial states $x = 0$,
-    and would call \blockTerm, updating initial states: $Init(X) \triangleq X \neq 0$.
-    Afterwards, SNA would detect a counterexample $Tr^1$, detecting that sink states 
-    can be reached within 1 iteration.
-    \blockTerm will block the transition, blocking branch that reaches sink state: 
-    $Tr(X,X') \triangleq Tr(X,X') \land x' \neq 0 $.
-    Execution of the SNA would proceed, safety check concluding safety for the updated Transition System:
-    $Inv(x) = x \neq 0$.
-    This invariant is not a recurrent set, so SNA would return UNKNOWN.
-
-    However, consider a small change to the Transition System.
-    Particularly, $Tr(X, X') \triangleq x' = x - 2 \land x > 0 \land x < 10$.
-    This change would render transition system is terminating, but, 
-    Algorithm~\ref{Alg:SNA} is unable to detect termination.
-    It would loop infinitely, blocking initial states that lead to termination.
-
-    However, SNA detects terminating traces during execution.
-    Intuition is to use such traces to prove the termination of transition systems.
-    If such traces are overapproximated, it is possible to construct a transition invariant,
-    which will witness the termination.
-    Particularly, in the case of example the well-founded transition invariant $TrInv(X,X') = x' < x \land x > 0$
-    would witness termination.
-\end{example}
 % \begin{example}\label{Ex:SNA}
 %     Consider a transition system $TS = \tuple{Init, Tr, X}$ with 
-%     boolean variables $X = \{a, b, c\}$ and: $Init(X)  \triangleq a$,
-%         $Tr(X, X') \triangleq (a \land b') \lor (a \land c') \lor (b \land c')$. 
+%     boolean variables $X = \{X\}$ and: $Init(X)  \triangleq \top$,
+%         $Tr(X, X') \triangleq (X' = X - 1 \lor X' = X - 2) \land X \neq 0$. 
 %     The sink states are computed as 
-%     $Sink(X) \triangleq c$.
+%     $Sink(X) \triangleq X = 0$.
 %     The initial safety problem is $P = \tuple{Init, Tr, Sink, X}$.
+%     This transition system is nonterminating and algorithm would proceed as follows.
 
-%     \textit{Iteration 1.} $safetyCheck(P)$ returns UNSAFE with the 
-%     trace $Tr^1(X^{(0)}, X^{(1)})$ corresponding to the path 
-%     $a \to c$, i.e., $Init(X^{(0)}) \land Tr(X^{(0)}, X^{(1)}) 
-%     \land Sink(X^{(1)})$.
-%     \blockTerm\ analyses the trace and detects that from state $a$ 
-%     there exists an alternative successor, namely $b$, that does not 
-%     lead directly to $Sink$. Formally, the check 
-%     $S_0(X) \land Tr(X, X') \land \lnot S_1(X')$ is satisfiable 
-%     (with $S_1 \equiv c$), so the transition relation is refined:
-%     $$Tr'(X, X') \;\gets\; Tr(X, X') \land \lnot c'$$
+%     First, SNA would detect that sink states are the part of initial states $X = 0$,
+%     and would call \blockTerm, updating initial states: $Init(X) \triangleq X \neq 0$.
+%     Afterwards, SNA would detect a counterexample $Tr^1$, detecting that sink states 
+%     can be reached within 1 iteration.
+%     \blockTerm will block the transition, blocking branch that reaches sink state: 
+%     $Tr(X,X') \triangleq Tr(X,X') \land X' \neq 0 $.
+%     Execution of the SNA would proceed, safety check concluding safety for the updated Transition System:
+%     $Inv(X) = X \neq 0$.
+%     This invariant is not a recurrent set, so SNA would return UNKNOWN.
 
-%     \textit{Iteration 2.} $safetyCheck(\tuple{Init, Tr', Sink, X})$ 
-%     returns SAFE with an inductive invariant $Inv(X)$. The algorithm 
-%     checks whether $Inv(X)$ is a recurrent set.
-%     Since $Tr'$ blocks the transition to $c$, state $b$ has no 
-%     outgoing transition under $Tr'$, so $Inv$ is not a recurrent set.
-%     As no recurrent set was found, Algorithm~\ref{Alg:SNA} returns $UNKNOWN$.
+%     However, consider a small change to the Transition System.
+%     Particularly, $Tr(X, X') \triangleq (X' = X - 1 \lor X' = X - 2) \land X > 0$.
+%     This change would render transition system terminating, but, 
+%     Algorithm~\ref{Alg:SNA} is unable to detect termination.
+%     It would loop infinitely, blocking initial states that lead to termination.
+
+%     However, SNA detects terminating traces during execution.
+%     Intuition is to use such traces to prove the termination of transition systems.
+%     If such traces are overapproximated, it is possible to construct a transition invariant,
+%     which will witness the termination.
+%     Particularly, in the case of example the well-founded transition invariant $TrInv(X,X') = X' < X \land X > 0$
+%     would witness termination.
 % \end{example}
+\begin{example}\label{Ex:SNA}
+    Consider a transition system $TS = \tuple{Init, Tr, X}$ with 
+    $X = \{v\}$, where $v$ is an integer variable, and:
+    \begin{align*}
+        Init(X)   &\triangleq \top \\
+        Tr(X, X') &\triangleq (v' = v - 1 \lor v' = v - 2) \land v \neq 0
+    \end{align*}
+    The sink states are computed as $Sink(X) \triangleq v = 0$.
+    The initial safety problem is $P = \tuple{Init, Tr, Sink, X}$.
+
+    \textit{Iteration 1.} $safetyCheck(P)$ returns UNSAFE: the sink 
+    state $v = 0$ is reachable from $Init \equiv \top$ in zero 
+    transitions. 
+    \blockTerm\ detects that no alternative successor 
+    exists from the initial state $v = 0$, so it blocks this state 
+    $Init(X) \;\gets\; v \neq 0$.
+
+    \textit{Iteration 2.} $safetyCheck(P)$ returns UNSAFE with a 
+    trace $Tr^1(X^{(0)}, X^{(1)})$, witnessing that a sink state 
+    is reachable in one transition. \blockTerm\ detects that from 
+    the current states there exists an alternative successor that 
+    does not reach $Sink$, so it blocks the sink-reaching branch 
+    $Tr(X, X') \;\gets\; Tr(X, X') \land v' \neq 0$.
+
+    \textit{Iteration 3.} $safetyCheck(P)$ returns SAFE with 
+    inductive invariant $Inv(X) \equiv v \neq 0$. 
+    The invariant $Inv$ is a recurrent set as it is possible to take
+    a transition from all states within invariant, particularly $v=1$ or 
+    $v=2$. 
+    Algorithm~\ref{Alg:SNA} therefore returns \textsc{UNSAT}.
+
+    \textit{Motivation for termination analysis.} Now consider a 
+    small modification: $Tr(X, X') \triangleq (v' = v - 1 \lor 
+    v' = v - 2) \land v > 0$. This renders $TS$ terminating, 
+    since $v$ is strictly positive and decreases by at least one 
+    at every step. 
+    However, Algorithm~\ref{Alg:SNA} cannot detect termination by design, in the 
+    case of this particular example it would return $UNKNOWN$, after updating 
+    transition to $Tr(X,X') = Tr(X,X') \land v' > 2$. 
+    Crucially, terminating traces \emph{are} detected during the execution of
+    the algorithm. 
+    The key insight is to exploit these traces: by over-approximating them via 
+    interpolation, it is possible to construct a transition invariant 
+    witnessing termination. 
+    In this example, the disjunctively well-founded transition invariant 
+    $TrInv(X, X') \triangleq v' < v \land v > 0$ covers all reachable states 
+    and witnesses termination of $TS$.
+\end{example}

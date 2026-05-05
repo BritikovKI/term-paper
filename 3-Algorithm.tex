@@ -264,7 +264,7 @@ The overall flow is shown in Figure~\ref{fig:SNATrInv}.
             $\tuple{TInv, C} \gets \trInvSynthesis(P, Tr^n, TInv)$ \label{SNA_Term:Synth} \\
             $\tuple{res', *} \gets safetyCheck(\tuple{Init, Tr, \lnot C, X})$ \label{SNA_Term:CheckNc} \\
             \eIf{$res' = UNSAFE$} {
-                $P \gets \blockTerm(P, \phi)$ \\
+                $P \gets \blockTerm(P, \phi)$\label{SNA_Term:BlockTerm} \\
             }
             {
                \Return $TERM$\label{SNA_Term:NEWTERM}
@@ -364,21 +364,66 @@ and then we prove the correctness of the nontermination.
     directly corresponds to one described in the Algorithm~\ref{Alg:SNA}. 
 \end{proof}
 
+\begin{example}\label{Ex:Motivation}
+    Consider a transition system $TS = \tuple{Init, Tr, x}$ with 
+    $x = \{v, u\}$, where $v, u$ are integer variables, and:
+    \begin{align*}
+        Init(x)   &\triangleq u < 10 \land v > 0 \\
+        Tr(x, x') &\triangleq (v' = v - 1 \land u' = u \land v > 0) \lor 
+                     (v' = v + 1 \land u' = u + 1 \land u < 10) 
+    \end{align*}
+    Intuitively, at each step the system either decrements $v$ 
+    (and keeps $u$ unchanged), or increments both $v$ and $u$ 
+    provided $u < 10$. 
+    Once $u = 10$, only the decrementing branch is available, and $v$ decreases 
+    monotonically to zero. 
+    Hence $TS$ is terminating.
+    The sink states are $Sink(x) \triangleq v \leq 0$.
+    The initial safety problem is $P = \tuple{Init, Tr, Sink, x}$.
+
+    \textit{Iteration 1 of Algorithm~\ref{Alg:SNA_Term}.}
+    $safetyCheck(P)$ returns UNSAFE with a trace $Tr^1(x^{(0)}, 
+    x^{(1)})$: a sink state is reachable in one transition via the 
+    decrementing branch when $v = 1$.
+    \trInvSynthesis\ constructs transition invariant:
+    $TInv(x, x') \;\triangleq\; v' < v \land v > 0$. 
+    The coverage formula is then computed as:
+    $C(x) \;\triangleq\; u = 10$.
+    $TInv$ is inductive only when $u = 10$. 
+    The safety check for $\tuple{Init, Tr, \lnot C, x}$ returns UNSAFE, since states 
+    with $u < 10$ are reachable from $Init$. The algorithm 
+    therefore calls \blockTerm, blocking the sink-reaching 
+    transition:
+    $$Tr(x, x') \;\gets\; Tr(x, x') \land v' \neq 0$$
+    and continues.
+
+    \textbf{Iteration 2 of Algorithm~\ref{Alg:SNA_Term}.}
+    $safetyCheck(P)$ returns SAFE with inductive invariant 
+    $Inv(x) \equiv v \neq 0$. Since $v = 1 \land u = 10$ has no 
+    outgoing transition under the refined $Tr'$ (the decrementing 
+    branch would produce $v' = 0$, which is now blocked), $Inv$ 
+    is not a recurrent set. Algorithm~\ref{Alg:SNA_Term} returns 
+    \textsc{Unknown}.
+
+    \textbf{The limitation.} The root cause is that $TInv$ does 
+    not cover states with $u < 10$. It captures why the system 
+    terminates when $u = 10$, but not the global argument: $u$ 
+    grows until at most $u = 10$, after which $v$ decreases 
+    monotonically. 
+    A complete termination proof requires a \emph{second} disjunct covering the $u < 10$ region.
+    Below, we propose an extension which would allow to concentrate on the state space
+    which is not covered by transition invariant.
+\end{example}
+
 
 \section{Extended Interpolation-based Transition Invariant Generation for Proving and Disproving Termination}
 \label{Sec:Main}
 
 Algorithm~\ref{Alg:SNA_Term} is already capable to prove termination efficiently, via the construction of transition invariants.
-This section describes three optimizations that extend its power: a termination check, safety problem refinement, 
-and targeted analysis of states not covered by the transition invariant. 
-The overall flow of the optimized algorithm is shown in Figure~\ref{fig:SNA++}.
+This section describes the extension of the algorithm that tightens the connections and communication between termination and nontermination
+analysis.
+Additionally, it contains extensions of the original SNA algorithm, that allow to improve the performance even more. 
 
-\begin{figure}[t]
-    \centering
-    \includegraphics[width=\linewidth]{Figures/SNA++.pdf}
-    \caption{Optimized Interpolation-based Termination Analysis (New components are highlighted in dark orange and dark blue colours).}
-    \label{fig:SNA++}
-\end{figure}
 
 
 % Mention that A and B can be used for Algo 1
@@ -412,6 +457,14 @@ Particularly, the algorithm constructs the formula $C(X)$ encoding states for wh
 If $\lnot C(X)$ is reachable, it means that there exist states for which the transition invariant is not valid, and which potentially can lead to non-termination.
 The intuition is to compute the reachable states $S_m$ within $\lnot C(X)$ to construct transition invariant covering 
 those states in particular, or to detect a recurrent set otherwise.
+The overall flow of the optimized algorithm is shown in Figure~\ref{fig:SNA++}.
+
+\begin{figure}[t]
+    \centering
+    \includegraphics[width=\linewidth]{Figures/SNA++.pdf}
+    \caption{Optimized Interpolation-based Termination Analysis (New components are highlighted in dark orange and dark blue colours).}
+    \label{fig:SNA++}
+\end{figure}
 
 \subsection{Full Algorithm}
 
