@@ -369,8 +369,8 @@ and then we prove the correctness of the nontermination.
     $x = \{v, u\}$, where $v, u$ are integer variables, and:
     \begin{align*}
         Init(x)   &\triangleq u < 10 \land v > 0 \\
-        Tr(x, x') &\triangleq (v' = v - 1 \land u' = u \land v > 0) \lor 
-                     (v' = v + 1 \land u' = u + 1 \land u < 10) 
+        Tr(x, x') &\triangleq ((v' = v - 1 \land u' = u ) \lor 
+                     (v' = v + 1 \land u' = u + 1 \land u < 10)) \land v > 0
     \end{align*}
     Intuitively, at each step the system either decrements $v$ 
     (and keeps $u$ unchanged), or increments both $v$ and $u$ 
@@ -381,7 +381,7 @@ and then we prove the correctness of the nontermination.
     The sink states are $Sink(x) \triangleq v \leq 0$.
     The initial safety problem is $P = \tuple{Init, Tr, Sink, x}$.
 
-    \textit{Iteration 1 of Algorithm~\ref{Alg:SNA_Term}.}
+    \textit{Iteration 1.}
     $safetyCheck(P)$ returns UNSAFE with a trace $Tr^1(x^{(0)}, 
     x^{(1)})$: a sink state is reachable in one transition via the 
     decrementing branch when $v = 1$.
@@ -397,13 +397,11 @@ and then we prove the correctness of the nontermination.
     $$Tr(x, x') \;\gets\; Tr(x, x') \land v' \neq 0$$
     and continues.
 
-    \textbf{Iteration 2 of Algorithm~\ref{Alg:SNA_Term}.}
-    $safetyCheck(P)$ returns SAFE with inductive invariant 
-    $Inv(x) \equiv v \neq 0$. Since $v = 1 \land u = 10$ has no 
-    outgoing transition under the refined $Tr'$ (the decrementing 
-    branch would produce $v' = 0$, which is now blocked), $Inv$ 
-    is not a recurrent set. Algorithm~\ref{Alg:SNA_Term} returns 
-    \textsc{Unknown}.
+    \textit{Iteration 2.} $safetyCheck(P)$ returns SAFE with inductive invariant 
+    $Inv(x) \equiv v \neq 0$. 
+    Since $v = 1 \land u = 10$ has no  outgoing transition under the refined $Tr'$ (the decrementing 
+    branch would produce $v' = 0$, which is now blocked), $Inv$ is not a recurrent set. 
+    Algorithm~\ref{Alg:SNA_Term} returns \textsc{Unknown}.
 
     \textbf{The limitation.} The root cause is that $TInv$ does 
     not cover states with $u < 10$. It captures why the system 
