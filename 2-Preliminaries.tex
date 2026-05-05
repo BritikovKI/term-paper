@@ -253,26 +253,20 @@ Otherwise, if such states do not exist, the algorithm blocks the subset of initi
 % \end{example}
 \begin{example}\label{Ex:SNA}
     Consider a transition system $TS = \tuple{Init, Tr, X}$ with 
-    $X = \{v\}$, where $v$ is an integer variable, and:
-    \begin{align*}
-        Init(X)   &\triangleq \top \\
-        Tr(X, X') &\triangleq (v' = v - 1 \lor v' = v - 2) \land v \neq 0
-    \end{align*}
-    The sink states are computed as $Sink(X) \triangleq v = 0$.
+    $X = \{v\}$, where $v$ is an integer variable, $Init(X)   \triangleq \top$, and
+    $Tr(X, X') \triangleq (v' = v - 1 \lor v' = v - 2) \land v \neq 0$.
+    The sink states can be encoded as $Sink(X) \triangleq v = 0$.
     The initial safety problem is $P = \tuple{Init, Tr, Sink, X}$.
 
     \textit{Iteration 1.} $safetyCheck(P)$ returns UNSAFE: the sink 
-    state $v = 0$ is reachable from $Init \equiv \top$ in zero 
+    state $v = 0$ is reachable from $Init$ in zero 
     transitions. 
-    \blockTerm\ detects that no alternative successor 
-    exists from the initial state $v = 0$, so it blocks this state 
-    $Init(X) \;\gets\; v \neq 0$.
+    \blockTerm\ blocks this state  $Init(X) \;\gets\; v \neq 0$.
 
     \textit{Iteration 2.} $safetyCheck(P)$ returns UNSAFE with a 
-    trace $Tr^1(X^{(0)}, X^{(1)})$, witnessing that a sink state 
-    is reachable in one transition. \blockTerm\ detects that from 
-    the current states there exists an alternative successor that 
-    does not reach $Sink$, so it blocks the sink-reaching branch 
+    trace $Tr^1(X^{(0)}, X^{(1)})$. \blockTerm\ detects that $\exists X^{(0)}, X^{(1)}. 
+    Init(X^{(0)}) \land Tr^1(X^{(0)}, X^{(1)}) \land \lnot Sink(X^{(1)})$. 
+    It blocks the states $X^{(1)}$ which necessarily lead to termination: 
     $Tr(X, X') \;\gets\; Tr(X, X') \land v' \neq 0$.
 
     \textit{Iteration 3.} $safetyCheck(P)$ returns SAFE with 
@@ -280,21 +274,19 @@ Otherwise, if such states do not exist, the algorithm blocks the subset of initi
     The invariant $Inv$ is a recurrent set as it is possible to take
     a transition from all states within invariant, particularly $v=1$ or 
     $v=2$. 
-    Algorithm~\ref{Alg:SNA} therefore returns \textsc{UNSAT}.
+    Algorithm~\ref{Alg:SNA} therefore returns \textsc{NONTERM}.
 
-    \textit{Motivation for termination analysis.} Now consider a 
+    \textit{Motivation for transition invariant-based termination analysis.} Now consider a 
     small modification: $Tr(X, X') \triangleq (v' = v - 1 \lor 
     v' = v - 2) \land v > 0$. This renders $TS$ terminating, 
-    since $v$ is strictly positive and decreases by at least one 
-    at every step. 
+    since $v$ is strictly positive and decreases every step. 
     However, Algorithm~\ref{Alg:SNA} cannot detect termination by design, in the 
     case of this particular example it would return $UNKNOWN$, after updating 
     transition to $Tr(X,X') = Tr(X,X') \land v' > 2$. 
     Crucially, terminating traces \emph{are} detected during the execution of
     the algorithm. 
-    The key insight is to exploit these traces: by over-approximating them via 
-    interpolation, it is possible to construct a transition invariant 
-    witnessing termination. 
+    The key insight is to over-approximate these traces via 
+    interpolation, to construct a transition invariant witnessing termination. 
     In this example, the disjunctively well-founded transition invariant 
     $TrInv(X, X') \triangleq v' < v \land v > 0$ covers all reachable states 
     and witnesses termination of $TS$.

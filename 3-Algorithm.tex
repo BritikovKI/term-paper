@@ -364,50 +364,43 @@ and then we prove the correctness of the nontermination.
     directly corresponds to one described in the Algorithm~\ref{Alg:SNA}. 
 \end{proof}
 
-\begin{example}\label{Ex:Motivation}
-    Consider a transition system $TS = \tuple{Init, Tr, x}$ with 
-    $x = \{v, u\}$, where $v, u$ are integer variables, and:
-    \begin{align*}
-        Init(x)   &\triangleq u < 10 \land v > 0 \\
-        Tr(x, x') &\triangleq ((v' = v - 1 \land u' = u ) \lor 
-                     (v' = v + 1 \land u' = u + 1 \land u < 10)) \land v > 0
-    \end{align*}
-    Intuitively, at each step the system either decrements $v$ 
-    (and keeps $u$ unchanged), or increments both $v$ and $u$ 
-    provided $u < 10$. 
-    Once $u = 10$, only the decrementing branch is available, and $v$ decreases 
-    monotonically to zero. 
-    Hence $TS$ is terminating.
-    The sink states are $Sink(x) \triangleq v \leq 0$.
-    The initial safety problem is $P = \tuple{Init, Tr, Sink, x}$.
 
-    \textit{Iteration 1.}
-    $safetyCheck(P)$ returns UNSAFE with a trace $Tr^1(x^{(0)}, 
-    x^{(1)})$: a sink state is reachable in one transition via the 
-    decrementing branch when $v = 1$.
+
+\begin{example}\label{Ex:Motivation}
+    Consider a transition system $TS = \tuple{Init, Tr, X}$ with 
+    $X = \{v, u\}$, where $v, u$ are integer variables, $Init(X)   \triangleq u < 10 \land v > 0 $, and
+    $Tr(X, X') \triangleq ((v' = v - 1 \land u' = u ) \lor (v' = v + 1 \land u' = u + 1 \land u < 10)) \land v > 0$.
+
+
+    Intuitively, at each step the system either decrements $v$ (and keeps $u$ unchanged), or increments both $v$ and $u$ 
+    provided $u < 10$. 
+    Once $u = 10$, only the decrementing branch is available, and $v$ decreases monotonically to zero. 
+    Hence $TS$ is terminating.
+    The sink states are $Sink(X) \triangleq v \leq 0$.
+    The initial safety problem is $P = \tuple{Init, Tr, Sink, X}$.
+
+    \textit{Iteration 1.} $safetyCheck(P)$ returns UNSAFE with a trace $Tr^1(X^{(0)}, 
+    X^{(1)})$: a sink state is reachable in one transition via the 
+    decrement when $v = 1$.
     \trInvSynthesis\ constructs transition invariant:
-    $TInv(x, x') \;\triangleq\; v' < v \land v > 0$. 
-    The coverage formula is then computed as:
-    $C(x) \;\triangleq\; u = 10$.
-    $TInv$ is inductive only when $u = 10$. 
-    The safety check for $\tuple{Init, Tr, \lnot C, x}$ returns UNSAFE, since states 
-    with $u < 10$ are reachable from $Init$. The algorithm 
-    therefore calls \blockTerm, blocking the sink-reaching 
+    $TInv(X, X') \;\triangleq\; v' < v \land v > 0$. 
+    The coverage formula is then computed as: $C(X) \;\triangleq\; u = 10$.
+    The safety check for $\tuple{Init, Tr, \lnot C, X}$ returns UNSAFE, since states 
+    with $u < 10$ are reachable from $Init$. 
+    The algorithm therefore calls \blockTerm, blocking the sink-reaching 
     transition:
-    $$Tr(x, x') \;\gets\; Tr(x, x') \land v' \neq 0$$
-    and continues.
+    $$Tr(X, X') \;\gets\; Tr(X, X') \land v' \neq 0 .$$
 
     \textit{Iteration 2.} $safetyCheck(P)$ returns SAFE with inductive invariant 
-    $Inv(x) \equiv v \neq 0$. 
+    $Inv(X) \equiv v \neq 0$. 
     Since $v = 1 \land u = 10$ has no  outgoing transition under the refined $Tr'$ (the decrementing 
     branch would produce $v' = 0$, which is now blocked), $Inv$ is not a recurrent set. 
     Algorithm~\ref{Alg:SNA_Term} returns \textsc{Unknown}.
 
-    \textbf{The limitation.} The root cause is that $TInv$ does 
-    not cover states with $u < 10$. It captures why the system 
-    terminates when $u = 10$, but not the global argument: $u$ 
-    grows until at most $u = 10$, after which $v$ decreases 
-    monotonically. 
+    \textbf{The limitation.} The root cause why algorithm cannot prove termination is that $TInv$ does 
+    not cover states with $u < 10$. 
+    It captures why the system terminates when $u = 10$, but not the global argument: $u$ 
+    grows until at most $u = 10$, after which $v$ decreases monotonically. 
     A complete termination proof requires a \emph{second} disjunct covering the $u < 10$ region.
     Below, we propose an extension which would allow to concentrate on the state space
     which is not covered by transition invariant.
