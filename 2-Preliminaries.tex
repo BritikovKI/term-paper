@@ -24,11 +24,12 @@ Safety verification amounts to determining whether there exists a transition tra
 If TS is safe, then there exists an inductive invariant $Inv(X)$ s.t. (1) $\forall X. Init(X) \rightarrow Inv(X)$, (2) $\forall X. Inv(X) \land Tr(X,X') \rightarrow Inv(X')$, and (3) $\forall X. Inv(X) \rightarrow \lnot Bad(X)$.
 We use $safetyCheck(P)$ to denote a safety verification procedure that returns a tuple $\tuple{SAFE, Inv(X)}$ if TS is safe ($Inv(X)$ is inductive invariant).
 Otherwise, if TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, such that: 
-$$\exists X^{(0)}, \dots, X^{(n)}. Init(X^{(0)}) \land Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land Bad(X^{(n)}).$$
+
+$$\exists \dots, X^{(n)}. Init(X^{(0)}) \land Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land Bad(X^{(n)})$$
 
 \paragraph{Nontermination}
 A transition system is called \textbf{nonterminating} if there exists an initial state, from which it is possible to take any number of transitions:
-$$\exists X. Init(X) \land \forall n \in \mathbb{N}.  \exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X, X^{(1)}, \dots, X^{(n)}).$$
+$$\exists X. Init(X) \land \forall n \in \mathbb{N}.  \exists \dots, X^{(n)}. Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
 
 \begin{definition}[Recurrent Set]
     For a Transition System $\tuple{ Init, Tr, X }$, a formula $N(X)$ is a recurrent set if: (1) $\forall X. N(X) \rightarrow \exists X'. Tr(X,X') \land N(X')$,  (2) $\exists X. N(X) \land Init(X)$.
@@ -40,11 +41,11 @@ initial states.
 
 \paragraph{Termination} A TS is called \textbf{terminating} if for every initial state it is possible to take only limited number of transitions.
 For a Transition System $\tuple{ Init, Tr, X }$:
-$$\forall X. Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X, X^{(1)}, \dots, X^{(n)}).$$
+$$\forall X. Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists \dots, X^{(n)}. Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
 % Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, mapping states to a well-founded domain, such that its value strictly decreases along every transition.
 
 \begin{definition}[Transition invariant]
-    For a Transition System $\tuple{ Init, Tr, X }$, $TrInv(X,X')$ is a transition invariant if: $\forall X,X'. R(X) \land Tr^*(X,X') \rightarrow TrInv(X,X')$, where $Tr^*(X,X')$ is the reflexive transitive closure of $Tr(X,X')$
+    For a Transition System $\tuple{ Init, Tr, X }$, $TrInv(X,X')$ is a transition invariant if: $\forall X,X'. R(X) \land Tr^+(X,X') \rightarrow TrInv(X,X')$, where $Tr^+(X,X')$ is the transitive closure of $Tr(X,X')$
     and $R(X)$ is a formula encoding all the states, reachable within transition system.
 \end{definition}
 
@@ -276,7 +277,7 @@ Otherwise, if such states do not exist, the algorithm blocks the subset of initi
     $v=2$. 
     Algorithm~\ref{Alg:SNA} therefore returns \textsc{NONTERM}.
 
-    \textit{Motivation for transition invariant-based termination analysis.} Now consider a 
+    \textit{Motivation for transition invariant-based termination analysis.} Consider a 
     small modification: $Tr(X, X') \triangleq (v' = v - 1 \lor 
     v' = v - 2) \land v > 0$. This renders $TS$ terminating, 
     since $v$ is strictly positive and decreases every step. 

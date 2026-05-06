@@ -17,7 +17,7 @@ our termination approach.
 \subsection{Implementation}
 
 
-We implemented Algorithms~\ref{Alg:SNA}, \ref{Alg:SNA_Term}, and \ref{Alg:SNA_Refined} inside of the \golem~\cite{DBLP:conf/cav/BlichaBS23}; 
+We implemented Algorithms~\ref{Alg:SNA}, \ref{Alg:SNA_Term}, and \ref{Alg:SNA_Refined} inside of \golem~\cite{DBLP:conf/cav/BlichaBS23}; 
 we refer to these implementations as \sna, \snaTerm and \snaOpt.
 \sna handles trivial termination cases during preprocessing, such as the absence of initial states or the 
 absence of transitions from initial states.
@@ -50,7 +50,7 @@ Our evaluation addresses the following research questions:
 
 The benchmark suite of Integer Transition Systems is taken from the Termination Competition. 
 Overall there are 1180 benchmarks (538 nonterminating, 623 terminating, and 19 unknown).
-The evaluation was run with 120 seconds timeout (increase of the timeout almost does not influence the evaluation).
+The evaluation was run with 120 seconds timeout (increase of the timeout does not influence the evaluation).
 
 \begin{table}[h]
     \centering
@@ -93,7 +93,7 @@ For example, the most efficient results were produced using TPA \snaOpt - 785 in
 
 \begin{figure}[t!]
     \centering
-    \includegraphics[width=1\linewidth]{Figures/scatter.pdf}
+    \includegraphics[width=1\linewidth]{Figures/scatters.pdf}
     \caption{Comparison of \snaOpt with state-of-the-art tools.}
     \label{fig:stateOfArtComp}
 \end{figure}
@@ -124,6 +124,6 @@ demonstrating the practical value of the interpolation-based transition invarian
         \snaOpt & 743 & 301 & 442 & 8 \\
         \hline
     \end{tabular}
-    \caption{Comparison of \snaOpt with state-of-the-art  tools}
+    \caption{Comparison of \snaOpt with state-of-the-art tools}
     \label{tab:external}
 \end{table}

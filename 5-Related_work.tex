@@ -11,7 +11,7 @@ relation, which allows to prove termination~\cite{DBLP:conf/vmcai/PodelskiR04,DB
 State of the art techniques are centered on the construction of multiphase or lexicographic ranking functions.
 These complex techniques significantly broaden the class of programs that ranking functions can handle.
 However, since they reason on the original transitions, the complexity of original system can make construction of ranking 
-function significantly more complex, or even impossible. 
+function more difficult.
 
 Another techniques, which allows to efficiently prove termination are fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23} and 
 the computation of closed forms~\cite{DBLP:conf/sas/FrohnHG20,DBLP:journals/fmsd/HarkFG25}.
@@ -31,6 +31,5 @@ These techniques can vary from the template-based synthesis to the safety-check 
 Another set of techniques are based on the safety-based termination analysis~\cite{DBLP:journals/entcs/BiereAS02,DBLP:conf/tacas/UrbanGK16},
 that allow to use safety provers for the proof of nontermination. 
 An alternative family of techniques detects nontermination by identifying 
-lasso-shaped executions — finite paths leading to a loop that can be 
-repeated indefinitely~\cite{DBLP:journals/entcs/BiereAS02,DBLP:conf/popl/GuptaHMRX08,DBLP:conf/tacas/LeikeH18}.
+lasso-shaped execution, finite paths leading to an infinite loop~\cite{DBLP:journals/entcs/BiereAS02,DBLP:conf/tacas/LeikeH18}.
 
