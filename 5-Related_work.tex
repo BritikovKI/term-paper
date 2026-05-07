@@ -6,22 +6,20 @@ Termination and nontermination analysis are very active areas of research. We wi
 related to Interpolation-based Termination Analysis below.
 
 \textbf{Termination.} There exist many different techniques for the termination analysis of software.
-One of the most researched and applied techniques iss the synthesis of the ranking functions for the transition
-relation, which allows to prove termination~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19}. 
+One of the most researched and applied techniques iss the synthesis of the ranking functions~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19}. 
 State of the art techniques are centered on the construction of multiphase or lexicographic ranking functions.
 These complex techniques significantly broaden the class of programs that ranking functions can handle.
 However, since they reason on the original transitions, the complexity of original system can make construction of ranking 
-function more difficult.
+function significantly more difficult.
 
 Another techniques, which allows to efficiently prove termination are fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23} and 
 the computation of closed forms~\cite{DBLP:conf/sas/FrohnHG20,DBLP:journals/fmsd/HarkFG25}.
 
-There also exists another set of techniques which can prove termination that are based on the construction of well-founded transition
+There also exists another set of techniques that are based on the construction of well-founded transition
 invariants~\cite{DBLP:conf/pldi/CookPR06,DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
-These approaches allow to approximate the behaviour of the transition system, and if the approximation is calculated succesfully the termination analysis
-is significantly simplified.
-The core problem of these approaches is the synthesis of transition invariant.
-Majority of transition invariant-based techniques are based on the synthesis of transition invariants via template synthesis, 
+These approaches overapproximate the behaviour of the transition system, simplifying the termination proof.
+The core problem of these approaches is the synthesis of transition invariant. \konst{Think and rewrite}
+Most of transition invariant-based techniques are based on the synthesis of transition invariants via template synthesis, 
 which is not guided by the termination conditions and can often diverge and sometimes even connot produce a descriptive
 invariant.
 

@@ -19,9 +19,7 @@ our termination approach.
 
 We implemented Algorithms~\ref{Alg:SNA}, \ref{Alg:SNA_Term}, and \ref{Alg:SNA_Refined} inside of \golem~\cite{DBLP:conf/cav/BlichaBS23}; 
 we refer to these implementations as \sna, \snaTerm and \snaOpt.
-\sna handles trivial termination cases during preprocessing, such as the absence of initial states or the 
-absence of transitions from initial states.
-\golem supports multiple different safety verification procedures,
+\golem was chosen as it supports multiple different safety verification procedures,
 such as Property Directed Reachability~\cite{DBLP:journals/fac/BradleyM08} (PDR), Transition Power Abstraction~\cite{DBLP:conf/tacas/BlichaFHS22} (TPA) and Interpolation-based Model Checking~\cite{DBLP:conf/cav/McMillan03}.
 Additionally, we use quantifier elimination, already implemented in \golem.
 % \snaOpt with different safety verification engines was able to solve different 
@@ -50,7 +48,7 @@ Our evaluation addresses the following research questions:
 
 The benchmark suite of Integer Transition Systems is taken from the Termination Competition. 
 Overall there are 1180 benchmarks (538 nonterminating, 623 terminating, and 19 unknown).
-The evaluation was run with 120 seconds timeout (increase of the timeout does not influence the evaluation).
+The evaluation was executed with 120 seconds timeout (increase of the timeout does not significantly influence the evaluation).
 
 \begin{table}[h]
     \centering
@@ -62,7 +60,7 @@ The evaluation was run with 120 seconds timeout (increase of the timeout does no
         \hline
         \snaTerm & 521 & 186 & 335 & 7 \\
         \hline
-        \snaOpt & 743 & 301 & 442 & 230 \\
+        \snaOpt & 755 & 314 & 441 & 230 \\
         \hline
     \end{tabular}
     \caption{Comparison of \snaOpt with \sna and \snaTerm.}
@@ -78,7 +76,7 @@ The evaluation was run with 120 seconds timeout (increase of the timeout does no
 Table~\ref{tab:internal} gives the experimental results for \snaOpt, \sna, and \snaTerm. 
 Our results indicate that \snaOpt consistently outperforms both \sna and \snaTerm for Terminating 
 and Nonterminating instances. 
-We attribute this to the usefulness of creating "subproblems" in the \snaOpt, that allows the algorithm to focus
+We attribute this to the generation "subproblems" in the \snaOpt, that allows the algorithm to focus
 on the termination of specific subproblem instead of considering the whole system.
 This benefits recurrent set detection, by focusing the analysis on specific states not covered by the transition invariant.
 It also benefits termination proving, by enriching the transition invariant with additional disjuncts 
@@ -87,8 +85,8 @@ In answer to \textbf{RQ1}, the combination of termination and nontermination rea
 \snaOpt yields significantly improved performance across both problem classes.
 Notably, during experimentation we noticed that \snaOpt produces different outputs depending on the underlying 
 Safety Verification engine.
-For example, the most efficient results were produced using TPA \snaOpt - 785 instances solved. 
-\snaOpt with PDR solves less instances (781), however it can solve 17 benchmarks uniquely compared to the TPA.
+For example, the most efficient results were produced using TPA \snaOpt - 755 instances solved. 
+\snaOpt with PDR solves less instances (751), however it can solve 17 benchmarks uniquely compared to the TPA.
 %
 
 \begin{figure}[t!]
@@ -101,7 +99,7 @@ For example, the most efficient results were produced using TPA \snaOpt - 785 in
 Figure~\ref{fig:stateOfArtComp} shows a scatter plot comparing \snaOpt against state-of-the-art termination analysers.
 Orange squares denote nonterminating instances; blue crosses denote terminating instances.
 Points above the diagonal indicate instances where \snaOpt is faster than the competitor.
-\snaOpt is able to solve 785 benchmarks, with \Tt solving 1044, \KoAT 604, and \LoAT 527 instances.
+\snaOpt is able to solve 755 benchmarks, with \Tt solving 1002, \KoAT 562, and \LoAT 525 instances.
 As shown in Figure~\ref{fig:stateOfArtComp}, \snaOpt is competitive with state-of-the-art termination analysers.
 Among all tools, \snaOpt uniquely solves 8 instances.
 Notably, 2 of these — \texttt{juLinkedListCreateAddAll.jar-obl-11} and \texttt{juLinkedListCreateAddAllAt.jar-obl-17} — belong to the 
@@ -121,7 +119,7 @@ demonstrating the practical value of the interpolation-based transition invarian
         \hline
         \Tt & 1002 & 572 & 430 & 40 \\
         \hline
-        \snaOpt & 743 & 301 & 442 & 8 \\
+        \snaOpt & 755 & 314 & 441 & 8 \\
         \hline
     \end{tabular}
     \caption{Comparison of \snaOpt with state-of-the-art tools}

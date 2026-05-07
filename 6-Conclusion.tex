@@ -3,13 +3,12 @@
 
 This paper introduces Termination Analysis via Interpolation-based Synthesis of Transition Invariants.
 A novel approach for the termination analysis that extends Safety-based Nontermination Analysis technique.
-The key insight of our approach is to use interpolation for the construction of termination witnesses,
+Our key insight is to use interpolation for the construction of termination witnesses,
 that allows the transition invariant to be guided by termination condition.
-Additionally, our technique refines the state space, reusing the intermediate results of 
-termination and nontermination analysis, concentrating on states that can be potentially
-nonterminating.
-We also optimized and adapted the original Nontermination analysis technique.
-Usage of safety verifiers provides a strong background for the analysis, allowing to 
+Additionally, our technique is strongly centered on the interaction between termination and nontermination
+approaches, using transition invariants to limit the explored state space and using safety-based 
+nontermination to generate candidate transition invariants.
+Application of safety verifiers provides a strong background for the analysis, allowing to 
 quickly check termination and nontermination.
 We proved the soundness of the algorihtm and conducted an extensive experimental evaluation, 
 which demonstrates both the eficiency of the combination of termination and nontermination techniques,
