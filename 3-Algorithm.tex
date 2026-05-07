@@ -77,21 +77,21 @@ transitions, is defined by the following property:
 % $NT^n(X)$ encodes all states guaranteed to reach a sink state within $n$ 
 % transitions, is defined by the following property:
 
-$$\exists \dots, X^{(n)}. NT^{n}(X^{(0)}) \land Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \lnot Sink(X^{(n)})$$
+$$\exists X^{(0)}, \dots, X^{(n)}. Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \lnot Sink(X^{(n)})$$
 
 $NT^n$ is constructed with quantifier elimination, eliminating all variables from the formula except for $X^{(0)}$.
 Construction of $NT^{(n)}$ enables the overapproximation of the trace. 
 
 \begin{example}\label{Ex:Tn}
-    % Consider $TS = \tuple{Init, Tr, X}$ with $Init \triangleq  v > 0$, $Tr(X,X') \triangleq  ((v' = v - 1 \lor v' = v - 2) \land v > 0) \lor (v < -10 \land v' = v - 1)$, $X \triangleq  \{v\}$.
-    % For $n = 2$ quantifier elimination would yield $T^2(X) = v \leq 2$.
-    % States with $v \in \{3,4\}$ can reach $Sink$ in two transitions but are 
+    % Consider $TS = \tuple{Init, Tr, X}$ with $Init \triangleq  x > 0$, $Tr(X,X') \triangleq  ((x' = x - 1 \lor x' = x - 2) \land x > 0) \lor (x < -10 \land x' = x - 1)$, $X \triangleq  \{x\}$.
+    % For $n = 2$ quantifier elimination would yield $T^2(X) = x \leq 2$.
+    % States with $x \in \{3,4\}$ can reach $Sink$ in two transitions but are 
     % not guaranteed to do so, so they are not included in $T^2$.
-    % States with $v \in \{1,2\}$ terminate in 1 or 2 transitions.
-    Consider $TS = \tuple{Init, Tr, X}$ with $Init \triangleq  v > 0$, $Tr(X,X') \triangleq  ((v' = v - 1 \lor v' = v - 2) \land v > 0) \lor (v < -10 \land v' = v - 1)$, $X \triangleq  \{v\}$.
-    In this TS, sink states can be encoded as $Sink(X) \triangleq v \leq 0 \land v \geq -10$.
-    For $n = 2$ quantifier elimination would yield $NT^2(X) = v > 2$.
-    States with $v \in \{3,4\}$ can reach $Sink$ in two transitions, but not necessarily.
+    % States with $x \in \{1,2\}$ terminate in 1 or 2 transitions.
+    Consider $TS = \tuple{Init, Tr, X}$ with $Init \triangleq  x > 0$, $Tr(X,X') \triangleq  ((x' = x - 1 \lor x' = x - 2) \land x > 0) \lor (x < -10 \land x' = x - 1)$, $X \triangleq  \{x\}$.
+    In this TS, sink states can be encoded as $Sink(X) \triangleq x \leq 0 \land x \geq -10$.
+    For $n = 2$ quantifier elimination would yield $NT^2(X) = x > 2$.
+    States with $x \in \{3,4\}$ can reach $Sink$ in two transitions, but not necessarily.
     Therefore these states are included in $NT^2$.
 \end{example}
 
@@ -171,14 +171,14 @@ which $TrInv$ is not a transition invariant.
 % example has an issue!
 \begin{example}~\label{Ex:C}
     Continuing Example~\ref{Ex:Tn}, suppose the procedure constructs 
-    $TrInv \triangleq v' < v \land v' \geq 0$. Quantifier elimination then
-    yields $C(X) \equiv v > 0$.
+    $TrInv \triangleq x' < x \land x' \geq 0$. Quantifier elimination then
+    yields $C(X) \equiv x > 0$.
 \end{example}
 
 \emph{Note.} If $\lnot C(X)$ is not reachable, then $TrInv(X,X')$ is a disjunctively well-founded
 transition invariant over all reachable states, and witnesses the termination of transition system.
 For illustration, transition invariant in the Example~\ref{Ex:C} is sufficient to prove termination, 
-since $\lnot C(X) \triangleq v < 0$ is the sink states, and for all other states $TrInv$ is a valid
+since $\lnot C(X) \triangleq x \leq 0$ is the sink states, and for all other states $TrInv$ is a valid
 transition invariant.
 
 \begin{lemma}\label{Lem:Term}
@@ -320,19 +320,19 @@ Otherwise, the algorithm returns UNKNOWN as the analysis is inconclusive.
 
 \begin{example}
     Consider $TS$ from Example~\ref{Ex:Tn} with 
-    $Init \triangleq v > 0$, 
-    $Tr \triangleq \bigl((v'=v-1 \lor v'=v-2) \land v>0\bigr) 
-    \lor \bigl(v<-10 \land v'=v-1\bigr)$, $X \triangleq \{v\}$.
+    $Init \triangleq x > 0$, 
+    $Tr \triangleq \bigl((x'=x-1 \lor x'=x-2) \land x>0\bigr) 
+    \lor \bigl(x<-10 \land x'=x-1\bigr)$, $X \triangleq \{x\}$.
 
     Preprocessing computes 
-    $Sink \equiv v \leq 0 \land v \geq -10$.
+    $Sink \equiv x \leq 0 \land x \geq -10$.
     Then, the algorithm is called with $P=\tuple{Init, Tr, Sink, X}$.
 
     %
 
     The safety check detects a trace $Tr^1$ reaching $Sink$. 
-    \trInvSynthesis produces a transition invariant candidate $TInv(X,X') \triangleq v' < v \land v' \geq 0$ and the formula $C(X) = v > 0$.
-    The safety check for $\tuple{Init, Tr, \lnot (C(X) \lor Sink(X)), v}$ returns SAFE, and algorithm concludes that the transition system is terminating.
+    \trInvSynthesis produces a transition invariant candidate $TInv(X,X') \triangleq x' < x \land x' \geq 0$ and the formula $C(X) = x > 0$.
+    The safety check for $\tuple{Init, Tr, \lnot (C(X) \lor Sink(X)), x}$ returns SAFE, and algorithm concludes that the transition system is terminating.
 \end{example}
 
 
@@ -376,39 +376,39 @@ and then we prove the correctness of the nontermination.
 
 \begin{example}\label{Ex:Motivation}
     Consider a transition system $TS = \tuple{Init, Tr, X}$ with 
-    $X = \{v, u\}$, where $v, u$ are integer variables, $Init(X)   \triangleq u < 10 \land v > 0 $, and
-    $Tr(X, X') \triangleq ((v' = v - 1 \land u' = u ) \lor (v' = v + 1 \land u' = u + 1 \land u < 10)) \land v > 0$.
+    $X = \{x, u\}$, where $x, u$ are integer variables, $Init(X)   \triangleq u < 10 \land x > 0 $, and
+    $Tr(X, X') \triangleq ((x' = x - 1 \land u' = u ) \lor (x' = x + 1 \land u' = u + 1 \land u < 10)) \land x > 0$.
 
 
-    Intuitively, at each step the system either decrements $v$ (and keeps $u$ unchanged), or increments both $v$ and $u$ 
+    Intuitively, at each step the system either decrements $x$ (and keeps $u$ unchanged), or increments both $x$ and $u$ 
     provided $u < 10$. 
-    Once $u = 10$, only the decrementing branch is available, and $v$ decreases monotonically to zero. 
+    Once $u = 10$, only the decrementing branch is available, and $x$ decreases monotonically to zero. 
     Hence $TS$ is terminating.
-    The sink states are $Sink(X) \triangleq v \leq 0$.
+    The sink states are $Sink(X) \triangleq x \leq 0$.
     The initial safety problem is $P = \tuple{Init, Tr, Sink, X}$.
 
     \textit{Iteration 1.} $safetyCheck(P)$ returns UNSAFE with a trace $Tr^1(X^{(0)}, 
     X^{(1)})$: a sink state is reachable in one transition via the 
-    decrement when $v = 1$.
+    decrement when $x = 1$.
     \trInvSynthesis\ constructs transition invariant:
-    $TInv(X, X') \;\triangleq\; v' < v \land v > 0$. 
+    $TInv(X, X') \;\triangleq\; x' < x \land x > 0$. 
     The coverage formula is then computed as: $C(X) \;\triangleq\; u = 10$.
     The safety check for $\tuple{Init, Tr, \lnot C, X}$ returns UNSAFE, since states 
     with $u < 10$ are reachable from $Init$. 
     The algorithm therefore calls \blockTerm, blocking the sink-reaching 
     transition:
-    $$Tr(X, X') \;\gets\; Tr(X, X') \land v' > 0 .$$
+    $$Tr(X, X') \;\gets\; Tr(X, X') \land x' > 0 .$$
 
     \textit{Iteration 2.} $safetyCheck(P)$ returns SAFE with inductive invariant 
-    $Inv(X) \equiv v > 0$. 
-    Since $v = 1 \land u = 10$ has no  outgoing transition under the refined $Tr'$ (the decrementing 
-    branch would produce $v' = 0$, which is now blocked), $Inv$ is not a recurrent set. 
+    $Inv(X) \equiv x > 0$. 
+    Since $x = 1 \land u = 10$ has no  outgoing transition under the refined $Tr'$ (the decrementing 
+    branch would produce $x' = 0$, which is now blocked), $Inv$ is not a recurrent set. 
     Algorithm~\ref{Alg:SNA_Term} returns \textsc{Unknown}.
 
     \textbf{The limitation.} The root cause why algorithm cannot prove termination is that $TInv$ does 
     not cover states with $u < 10$. 
     It captures why the system terminates when $u = 10$, but not the global argument: $u$ 
-    grows until at most $u = 10$, after which $v$ decreases monotonically. 
+    grows until at most $u = 10$, after which $x$ decreases monotonically. 
     A complete termination proof requires a \emph{second} disjunct covering the $u < 10$ region.
     Below, we propose an extension which would allow to concentrate on the state space
     which is not covered by transition invariant.
