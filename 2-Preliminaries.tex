@@ -90,7 +90,7 @@ This approach is described below.
     \label{fig:SNA}
 \end{figure}
 
-The Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis (SNA) takes a safety problem $P = \tuple{Init, Tr, Sink, X}$, where $Sink(X) = QE(\exists X'. \lnot Tr(X,X'))$.
+Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis (SNA) takes a safety problem $P = \tuple{Init, Tr, Sink, X}$, where $Sink(X) = QE(\exists X'. \lnot Tr(X,X'))$.
 As an output, it returns NONTERM if the system is nonterminating, and UNKNOWN, if the algorithm cannot conclude the analysis. 
 Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nontermination.
 
