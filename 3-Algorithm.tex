@@ -77,7 +77,7 @@ transitions, is defined by the following property:
 % $NT^n(X)$ encodes all states guaranteed to reach a sink state within $n$ 
 % transitions, is defined by the following property:
 
-$$NT^n(X^{(0)}) \rightarrow \exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \lnot Sink(X^{(n)})$$
+$$NT^n(X^{(0)}) \leftrightarrow \exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \lnot Sink(X^{(n)})$$
 
 $NT^n$ is constructed with quantifier elimination, eliminating all variables from the formula except for $X^{(0)}$.
 Construction of $NT^{(n)}$ enables the overapproximation of the trace. 
