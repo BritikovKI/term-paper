@@ -10,19 +10,18 @@ programs.
 Modern techniques treat termination and nontermination as separate 
 problems, since each has a different proof procedure.
 State-of-the-art termination techniques centre around the synthesis of 
-ranking functions for the transition relation~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19}.
+ranking functions for the transition relation~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/UrbanGK16}.
 The existence of a ranking function witnesses termination by providing a measure that strictly decreases along every 
 execution.
-Alternative approaches are based on the computability of closed forms~\cite{DBLP:conf/sas/FrohnHG20,DBLP:journals/fmsd/HarkFG25}, 
-fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23}, and the synthesis of disjunctively well-founded 
+Alternative approaches are based on the fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23}, and the synthesis of disjunctively well-founded 
 transition invariants~\cite{Transition-Invariants-Revisited-CAV26,DBLP:conf/pldi/CookPR06,DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
-Nontermination analysis techniques are mostly based on the detection of recurrent 
+Nontermination analysis techniques are mostly centered around the detection of recurrent 
 sets — sets of states from which execution cannot escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14,DBLP:journals/entcs/BiereAS02}.
-There also exist alternative nontermination approaches based on Hoare-style reasoning~\cite{DBLP:conf/pldi/LeQC15}, safety proving~\cite{DBLP:conf/tacas/ChenCFNO14,DBLP:journals/entcs/BiereAS02,DBLP:conf/tacas/UrbanGK16}, or representing infinite runs as sums of geometric series~\cite{DBLP:conf/tacas/LeikeH18}.
+There also exist alternative nontermination approaches based on Hoare-style reasoning~\cite{DBLP:conf/pldi/LeQC15}, safety proving~\cite{DBLP:conf/tacas/ChenCFNO14,DBLP:journals/entcs/BiereAS02}, or representing infinite runs as sums of geometric series~\cite{DBLP:conf/tacas/LeikeH18}.
 
 
 In this work, we present a unified framework that is capable of proving both termination and nontermination.
-This technique is constructed by extending and optimizing the safety-based nontermination 
+This technique is constructed by extending the safety-based nontermination 
 analysis~\cite{DBLP:conf/tacas/ChenCFNO14} (SNA), allowing it to additionally prove termination.
 Implemented termination analysis is based on a new interpolation-based method for generation of
 disjunctively well-founded transition invariants, which utilises the intermediate results

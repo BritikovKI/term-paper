@@ -5,29 +5,32 @@
 Termination and nontermination analysis are very active areas of research. We will discuss techniques,
 related to Interpolation-based Termination Analysis below.
 
-\textbf{Termination.} There exist many different techniques for the termination analysis of software.
-One of the most researched and applied techniques iss the synthesis of the ranking functions~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19}. 
-State of the art techniques are centered on the construction of multiphase or lexicographic ranking functions.
-These complex techniques significantly broaden the class of programs that ranking functions can handle.
-However, since they reason on the original transitions, the complexity of original system can make construction of ranking 
-function significantly more difficult.
-
-Another techniques, which allows to efficiently prove termination are fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23} and 
-the computation of closed forms~\cite{DBLP:conf/sas/FrohnHG20,DBLP:journals/fmsd/HarkFG25}.
-
-There also exists another set of techniques that are based on the construction of well-founded transition
-invariants~\cite{DBLP:conf/pldi/CookPR06,DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
-These approaches overapproximate the behaviour of the transition system, simplifying the termination proof.
-The core problem of these approaches is the synthesis of transition invariant. \konst{Think and rewrite}
-Most of transition invariant-based techniques are based on the synthesis of transition invariants via template synthesis, 
-which is not guided by the termination conditions and can often diverge and sometimes even connot produce a descriptive
-invariant.
-
 \textbf{Nontermination.} Nontermination analysis is typically centered around the construction of recurrent sets — sets of states from which execution cannot 
 escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14}.
 These techniques can vary from the template-based synthesis to the safety-check based recurrent set construction.
-Another set of techniques are based on the safety-based termination analysis~\cite{DBLP:journals/entcs/BiereAS02,DBLP:conf/tacas/UrbanGK16},
-that allow to use safety provers for the proof of nontermination. 
-An alternative family of techniques detects nontermination by identifying 
-lasso-shaped execution, finite paths leading to an infinite loop~\cite{DBLP:journals/entcs/BiereAS02,DBLP:conf/tacas/LeikeH18}.
+Another traditional approach is safety-based nontermination analysis~\cite{DBLP:journals/entcs/BiereAS02},
+that detects nontermination if the same state is reachable within TS more then ones - detecting a lasso.
+Newly introduced nontermination technique is the construction of geometric nontermination argument~\cite{DBLP:conf/tacas/LeikeH18} -
+a finite representation of an infinite execution that via a sum of geometric series.
+
+\textbf{Termination.} There exist many different techniques for the termination analysis of software.
+One of the most researched and applied techniques is the synthesis of the ranking function~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/UrbanGK16}. 
+State of the art techniques are centered on the construction of multiphase or lexicographic ranking functions.
+These complex techniques significantly broaden the class of programs for which the termination can be proven.
+However, the complexity of transition system can make construction of ranking function difficult.
+Other technique, which allows to efficiently prove termination are fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23}, which
+relies on the reduction of termination/nontermination problems into first order fixpoint formula and checking its validity.
+
+There also exists another set of techniques that are based on the construction of well-founded transition
+invariants~\cite{TDBLP:conf/lics/PodelskiR04,DBLP:conf/sas/CookPR05,DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
+These approaches overapproximate the behaviour of the transition system, simplifying the termination proof.
+The core problem of these approaches is the generation of transition invariant.
+Listed techniques rely either on the template-based generation or on the direct generation of ranking relation based on a particular trace
+in the transition system.
+In contrast, we propose to do the guided generation of transition invariants, based on the terminating traces and the actual 
+termination conditions.
+Additionally, our technique is combined with a nontermination approach, increasing the efficiency of both techniques.
+
+
+
 

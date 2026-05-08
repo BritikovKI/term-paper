@@ -30,7 +30,7 @@ $$Init(X^{(0)}) \land Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land Bad(X^{(n)})$$
 
 \textit{Nontermination:}
 A transition system is called \textbf{nonterminating} if there exists an initial state, from which it is possible to take any number of transitions:
-$$\exists X. Init(X) \land \forall n \in \mathbb{N}.  \exists \dots, X^{(n)}. Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
+$$\exists X. Init(X) \land \forall n \in \mathbb{N}.  \exists X^{(0)}, \dots, X^{(n)}. Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
 
 \begin{definition}[Recurrent Set]
     For a Transition System $\tuple{ Init, Tr, X }$, a formula $N(X)$ is a recurrent set if: (1) $\forall X. N(X) \rightarrow \exists X'. Tr(X,X') \land N(X')$,  (2) $\exists X. N(X) \land Init(X)$.

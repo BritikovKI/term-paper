@@ -77,7 +77,7 @@ transitions, is defined by the following property:
 % $NT^n(X)$ encodes all states guaranteed to reach a sink state within $n$ 
 % transitions, is defined by the following property:
 
-$$\exists X^{(0)}, \dots, X^{(n)}. Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \lnot Sink(X^{(n)})$$
+$$NT^n(X^{(0)}) \rightarrow \exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \lnot Sink(X^{(n)})$$
 
 $NT^n$ is constructed with quantifier elimination, eliminating all variables from the formula except for $X^{(0)}$.
 Construction of $NT^{(n)}$ enables the overapproximation of the trace. 
@@ -89,7 +89,7 @@ Construction of $NT^{(n)}$ enables the overapproximation of the trace.
     % not guaranteed to do so, so they are not included in $T^2$.
     % States with $x \in \{1,2\}$ terminate in 1 or 2 transitions.
     Consider $TS = \tuple{Init, Tr, X}$ with $Init \triangleq  x > 0$, $Tr(X,X') \triangleq  ((x' = x - 1 \lor x' = x - 2) \land x > 0) \lor (x < -10 \land x' = x - 1)$, $X \triangleq  \{x\}$.
-    In this TS, sink states can be encoded as $Sink(X) \triangleq x \leq 0 \land x \geq -10$.
+    In this TS, sink states are $Sink(X) \triangleq x \leq 0 \land x \geq -10$.
     For $n = 2$ quantifier elimination would yield $NT^2(X) = x > 2$.
     States with $x \in \{3,4\}$ can reach $Sink$ in two transitions, but not necessarily.
     Therefore these states are included in $NT^2$.
@@ -171,15 +171,14 @@ which $TrInv$ is not a transition invariant.
 % example has an issue!
 \begin{example}~\label{Ex:C}
     Continuing Example~\ref{Ex:Tn}, suppose the procedure constructs 
-    $TrInv \triangleq x' < x \land x' \geq 0$. Quantifier elimination then
-    yields $C(X) \equiv x > 0$.
+    $TrInv \triangleq x' < x \land x' \geq 0$. Quantifier elimination
+    at line~\ref{SNA_TrInv:TINV} then yields $C(X) \triangleq x \geq 0$.
 \end{example}
 
 \emph{Note.} If $\lnot C(X)$ is not reachable, then $TrInv(X,X')$ is a disjunctively well-founded
 transition invariant over all reachable states, and witnesses the termination of transition system.
 For illustration, transition invariant in the Example~\ref{Ex:C} is sufficient to prove termination, 
-since $\lnot C(X) \triangleq x \leq 0$ is the sink states, and for all other states $TrInv$ is a valid
-transition invariant.
+since $\lnot C(X) \triangleq x < 0$ cannot be reached within TS.
 
 \begin{lemma}\label{Lem:Term}
     Let $TS = \tuple{Init, Tr, X}$ be a transition system and let 
@@ -273,7 +272,7 @@ The overall flow is shown in Figure~\ref{fig:SNATrInv}.
         \label{SNA_Term:Safety} $\tuple{res, \phi = Tr^n\ or\ Inv} \gets safetyCheck(P)$ \\
         \eIf{$res = UNSAFE$} {
             $\tuple{TInv, C} \gets \trInvSynthesis(P, Tr^n, TInv)$ \label{SNA_Term:Synth} \\
-            $\tuple{res', \_} \gets safetyCheck(\tuple{Init, Tr, \lnot (C \lor Sink), X})$ \label{SNA_Term:CheckNc} \\
+            $\tuple{res', \_} \gets safetyCheck(\tuple{Init, Tr, \lnot C, X})$ \label{SNA_Term:CheckNc} \\
             \eIf{$res' = UNSAFE$} {
                 $P \gets \blockTerm(P, \phi)$\label{SNA_Term:BlockTerm} \\
             }
@@ -308,7 +307,6 @@ The algorithm handles two possible cases:
 \paragraph{UNSAFE.} A terminating trace $Tr^n$ exists.
 The algorithm calls 
 \trInvSynthesis\ to extend $TInv$ and compute the coverage formula $C(X)$ (line~\ref{SNA_Term:Synth}).
-\konst{Think how to include sink states to C(x), bc it does not make sense for TrInv to be valid over Sink(x).}
 Then, it checks if $\lnot (C(X) \lor Sink(X))$ is reachable from the initial states (line~\ref{SNA_Term:CheckNc}).
 If $\lnot (C(X) \lor Sink(X))$ is reachable, algorithm refines the safety problem by blocking 
 the states deterministically leading to termination via \blockTerm, and the loop continues.
@@ -325,7 +323,7 @@ Otherwise, the algorithm returns UNKNOWN as the analysis is inconclusive.
     \lor \bigl(x<-10 \land x'=x-1\bigr)$, $X \triangleq \{x\}$.
 
     Preprocessing computes 
-    $Sink \equiv x \leq 0 \land x \geq -10$.
+    $Sink \triangleq x \leq 0 \land x \geq -10$.
     Then, the algorithm is called with $P=\tuple{Init, Tr, Sink, X}$.
 
     %
@@ -400,7 +398,7 @@ and then we prove the correctness of the nontermination.
     $$Tr(X, X') \;\gets\; Tr(X, X') \land x' > 0 .$$
 
     \textit{Iteration 2.} $safetyCheck(P)$ returns SAFE with inductive invariant 
-    $Inv(X) \equiv x > 0$. 
+    $Inv(X) \triangleq x > 0$. 
     Since $x = 1 \land u = 10$ has no  outgoing transition under the refined $Tr'$ (the decrementing 
     branch would produce $x' = 0$, which is now blocked), $Inv$ is not a recurrent set. 
     Algorithm~\ref{Alg:SNA_Term} returns \textsc{Unknown}.
@@ -476,14 +474,14 @@ Otherwise, if nontermination is proven for $S_m$, then the original TS is also n
         \label{SNA_Refined:Safety} $\tuple{res, \phi = Inv\ or\ Tr^n} \gets safetyCheck(\tuple{Init', Tr', Sink', X})$ \\
         \eIf{$\tuple{res, \phi} = \tuple{UNSAFE, Tr^{n}(X^{(0)}, \dots, X^{(n)})}$} {
             $\tuple{TInv, C} \gets \trInvSynthesis(P, \phi, TInv)$ \\
-            \label{SNA_Refined:CheckNc} $\tuple{res', \_} \gets safetyCheck(\tuple{Init', Tr', \lnot C, X})$ \\
+            \label{SNA_Refined:CheckNc} $\tuple{res', \phi'} \gets safetyCheck(\tuple{Init', Tr', \lnot C, X})$ \\
             \eIf{$res' = SAFE$} {
                 \eIf {$Prs = \emptyset$} {\Return $TERM$\label{SNA_Refined:NEWTERM}}
                 {\Continue}
             }
             {
                 $Prs.push(\blockTerm(P', \phi))$ \\
-                $S_m \gets QE(\exists X^{(0)}, \dots, X^{(m-1)}, Init(X^{(0)}) \land Tr^m(X^{(0)}, \dots, X^{(m)}) \land \lnot C(X^{(m)}))$ \label{SNA_Refined:Sm}\\
+                $S_m \gets QE(\exists X^{(0)}, \dots, X^{(m-1)}, Init(X^{(0)}) \land \phi'(X^{(0)}, \dots, X^{(m)}) \land \lnot C(X^{(m)}))$ \label{SNA_Refined:Sm}\\
                 $Prs.push(\tuple{S_m, Tr', Sink', X})$\label{SNA_Refined:PushNewProblem}
             }
         }{
@@ -503,8 +501,7 @@ Otherwise, if nontermination is proven for $S_m$, then the original TS is also n
 \end{algorithm}
 
 
-Algorithm~\ref{Alg:SNA_Refined} extends Algorithm~\ref{Alg:SNA_Term} to enable more efficient termination and nontermination proving. 
-\konst{Think about algo $Tr^m$ appears from nowhere.}
+Algorithm~\ref{Alg:SNA_Refined} extends Algorithm~\ref{Alg:SNA_Term} to enable more efficient termination and nontermination proving.
 First, in addition to maintaining the transition invariant,
 the algorithm maintains a stack of safety problems to be analyzed: $Prs$ (line~\ref{SNA_Refined:Prs}).
 At each iteration, the algorithm pops a safety problem from the stack and analyzes it.
