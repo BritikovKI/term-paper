@@ -1,19 +1,44 @@
 \section{Conclusion}
 \label{Sec:Conclusion}
 
-This paper introduces Termination Analysis via Interpolation-based Synthesis of Transition Invariants.
-A novel approach for the termination analysis that extends Safety-based Nontermination Analysis technique.
-Our key insight is to use interpolation for the construction of termination witnesses,
-that allows the transition invariant to be guided by termination condition.
-Additionally, our technique is strongly centered on the interaction between termination and nontermination
-approaches, using transition invariants to limit the explored state space and using safety-based 
-nontermination to generate candidate transition invariants.
-Application of safety verifiers provides a strong background for the analysis, allowing to 
-quickly check termination and nontermination.
-We proved the soundness of the algorihtm and conducted an extensive experimental evaluation, 
-which demonstrates both the eficiency of the combination of termination and nontermination techniques,
-and the competitive  performance compared to other state-of-the-art termination analysis tools.
+% This paper introduces Interpolation-based Transition Invariant Generation for Proving and Disproving Termination.
+% A novel approach for the termination analysis that extends Safety-based Nontermination Analysis technique.
+% Our key insight is to use interpolation for the construction of termination witnesses,
+% that allows the transition invariant to be guided by termination condition.
+% Additionally, our technique is strongly centered on the interaction between termination and nontermination
+% approaches, using transition invariants to limit the explored state space and using safety-based 
+% nontermination to generate candidate transition invariants.
+% Application of safety verifiers provides a strong background for the analysis, allowing to 
+% quickly check termination and nontermination.
+% We proved the soundness of the algorihtm and conducted an extensive experimental evaluation, 
+% which demonstrates both the eficiency of the combination of termination and nontermination techniques,
+% and the competitive  performance compared to other state-of-the-art termination analysis tools.
 
-\thanks{This work was funded by SNCF grant .... We also want to express 
-gratitude to Marek Jankola and Dirk Beyer for the fruitful conversations on 
-the topic of termination.}
+This paper presents an interpolation-based approach to transition 
+invariant generation for proving and disproving termination of 
+infinite-state systems. 
+The approach extends safety-based nontermination analysis with a termination proving capability, 
+unifying the two within a single framework. 
+Our key insight is to exploit terminating traces produced by the SNA
+as a source of structural information, using Craig interpolation 
+to construct well-founded transition invariants guided by the 
+termination conditions. 
+The interaction between termination and nontermination reasoning is central to our technique: 
+transition invariants are used to focus the nontermination search 
+on non-covered states, while the SNA generates traces for invariants generation. 
+Grounding the approach in safety verification provides a robust foundation, enabling 
+efficient checking of both termination and nontermination via 
+existing safety solvers. 
+We proved the soundness of the algorithm and conducted an 
+experimental evaluation on benchmarks from the Termination 
+Competition. 
+The results demonstrate both the benefit of combining 
+termination and nontermination analysis and competitive performance 
+against state-of-the-art termination analysis tools, including the 
+unique solution of previously unsolved benchmark instances.
+
+
+
+\textbf{Acknowledgements.} This work was supported by SNSF grant No.~XXXXXX.
+We thank Marek Jankola and Dirk Beyer for fruitful discussions 
+on termination analysis.

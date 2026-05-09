@@ -4,8 +4,7 @@
 Termination analysis of infinite-state systems is a fundamental problem 
 in formal methods.
 Proving termination and nontermination over LIA is generally undecidable~\cite{DBLP:conf/cav/Braverman06}, 
-yet many practical techniques succeed on large classes of real-world 
-programs.
+yet many practical techniques succeed on a large class of real-world problems.
 
 Modern techniques treat termination and nontermination as separate 
 problems, since each has a different proof procedure.
@@ -17,32 +16,30 @@ Alternative approaches are based on the fixpoint computation~\cite{DBLP:journals
 transition invariants~\cite{Transition-Invariants-Revisited-CAV26,DBLP:conf/pldi/CookPR06,DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
 Nontermination analysis techniques are mostly centered around the detection of recurrent 
 sets — sets of states from which execution cannot escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14,DBLP:journals/entcs/BiereAS02}.
-There also exist alternative nontermination approaches based on Hoare-style reasoning~\cite{DBLP:conf/pldi/LeQC15}, safety proving~\cite{DBLP:conf/tacas/ChenCFNO14,DBLP:journals/entcs/BiereAS02}, or representing infinite runs as sums of geometric series~\cite{DBLP:conf/tacas/LeikeH18}.
+There also exist alternative nontermination approaches based on Hoare-style reasoning~\cite{DBLP:conf/pldi/LeQC15}, 
+safety proving~\cite{DBLP:conf/tacas/ChenCFNO14,DBLP:journals/entcs/BiereAS02}, or representing infinite 
+runs as sums of geometric series~\cite{DBLP:conf/tacas/LeikeH18}.
 
 
 In this work, we present a unified framework that is capable of proving both termination and nontermination.
-This technique is constructed by extending the safety-based nontermination 
-analysis~\cite{DBLP:conf/tacas/ChenCFNO14} (SNA), allowing it to additionally prove termination.
-Implemented termination analysis is based on a new interpolation-based method for generation of
-disjunctively well-founded transition invariants, which utilises the intermediate results
-of nontermination analysis.
-Proposed approach uses terminating traces constructed by SNA, overapproximating them with Craig's interpolation.
-These overapproximations are used as transition invariant candidate, which can prove termination if 
-it is a valid transition invariant over all reachable states.
-Additionally, algorithm computes states over which candidate transition invariant is not valid.
-Those states are separately analyzed for termination and nontermination, introducing smaller 
-subproblem, compared to the analysis of the whole transition system.
+This framework was built by extending the safety-based nontermination 
+analysis~\cite{DBLP:conf/tacas/ChenCFNO14} (SNA), allowing it to prove termination.
+The extension is a novel interpolation-based method for generation of
+disjunctively well-founded transition invariants for termination analysis.
+Proposed approach uses terminating transition traces constructed by SNA, overapproximating them with Craig interpolation~\cite{Craig_1957}.
+The interpolants are processed into transition invariant candidate, which os used to prove termination.
+Additionally, based on the transition invariant candidate, algorithm creates smaller
+(non)termination problems, which help to analyse the analysis of the whole transition system.
 
-
-Our new technique was implemented in Golem CHC Solver. 
-We evaluated our technique over the Integer Transition Systems benchmarks from the Termination Competition. 
-Proposed approach that combines termination and nontermination frameworks demonstrated significant 
-improvement for nontermination analysis, compared to the original SNA algorithm, 
-while also solving a large number of terminating instances.
+Our new technique was implemented in Golem Constrained Horn Clause Solver. 
+We evaluated it over the Integer Transition Systems benchmarks from the Termination Competition~\cite{DBLP:conf/cade/GieslMRTW15}. 
+Proposed approach was able to solve a large number of terminating instances and demonstrated significant improvement for 
+nontermination analysis, compared to the SNA.
 The comparison with winners of Termination Competition 2025 (KoAT, LoAT~\cite{10.1007/978-3-031-90660-2_13}, T2~\cite{DBLP:conf/tacas/BrockschmidtCIK16}) 
 demonstrated that the developed approach is competitive with the state-of-the-art tools, and is able to solve unique instances, including instances
 that were never solved in the history of Termination competition.
 
-Overall, this paper presents following contributions: (1) a new interpolation-based method for the synthesis of disjunctively well-founded transition invariants, 
-(2) a unified termination/nontermination procedure, which utilises the intermediate results of analysis for self-guidance and (3) an implementation of the described 
-procedure in Golem and evaluation of proposed approach.
+Our paper presents following contributions: (1) a novel interpolation-based method for the generation of 
+disjunctively well-founded transition invariants, (2) a unified termination/nontermination procedure, which utilises 
+the intermediate results of (non)termination analysis for self-guidance and (3) an 
+implementation and evaluation of the described procedure.

@@ -60,7 +60,7 @@ The evaluation was executed with 120 seconds timeout (increase of the timeout do
         \hline
         \snaTerm & 521 & 186 & 335 & 7 \\
         \hline
-        \snaOpt & 761 & 320 & 441 & 230 \\
+        \snaOpt & 761 & 320 & 441 & 240 \\
         \hline
     \end{tabular}
     \caption{Comparison of \snaOpt with \sna and \snaTerm.}
@@ -85,8 +85,8 @@ In answer to \textbf{RQ1}, the combination of termination and nontermination rea
 \snaOpt yields significantly improved performance across both problem classes.
 Notably, during experimentation we noticed that \snaOpt produces different outputs depending on the underlying 
 Safety Verification engine.
-For example, the most efficient results were produced using TPA \snaOpt - 755 instances solved. 
-\snaOpt with PDR solves less instances (751), however it can solve 17 benchmarks uniquely compared to the TPA.
+For example, the most efficient results were produced using TPA \snaOpt - 761 instances solved. 
+\snaOpt with PDR solves less instances (756), however it can solve 17 benchmarks uniquely compared to the TPA.
 %
 
 \begin{figure}[t!]
@@ -99,13 +99,13 @@ For example, the most efficient results were produced using TPA \snaOpt - 755 in
 Figure~\ref{fig:stateOfArtComp} shows a scatter plot comparing \snaOpt against state-of-the-art termination analysers.
 Orange squares denote nonterminating instances; blue crosses denote terminating instances.
 Points above the diagonal indicate instances where \snaOpt is faster than the competitor.
-\snaOpt is able to solve 755 benchmarks, with \Tt solving 1002, \KoAT 562, and \LoAT 525 instances.
+\snaOpt is able to solve 761 benchmarks, with \Tt solving 1002, \KoAT 562, and \LoAT 525 instances.
 As shown in Figure~\ref{fig:stateOfArtComp}, \snaOpt is competitive with state-of-the-art termination analysers.
 Among all tools, \snaOpt uniquely solves 8 instances.
 Notably, 2 of these — \texttt{juLinkedListCreateAddAll.jar-obl-11} and \texttt{juLinkedListCreateAddAllAt.jar-obl-17} — belong to the 
 19 previously unsolved instances in the Termination Competition, for which \snaOpt finds recurrent sets proving nontermination.
-In answer to \textbf{RQ2}, \snaOpt is competitive with state-of-the-art tools overall and uniquely solves instances previously unsolved in the Termination Competition, 
-demonstrating the practical value of the interpolation-based transition invariant approach.
+In answer to \textbf{RQ2}, \snaOpt is competitive with state-of-the-art tools overall and uniquely solves 
+instances previously unsolved in the Termination Competition.
 
 \begin{table}[h]
     \centering
