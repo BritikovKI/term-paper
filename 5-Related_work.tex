@@ -39,11 +39,9 @@ multiphase or lexicographic ranking
 functions~\cite{DBLP:journals/jacm/Ben-AmramG14}, which 
 significantly broaden the class of programs for which termination 
 can be proved. However, the complexity of a transition system can 
-make ranking function synthesis difficult or impossible even for 
-terminating systems, which motivates our approach.
-An alternative is fixpoint 
-computation~\cite{DBLP:journals/pacmpl/UnnoTGK23}, which reduces 
-termination and nontermination to the validity of a first-order 
+make ranking function  very difficult or impossible.
+An alternative is fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23}, 
+which reduces termination and nontermination to the validity of a first-order 
 fixpoint formula.
 
 % There exist many different techniques for the termination analysis of software.
@@ -59,8 +57,8 @@ disjunctively well-founded transition
 invariants~\cite{DBLP:conf/lics/PodelskiR04,DBLP:conf/sas/CookPR05,
 DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
 These approaches over-approximate the behaviour of the transition 
-system, reducing the termination proof to a well-foundedness check 
-on the invariant. 
+system, reducing the termination proof to a disjunctive 
+well-foundedness check on the invariant. 
 The central challenge is the generation of the 
 transition invariant itself: existing techniques rely either on 
 template-based generation or on the direct construction of a 

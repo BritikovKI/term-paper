@@ -88,8 +88,8 @@ This approach is described below.
 
 \begin{definition}[Sink states]
     For a Transition System $\tuple{ Init, Tr, X }$, a state $s$ is a sink state, if $\lnot \exists s'. Tr(s,s')$.
-    We use $Sink(X)$ to denote the formula encoding all sink states in the transition system, 
-    such that $\forall X. Sink(X) \leftrightarrow \lnot \exists X'. Tr(X,X')$
+    We use $Sink(X)$ to denote the formula encoding all sink states in the transition system:
+    $\forall X. Sink(X) \leftrightarrow \lnot \exists X'. Tr(X,X')$
 \end{definition}
 
 \begin{figure}[t]
@@ -147,7 +147,7 @@ The check at line~\ref{SNA:SAFE} is executed using quantifier elimination, check
 is unsatisfiable:
 $$\exists X. \phi(X) \land \lnot QE(\exists X'. Tr(X,X')).$$
 If $Inv(X)$ is a recurrent set, then the transition system is nonterminating.
-Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
+Otherwise, algorithm returns UNKNOWN.
 
 \begin{algorithm}
     \SetInd{0.5em}{0.5em}
@@ -182,15 +182,16 @@ Otherwise, algorithm returns UNKNOWN, as the analysis is inconclusive.
     % }
 \end{algorithm}
 
-The $\blockTerm$ procedure takes as input a safety problem $P$ and a trace formula $Tr^{n}(X^{(0)}, \dots, X^{(n)})$ such that $Init(X) \land Tr^{n}(X, \dots, X') \land Sink(X')$ is satisfiable.
+The $\blockTerm$ procedure takes as input a safety problem $P$ and a trace formula $Tr^{n}(X^{(0)}, \dots, X^{(n)})$ such 
+that $Init(X^{(0)}) \land Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land Sink(X^{(n)})$ is satisfiable.
 The algorithm iteratively analyses the transition trace starting from the last transition. 
 % It checks if it is possible to take a transition that does not lead to the sink states, starting from the end of the trace.
 Algorithm~\ref{Alg:SNABlock} constructs states that are reachable after $i$ and $i+1$ transitions from the initial states using quantifier 
-elimination at the lines~\ref{SNA:Si1},~\ref{SNA:Si}.
-Then, at line~\ref{SNA:BLOCK} checks if $S_i(X) \land Tr(X,X') \land \lnot S_{i+1}(X')$ is satisfiable, sending a query to the SMT solver.
-This query is needed to check if it is possible to reach some state does not necessarily leads to the sink states.
+elimination at lines~\ref{SNA:Si1},~\ref{SNA:Si}.
+Then, at line~\ref{SNA:BLOCK} it checks if $S_i(X) \land Tr(X,X') \land \lnot S_{i+1}(X')$ is satisfiable, sending a query to the SMT solver.
+This query checks if it is possible to reach some state that does not necessarily lead to the sink states.
 If it is possible, then the algorithm blocks the states that deterministically lead to the sink states at line~\ref{SNA:TRBLOCK}.
-Otherwise, if the trace is deterministic, \blockTerm blocks the subset of initial states that leads to sink (line ~\ref{SNA:BLOCKINIT}).
+Otherwise, if the trace is deterministic, \blockTerm blocks the subset of initial states that leads to sink (line~\ref{SNA:BLOCKINIT}).
 
 
 \begin{lemma}\label{Lem:NONTERM}
@@ -202,11 +203,10 @@ Otherwise, if the trace is deterministic, \blockTerm blocks the subset of initia
     $Tr(X, X') \triangleq (x' = x - 1 \lor x' = x - 2) \land x \neq 0$.
     The sink states are $Sink(x) \triangleq v = 0$, and the initial 
     safety problem is $P = \tuple{Init, Tr, Sink, x}$.
-    This transition system is nonterminating, since $x$ can decrease 
-    indefinitely through negative values.
+    This TS is nonterminating, since $x$ can infinitely decrease.
 
     The execution of Algorithm~\ref{Alg:SNA} updates initial states
-    and transition in two iterations of the algorithm, using \blockTerm\: 
+    and transition in two iterations of the algorithm, via \blockTerm\: 
     $Init(X) \;\gets\; x \neq 0$, and  $Tr(X, X') \;\gets\; Tr(X, X') \land x' \neq 0$.
     The safety check of the updated problem concludes SAFE,
     with $Inv(X) \triangleq x \neq 0$. 
@@ -219,13 +219,13 @@ Otherwise, if the trace is deterministic, \blockTerm blocks the subset of initia
     However, Algorithm~\ref{Alg:SNA} cannot detect termination by design, and 
     it would return $UNKNOWN$. 
 
-    Let us examin the execution of Algorithm~\ref{Alg:SNA} on this example.
-    First, using \blockTerm it blocks initial states that lead to instant termination:
+    Let us examine the execution of Algorithm~\ref{Alg:SNA} on this example.
+    First, using \blockTerm it blocks initial states that instantly terminate:
     $Init(X) \;\gets\; x > 0$.
     In the second iteration, $safetyCheck(P)$ returns UNSAFE with a 
     trace $Tr^1(X^{(0)}, X^{(1)})$, detecting that $\exists X^{(0)}, X^{(1)}. 
     Init(X^{(0)}) \land Tr^1(X^{(0)}, X^{(1)}) \land \lnot Sink(X^{(1)})$.
-    Our key insight is to generalise such traces into a formula describing an 
+    Our key insight is to generalise such traces into a formula, describing an 
     entire class of terminating behaviours. 
     If this generalisation yields a disjunctively well-founded 
     transition invariant over all reachable states, it witnesses 
