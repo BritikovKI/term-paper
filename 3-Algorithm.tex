@@ -74,11 +74,11 @@ It proceeds in the following steps:
 
 \textbf{Step 1}: \textit{Computing $NT^n$ (line~\ref{SNA_TrInv:T}).} 
 $NT^n(X)$ encodes all states that do not necessarily terminate in $n$ 
-transitions. It is defined by the following property:
+transitions. It is defined by the following property: $NT^n(X^{(0)}) \leftrightarrow $
 % $NT^n(X)$ encodes all states guaranteed to reach a sink state within $n$ 
 % transitions, is defined by the following property:
 
-$$NT^n(X^{(0)}) \leftrightarrow \exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \lnot Sink(X^{(n)})$$
+$$\exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \lnot Sink(X^{(n)})$$
 
 $NT^n$ is constructed with quantifier elimination, eliminating all variables from the formula except for $X^{(0)}$.
 Construction of $NT^{(n)}$ enables the overapproximation of the trace. 
