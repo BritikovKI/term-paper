@@ -29,7 +29,9 @@ disjunctively well-founded transition invariants for termination analysis.
 Proposed approach uses terminating transition traces constructed by SNA, overapproximating them with Craig interpolation~\cite{Craig_1957}.
 The interpolants are processed into transition invariant candidate, which os used to prove termination.
 Additionally, based on the transition invariant candidate, algorithm creates smaller
-(non)termination problems, which aids the analysis of the whole transition system.
+(non)termination problems, which guides the analysis of the whole transition system.
+Solving these problems helps to construct transition invariant candidate, and
+allows to efficiently prove nontermination of more complex problems.
 
 Our new technique was implemented in Golem Constrained Horn Clause Solver. 
 We evaluated it over the Integer Transition Systems benchmarks from the Termination Competition~\cite{DBLP:conf/cade/GieslMRTW15}. 
