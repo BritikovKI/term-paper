@@ -1,12 +1,11 @@
 \section{Related Work}
 \label{Sec:Related}
 Termination and nontermination analysis are active areas of research. 
-Below we discuss techniques most closely related to our 
-interpolation-based termination analysis.
+Below we discuss the techniques most closely related to our approach.
 
 
 \textbf{Nontermination.} 
-Nontermination analysis is typically centred around the construction 
+Nontermination analysis is typically centred on the construction 
 of recurrent sets — sets of states from which execution cannot 
 escape~\cite{DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,
 DBLP:conf/tacas/ChenCFNO14,DBLP:conf/foveoos/BrockschmidtSOG11,
@@ -16,10 +15,13 @@ safety-check-based recurrent set construction, the latter of which
 our approach directly extends~\cite{DBLP:conf/tacas/ChenCFNO14}.
 An alternative approach detects nontermination by identifying 
 lasso-shaped executions — finite paths leading to a cycle — via 
-bounded model checking~\cite{DBLP:conf/popl/GuptaHMRX08}.
+bounded model checking~\cite{DBLP:journals/entcs/BiereAS02}.
 Leike and Heizmann~\cite{DBLP:conf/tacas/LeikeH18} propose 
 geometric nontermination witnesses: finite representations of 
 infinite executions via sums of geometric series.
+Compared to the approaches above, our technique is integrated with termination 
+analysis within a unified framework, so that intermediate results from each analysis 
+guide the other.
 % Nontermination analysis is typically centered around the construction of recurrent sets — sets of states from which execution cannot 
 % escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14}.
 % These techniques can vary from the template-based synthesis to the safety-check based recurrent set construction.
@@ -39,19 +41,10 @@ multiphase or lexicographic ranking
 functions~\cite{DBLP:journals/jacm/Ben-AmramG14}, which 
 significantly broaden the class of programs for which termination 
 can be proved. However, the complexity of a transition system can 
-make ranking function  very difficult or impossible.
+make ranking function synthesis infeasible.
 An alternative is fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23}, 
 which reduces termination and nontermination to the validity of a first-order 
 fixpoint formula.
-
-% There exist many different techniques for the termination analysis of software.
-% One of the most researched and applied techniques is the synthesis of the ranking function~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/UrbanGK16}. 
-% State of the art techniques are centered on the construction of multiphase or lexicographic ranking functions.
-% These complex techniques significantly broaden the class of programs for which the termination can be proven.
-% However, the complexity of transition system can make construction of ranking function difficult.
-% Other technique, which allows to efficiently prove termination is a fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23}, which
-% relies on the reduction of termination/nontermination problems into first order fixpoint formula and checking its validity.
-
 Another family of techniques proves termination via 
 disjunctively well-founded transition 
 invariants~\cite{DBLP:conf/lics/PodelskiR04,DBLP:conf/sas/CookPR05,
@@ -67,9 +60,7 @@ In contrast, our approach
 uses Craig interpolation to guide transition invariant synthesis 
 with respect to the actual termination conditions, producing 
 property-directed invariants from terminating traces. 
-Furthermore, our technique is integrated with nontermination analysis within a 
-unified framework, so that intermediate results from each analysis 
-guide the other.
+
 
 
 % There also exists another set of techniques that are based on the construction of well-founded transition
