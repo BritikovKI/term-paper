@@ -199,7 +199,7 @@ Otherwise, \blockTerm blocks the subset of initial states that deterministically
 
 
 \begin{lemma}\label{Lem:NONTERM}
-    If Algorithm~\ref{Alg:SNA} returns NONTERM, then the transition system is nonterminating, cf.~\cite{DBLP:conf/tacas/ChenCFNO14}.
+    If Algorithm~\ref{Alg:SNA} returns \NONTERM, then the transition system is nonterminating, cf.~\cite{DBLP:conf/tacas/ChenCFNO14}.
 \end{lemma}
 \begin{example}\label{Ex:SNA}
     Consider a transition system $TS = \tuple{Init, Tr, X}$ with 
@@ -214,7 +214,7 @@ Otherwise, \blockTerm blocks the subset of initial states that deterministically
     $Init(X) \;\gets\; x \neq 0$, and  $Tr(X, X') \;\gets\; Tr(X, X') \land x' \neq 0$.
     The safety check of the updated problem concludes SAFE,
     with $Inv(X) \triangleq x \neq 0$. 
-    $Inv(X)$ is a recurrent set, and algorithm returns \textsc{NONTERM}.
+    $Inv(X)$ is a recurrent set, and algorithm returns \NONTERM.
 
     \textit{Motivation for transition invariant-based termination analysis.} Consider a 
     small modification (replacing $x\neq0$ with $x>0$): $Tr(X, X') \triangleq 
