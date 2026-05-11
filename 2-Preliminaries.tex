@@ -26,7 +26,7 @@ states that violate the safety property.
 Safety verification amounts to determining whether there exists a transition trace that reaches a $Bad$ state from the initial states.
 If TS is safe, then there exists an inductive invariant $Inv(X)$ such that (1) $\forall X. Init(X) \rightarrow Inv(X)$, 
 (2) $\forall X, X'. Inv(X) \land Tr(X,X') \rightarrow Inv(X')$, and (3) $\forall X. Inv(X) \rightarrow \lnot Bad(X)$.
-We use \textsc{SafetyCheck}$(P)$ to denote a safety verification procedure that returns a tuple $\tuple{SAFE, Inv(X)}$ if 
+We use \safetyCheck$(P)$ to denote a safety verification procedure that returns a tuple $\tuple{SAFE, Inv(X)}$ if 
 TS is safe ($Inv(X)$ is inductive invariant).
 % Otherwise, if TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, such that: 
 If TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, where $\exists X^{(0)}, \dots, X^{(n)}.$
@@ -123,7 +123,7 @@ Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nontermination.
     % \SetKwProg{Fn}{Function}{:}{}
     % \nonl\Fn{\FAnalyze{$P$}}{
         \While{$\top$}{
-            $\tuple{\res,\phi = Tr^{n}\ or \Inv} \gets \textsc{SafetyCheck}(P)$\\
+            $\tuple{\res,\phi = Tr^{n}\ or \Inv} \gets \safetyCheck(P)$\\
             \label{SNA:UNSAFE}\eIf{$\res = \UNSAFE$} {
                 $P \gets \blockTerm(P, \phi)$ \label{SNA:BLOCKTERM}
             }
@@ -226,7 +226,7 @@ Otherwise, \blockTerm blocks the subset of initial states that deterministically
     Let us examine the execution of Algorithm~\ref{Alg:SNA} on this example.
     First, using \blockTerm, it blocks initial states that instantly terminate:
     $Init(X) \;\gets\; x > 0$.
-    In the second iteration, \textsc{SafetyCheck}$(P)$ returns UNSAFE with a 
+    In the second iteration, \safetyCheck$(P)$ returns UNSAFE with a 
     trace $Tr^1(X^{(0)}, X^{(1)})$, detecting that $\exists X^{(0)}, X^{(1)}. 
     Init(X^{(0)}) \land Tr^1(X^{(0)}, X^{(1)}) \land \Sink(X^{(1)})$.
     Our key insight is to generalise such traces into a formula, describing an 

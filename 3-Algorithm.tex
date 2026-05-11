@@ -24,7 +24,7 @@ can be reached within $n$ transitions.
 $NT^n$ is used to construct the interpolant. 
 The negation of $NT^n$ defines the states from which $Sink$ is guaranteed to be reached in at most $n$ transitions; 
 (2) constructing an over-approximation of the terminating trace via interpolation. 
-The usage of sink states allows the interpolant to capture the reason for termination. 
+The usage of sink states allows the interpolant to capture the reason for termination;
 (3) converting the interpolant into an underapproximating DNF formula.
 This allows to efficiently synthesise ranking functions for separate disjuncts; 
 (4) filtering disjuncts to retain only those encoding well-founded relations, constructing a candidate transition invariant.
@@ -274,10 +274,10 @@ The overall flow is shown in Figure~\ref{fig:SNATrInv}.
     \Data{$\TrInv$ - formula that encodes transition invariant}
     $\TrInv \gets \bot$ \\
     \While{$\top$} {
-        \label{SNA_Term:Safety} $\tuple{\res, \phi = Tr^n\ or\ Inv} \gets safetyCheck(P)$ \\
+        \label{SNA_Term:Safety} $\tuple{\res, \phi = Tr^n\ or\ Inv} \gets \safetyCheck(P)$ \\
         \eIf{$\res = \UNSAFE$} {
             $\tuple{\TrInv, C} \gets \trInvSynthesis(P, Tr^n, \TrInv)$ \label{SNA_Term:Synth} \\
-            $\tuple{\res', \_} \gets safetyCheck(\tuple{Init, Tr, \lnot C, X})$ \label{SNA_Term:CheckNc} \\
+            $\tuple{\res', \_} \gets \safetyCheck(\tuple{Init, Tr, \lnot C, X})$ \label{SNA_Term:CheckNc} \\
             \eIf{$\res' = \UNSAFE$} {
                 $P \gets \blockTerm(P, \phi)$\label{SNA_Term:BlockTerm} \\
             }
@@ -352,7 +352,7 @@ Otherwise, the algorithm returns \UNKNOWN as the analysis is inconclusive.
     \blockTerm, then blocks the states that are guaranteed to reach sink:
     $Tr(X, X') \;\gets\; Tr(X, X') \land x' > 0$.
 
-    Algorithm repeats $safetyCheck(P)$, which returns \SAFE with inductive invariant 
+    Algorithm repeats $\safetyCheck(P)$, which returns \SAFE with inductive invariant 
     $Inv(X) \triangleq x > 0$. 
     However, $Inv$ is not a recurrent set, so Algorithm~\ref{Alg:SNA_Term} returns \textsc{Unknown}.
 
@@ -461,10 +461,10 @@ If nontermination is proven for $S_m$, then the original TS is also nonterminati
     $\Prs \gets [P]$ \label{SNA_Refined:Prs} \\
     \While{$\top$} {
         \label{SNA_Refined:Extension} $P'(\tuple{Init, Tr, Sink, X}) \gets \Prs.pop()$ \\
-        \label{SNA_Refined:Safety} $\tuple{\res, \phi} \gets safetyCheck(\tuple{Init, Tr, Sink, X})$ \\
+        \label{SNA_Refined:Safety} $\tuple{\res, \phi} \gets \safetyCheck(\tuple{Init, Tr, Sink, X})$ \\
         \eIf{$\res' = \UNSAFE$} {
             $\tuple{\TrInv, C} \gets \trInvSynthesis(P', \phi, \TrInv)$ \\
-            \label{SNA_Refined:CheckNc} $\tuple{\res', \phi'} \gets safetyCheck(\tuple{Init, Tr, \lnot C, X})$ \\
+            \label{SNA_Refined:CheckNc} $\tuple{\res', \phi'} \gets \safetyCheck(\tuple{Init, Tr, \lnot C, X})$ \\
             \eIf{$\tuple{\res', \phi'} = \tuple{\UNSAFE, Tr^{m}}$} 
             {
                 $\Prs.push(\blockTerm(P', \phi))$ \label{SNA_Refined:BlockTerm}\\
