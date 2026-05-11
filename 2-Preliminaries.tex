@@ -26,7 +26,7 @@ states that violate the safety property.
 Safety verification amounts to determining whether there exists a transition trace that reaches a $Bad$ state from the initial states.
 If TS is safe, then there exists an inductive invariant $Inv(X)$ such that (1) $\forall X. Init(X) \rightarrow Inv(X)$, 
 (2) $\forall X, X'. Inv(X) \land Tr(X,X') \rightarrow Inv(X')$, and (3) $\forall X. Inv(X) \rightarrow \lnot Bad(X)$.
-We use $safetyCheck(P)$ to denote a safety verification procedure that returns a tuple $\tuple{SAFE, Inv(X)}$ if 
+We use \textsc{SafetyCheck}$(P)$ to denote a safety verification procedure that returns a tuple $\tuple{SAFE, Inv(X)}$ if 
 TS is safe ($Inv(X)$ is inductive invariant).
 % Otherwise, if TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, such that: 
 If TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, where $\exists X^{(0)}, \dots, X^{(n)}.$
@@ -56,7 +56,7 @@ $$\exists n \in \mathbb{N}. \lnot \exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X, X^{
 % Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, mapping states to a well-founded domain, such that its value strictly decreases along every transition.
 
 \begin{definition}[Transition invariant]
-    For a Transition System $\tuple{ Init, Tr, X }$, $TrInv(X,X')$ is a transition invariant if: $\forall X,X'. R(X) \land Tr^+(X,X') \rightarrow TrInv(X,X')$, where $Tr^+(X,X')$ is the transitive closure of $Tr(X,X')$
+    For a Transition System $\tuple{ Init, Tr, X }$, $\TrInv(X,X')$ is a transition invariant if: $\forall X,X'. R(X) \land Tr^+(X,X') \rightarrow \TrInv(X,X')$, where $Tr^+(X,X')$ is the transitive closure of $Tr(X,X')$
     and $R(X)$ is a formula encoding all states reachable in TS.
 \end{definition}
 
@@ -90,9 +90,9 @@ recurrent sets via inductive invariants~\cite{DBLP:conf/tacas/ChenCFNO14}.
 It was introduced in the context of proving nontermination of programs with loops, and can be extended for the Transition Systems.
 
 \begin{definition}[Sink states]
-    For a Transition System $\tuple{ Init, Tr, X }$, a state $s$ is a sink state, if $\lnot \exists s'. Tr(s,s')$.
-    We use $Sink(X)$ to denote the formula encoding all sink states in the transition system:
-    $\forall X. Sink(X) \leftrightarrow \lnot \exists X'. Tr(X,X')$
+    For a Transition System $\tuple{Init, Tr, X }$, a state $s$ is a sink state, if $\lnot \exists s'. Tr(s,s')$.
+    We use $\Sink(X)$ to denote the formula encoding all sink states in the transition system:
+    $\forall X. \Sink(X) \leftrightarrow \lnot \exists X'. Tr(X,X')$
 \end{definition}
 
 \begin{figure}[t]
@@ -103,9 +103,9 @@ It was introduced in the context of proving nontermination of programs with loop
 \end{figure}
 
 Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis (SNA) takes a 
-safety problem $P = \tuple{Init, Tr, Sink, X}$, where sink states are constructed from TS using
-quantifier elimination, $Sink(X) = QE(\exists X'. \lnot Tr(X,X'))$.
-As an output, it returns NONTERM if the system is nonterminating, and UNKNOWN, if the algorithm cannot conclude the analysis. 
+safety problem $P = \tuple{Init, Tr, \Sink, X}$, where sink states are constructed from TS using
+quantifier elimination, $\Sink(X) = \lnot QE(\exists X'. Tr(X,X'))$.
+As an output, it returns \NONTERM{} if the system is nonterminating, and \UNKNOWN, if the algorithm cannot conclude the analysis. 
 Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nontermination.
 
 \begin{algorithm}[t!]
@@ -117,21 +117,21 @@ Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nontermination.
     \label{Alg:SNA}
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
-    \Input{Safety problem $P = \tuple{Init, Tr, Sink, X}$}
-    \Output{NONTERM $\mid$ UNKNOWN}
+    \Input{Safety problem $P = \tuple{\Init, \Tr, \Sink, X}$}
+    \Output{\NONTERM $\mid$ \UNKNOWN}
     % \SetKwFunction{FAnalyze}{Analyze}
     % \SetKwProg{Fn}{Function}{:}{}
     % \nonl\Fn{\FAnalyze{$P$}}{
         \While{$\top$}{
-            $\tuple{res,\phi = Tr^{n}\ or\ Inv} \gets safetyCheck(P)$\\
-            \label{SNA:UNSAFE}\eIf{$res = UNSAFE$} {
+            $\tuple{\res,\phi = Tr^{n}\ or \Inv} \gets \textsc{SafetyCheck}(P)$\\
+            \label{SNA:UNSAFE}\eIf{$\res = \UNSAFE$} {
                 $P \gets \blockTerm(P, \phi)$ \label{SNA:BLOCKTERM}
             }
             {
                 \If{$\forall X. \phi(X) \rightarrow \exists X'. Tr(X,X')$\label{SNA:SAFE}}{
-                    \Return NONTERM \label{SNA:RECURRENT}
+                    \Return \NONTERM \label{SNA:RECURRENT}
                 }
-                \Return UNKNOWN
+                \Return \UNKNOWN
             }
             
         }
@@ -146,12 +146,12 @@ In this case, the algorithm calls the $\blockTerm$ procedure (Algorithm~\ref{Alg
 refines the safety problem $P$ by blocking the states that deterministically
 lead to the sink states, updating the safety problem.
 $\blockTerm$ is described in detail below.
-When $P$ is safe, algorithm checks if inductive invariant $Inv(X)$ is a recurrent set (line~\ref{SNA:SAFE}).
+When $P$ is safe, the algorithm checks if the inductive invariant $Inv(X)$ is a recurrent set (line~\ref{SNA:SAFE}).
 The check at line~\ref{SNA:SAFE} is executed using quantifier elimination, checking if the following formula
 is unsatisfiable:
 $$\exists X. \phi(X) \land \lnot QE(\exists X'. Tr(X,X')).$$
 If $Inv(X)$ is a recurrent set, then the transition system is nonterminating.
-Otherwise, algorithm returns UNKNOWN.
+Otherwise, the algorithm returns \UNKNOWN.
 
 \begin{algorithm}
     \SetInd{0.5em}{0.5em}
@@ -163,7 +163,7 @@ Otherwise, algorithm returns UNKNOWN.
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
     \SetKwInOut{Data}{Data}
-    \Input{Safety problem $P = \tuple{Init, Tr, Sink, X}$, terminating trace $Tr^{n}(X^{(0)}, \dots, X^{(n)}) = Tr(X^{(0)}, X^{(1)}) \land \dots \land Tr(X^{(n-1)}, X^{(n)})$}
+    \Input{Safety problem $P = \tuple{Init, Tr, \Sink, X}$, terminating trace $Tr^{n}(X^{(0)}, \dots, X^{(n)}) = Tr(X^{(0)}, X^{(1)}) \land \dots \land Tr(X^{(n-1)}, X^{(n)})$}
     \Output{Refined safety problem $P'$}
     \Data{$S_0,\dots,S_n$ - formulas which encode states within trace reachable in 0, ..., n transitions}
 
@@ -173,21 +173,21 @@ Otherwise, algorithm returns UNKNOWN.
     \SetAlgoFuncName{BlockTerm}{autoref name}
         $i \gets n-1$ \\
         \While{$i > 0$}{
-            $S_{i+1}(X) \gets QE(\exists X^{(0)},\dots, X^{(i)},  X^{(i+2)}, \dots, X^{(n)}.$ $Init(X^{(0)}) \land Tr^{n} \land Sink(X^{(n)}))[X^{(i+1)} \mapsto X]$ \label{SNA:Si1}\\
-            $S_{i}(X) \gets QE(\exists X^{(0)},\dots, X^{(i-1)},  X^{(i+1)}, \dots, X^{(n)}.$ $Init(X^{(0)}) \land Tr^{n} \land Sink(X^{(n)}))[X^{(i)} \mapsto X]$ \label{SNA:Si}\\
+            $S_{i+1}(X) \gets QE(\exists X^{(0)},\dots, X^{(i)},  X^{(i+2)}, \dots, X^{(n)}.$ $Init(X^{(0)}) \land Tr^{n} \land \Sink(X^{(n)}))[X^{(i+1)} \mapsto X]$ \label{SNA:Si1}\\
+            $S_{i}(X) \gets QE(\exists X^{(0)},\dots, X^{(i-1)},  X^{(i+1)}, \dots, X^{(n)}.$ $Init(X^{(0)}) \land Tr^{n} \land \Sink(X^{(n)}))[X^{(i)} \mapsto X]$ \label{SNA:Si}\\
             \If{SAT ? $S_i(X) \land Tr(X,X') \land \lnot S_{i+1}(X')$ \label{SNA:BLOCK}}{
                 $Tr'(X,X') \gets Tr(X,X') \land \lnot S_{i+1}(X')$ \label{SNA:TRBLOCK}  \\
-                \Return $\tuple{Init, Tr', Sink, X}$
+                \Return $\tuple{Init, Tr', \Sink, X}$
             }
             $i \gets i - 1$   
         }
-        $Init'(X^{(0)}) \gets Init(X^{(0)}) \land \lnot QE(\exists X^{(1)}, \dots, X^{(n)}. Init(X^{(0)}) \land Tr^{n} \land Sink(X^{(n)}))$  \label{SNA:BLOCKINIT} \\
-        \Return $\tuple{Init', Tr, Sink, X}$
+        $Init'(X^{(0)}) \gets Init(X^{(0)}) \land \lnot QE(\exists X^{(1)}, \dots, X^{(n)}. Init(X^{(0)}) \land Tr^{n} \land \Sink(X^{(n)}))$  \label{SNA:BLOCKINIT} \\
+        \Return $\tuple{Init', Tr, \Sink, X}$
     % }
 \end{algorithm}
 
 The $\blockTerm$ procedure takes as input a safety problem $P$ and a trace formula $Tr^{n}(X^{(0)}, \dots, X^{(n)})$ such 
-that $Init(X^{(0)}) \land Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land Sink(X^{(n)})$ is satisfiable.
+that $Init(X^{(0)}) \land Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \Sink(X^{(n)})$ is satisfiable.
 The algorithm iteratively analyses the trace from the last transition backwards. 
 % It checks if it is possible to take a transition that does not lead to the sink states, starting from the end of the trace.
 Using quantifier elimination, Algorithm~\ref{Alg:SNABlock} computes $S_i$ and $S_{i+1}$, 
@@ -205,8 +205,8 @@ Otherwise, \blockTerm blocks the subset of initial states that deterministically
     Consider a transition system $TS = \tuple{Init, Tr, X}$ with 
     $X = \{x\}$, $Init(X)   \triangleq \top$, and
     $Tr(X, X') \triangleq (x' = x - 1 \lor x' = x - 2) \land x \neq 0$.
-    The sink states are $Sink(X) \triangleq x = 0$, and the initial 
-    safety problem is $P = \tuple{Init, Tr, Sink, x}$.
+    The sink states are $\Sink(X) \triangleq x = 0$, and the initial 
+    safety problem is $P = \tuple{Init, Tr, \Sink, x}$.
     This TS is nonterminating, since $x$ infinitely decreases.
 
     The execution of Algorithm~\ref{Alg:SNA} updates initial states
@@ -221,20 +221,20 @@ Otherwise, \blockTerm blocks the subset of initial states that deterministically
     (x' = x - 1 \lor x' = x - 2) \land x > 0$. 
     This renders $TS$ terminating, since $x$ is strictly positive and decreases every step. 
     However, Algorithm~\ref{Alg:SNA} cannot detect termination by design, and 
-    it would return $UNKNOWN$. 
+    it would return \UNKNOWN. 
 
     Let us examine the execution of Algorithm~\ref{Alg:SNA} on this example.
-    First, using \blockTerm it blocks initial states that instantly terminate:
+    First, using \blockTerm, it blocks initial states that instantly terminate:
     $Init(X) \;\gets\; x > 0$.
-    In the second iteration, $safetyCheck(P)$ returns UNSAFE with a 
+    In the second iteration, \textsc{SafetyCheck}$(P)$ returns UNSAFE with a 
     trace $Tr^1(X^{(0)}, X^{(1)})$, detecting that $\exists X^{(0)}, X^{(1)}. 
-    Init(X^{(0)}) \land Tr^1(X^{(0)}, X^{(1)}) \land Sink(X^{(1)})$.
+    Init(X^{(0)}) \land Tr^1(X^{(0)}, X^{(1)}) \land \Sink(X^{(1)})$.
     Our key insight is to generalise such traces into a formula, describing an 
     entire class of terminating behaviours. 
     If this generalisation yields a disjunctively well-founded 
     transition invariant over all reachable states, it witnesses 
     termination.
-    Particularly, $TrInv(X, X') \triangleq x' < x \land x > 0$ is a well-founded transition 
+    Particularly, $\TrInv(X, X') \triangleq x' < x \land x > 0$ is a well-founded transition 
     invariant which proves the termination of $TS$.
     Section~\ref{Sec:Main} presents the algorithm that automates this generalisation via 
     Craig interpolation.
