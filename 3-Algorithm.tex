@@ -58,7 +58,7 @@ The overall flow of the procedure is illustrated in the Figure~\ref{fig:TrInvGen
     % $T^n(X^{(0)}) \gets \lnot QE(\exists X^{(1)}, \dots, X^{(n)}.$ $Tr^{n}(X^{(0)}, X^{(1)}, \dots, X^{(n)}) \land \lnot Sink(X^{(n)}))$ \label{SNA_TrInv:T} \\
     % $itp(X,X') \gets Itp(Tr^{n}(X, \dots, X'), T^n(X) \land \lnot Sink(X'))$\label{SNA_TrInv:Itp}\\
     $itp(X,X') \gets Itp(Tr^{n}(X, \dots, X'), \lnot NT^n(X) \land \lnot Sink(X'))$\label{SNA_TrInv:Itp}\\
-    $\Cs(X,X') \gets toDNF(itp)$ \label{SNA_TrInv:toDNF}\\
+    $\Cs(X,X') \gets \toDNF(itp)$ \label{SNA_TrInv:toDNF}\\
     $\TrInv \gets \TrInv \lor \bigvee_i \{d_i \in \Cs| \text{$\exists$ ranking function $f(X)$} \}$\label{SNA_TrInv:TrInv} \\
     $C(X) \gets \lnot QE(\exists X',X''.$ $\bigl(Id(X,X') \lor \TrInv(X,X')\bigr)  \land Tr(X',X'') 
         \land \lnot \TrInv(X,X''))$ \label{SNA_TrInv:NC} \\

@@ -18,7 +18,7 @@ relation, and $X$ is the set of system variables.
 With respect to transition system, a \emph{transition trace} is a formula encoding multiple consecutive 
 transitions: $Tr^{n}(X^{(0)}, \dots, X^{(n)}) = Tr(X^{(0)}, X^{(1)}) \land \dots \land Tr(X^{(n-1)}, X^{(n)})$.
 We write $Tr^{n}(X^{(0)},\dots,X^{(n)})$ for this conjunction throughout the paper.
-A \emph{safety problem} is defined as  $P = \tuple{ Init, Tr, Bad, X }$ where $Bad$ is a formula representing 
+A \emph{safety problem} is defined as  $P = \tuple{ Init, Tr, Bad, X }$, where $Bad$ is a formula representing 
 states that violate the safety property.
 
 %
@@ -27,14 +27,14 @@ Safety verification amounts to determining whether there exists a transition tra
 If TS is safe, then there exists an inductive invariant $Inv(X)$ such that (1) $\forall X. Init(X) \rightarrow Inv(X)$, 
 (2) $\forall X, X'. Inv(X) \land Tr(X,X') \rightarrow Inv(X')$, and (3) $\forall X. Inv(X) \rightarrow \lnot Bad(X)$.
 We use \safetyCheck$(P)$ to denote a safety verification procedure that returns a tuple $\tuple{SAFE, Inv(X)}$ if 
-TS is safe ($Inv(X)$ is inductive invariant).
+TS is safe ($Inv(X)$ is an inductive invariant).
 % Otherwise, if TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, such that: 
-If TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, where $\exists X^{(0)}, \dots, X^{(n)}.$
+If TS is unsafe it returns $\tuple{UNSAFE, Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, s.t. $\exists X^{(0)}, \dots, X^{(n)}$\footnote{It is a shorthand notation for $\exists  X^{(0)}, \dots, \exists X^{(n)}$}.
 
 $$Init(X^{(0)}) \land Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land Bad(X^{(n)})$$
 
 \textit{Nontermination:}
-A transition system is called \textbf{nonterminating} if there exists an initial state, from which it is possible to take 
+A transition system is called \textbf{nonterminating} if there exists an initial state from which it is possible to take 
 any number of transitions, meaning $\exists X. Init(X)$ such that:
 $$\forall n \in \mathbb{N}.  \exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
 
@@ -48,7 +48,7 @@ Transition System is nonterminating if there exists a \emph{recurrent set}.
 Intuitively, every state in the recurrent set has a successor that also lies in the recurrent set, and the recurrent set contains some of the 
 initial states.
 
-\textit{Termination:} A TS is called \textbf{terminating} if for every initial state it is possible to take only limited number of transitions.
+\textit{Termination:} A TS is called \textbf{terminating} if for every initial state it is possible to take only finite number of transitions.
 % For a Transition System $\tuple{ Init, Tr, X }$:
 Transition System $\tuple{ Init, Tr, X }$ terminates, if $\forall X. Init(X)$ the following holds:
 % $$\forall X. Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists \dots, X^{(n)}. Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
@@ -69,7 +69,7 @@ $$\exists n \in \mathbb{N}. \lnot \exists X^{(1)}, \dots, X^{(n)}. Tr^{n}(X, X^{
 A relation $R(X,X')$ can be proven~\cite{DBLP:conf/vmcai/PodelskiR04} to be well-founded by synthesizing a ranking function $f(X)$, such that
  $\forall X,X'. R(X,X') \rightarrow f(X) > f(X')$.
 
-A transition invariant~\cite{DBLP:conf/lics/PodelskiR04} can be used to prove termination.
+A transition invariant can be used to prove termination~\cite{DBLP:conf/lics/PodelskiR04}.
 If a transition invariant is a finite union of well-founded relations (for example if each relation admits a ranking function), 
 then the transition system terminates.
 \begin{definition}[Disjunctively well-founded relation]
