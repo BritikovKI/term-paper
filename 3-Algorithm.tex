@@ -355,7 +355,7 @@ Otherwise, the algorithm returns \UNKNOWN as the analysis is inconclusive.
     The safety check for $\tuple{\Init, \Tr, \lnot C, X}$ returns \UNSAFE, since states 
     with $u < 10$ are reachable from $\Init$. 
     \blockTerm, then blocks the states that are guaranteed to reach sink:
-    $\Tr(X, X') \;\gets\; \Tr(X, X') \land x' > 0$.
+    $\Tr(X, X') \;\gets\; \Tr(X, X') \land x > 0$.
 
     The algorithm calls $\safetyCheck(P)$, which returns $\SAFE$ with inductive invariant 
     $\Inv(X) \triangleq x > 0$. 
@@ -542,7 +542,7 @@ Formula $\Sink'$ replaces $\Sink$ in the safety problem, enabling the analysis t
 proceed instead of returning \UNKNOWN. 
 
 \begin{lemma}\label{Lem:FinalTermination}
-    If Algorithm~\ref{Alg:SNA_Refined} returns $\TERM$, then the original transition system $\tuple{\Init, \Tr, X}$ is also terminating.
+    If Algorithm~\ref{Alg:SNA_Refined} returns $\TERM$, then the original transition system $\tuple{\Init, \Tr, X}$ is terminating.
 \end{lemma}
 \begin{proof}
     \TERM is returned at line~\ref{SNA_Refined:NEWTERM} or line~\ref{SNA_Refined:TERM}.
@@ -552,13 +552,13 @@ proceed instead of returning \UNKNOWN.
     $\bigvee_{i=0}^m S_i(X)$ and $\bigvee_{j=0}^l S_j(X')$ are the states that deterministically lead to termination.
 
     \textbf{Case 1.} If $\TERM$ is returned at line~\ref{SNA_Refined:NEWTERM}, then the termination proof 
-    follows directly from the Lemma~\ref{Lem:TERM_N}. This is the case, since the original safety problem is
+    follows directly from Lemma~\ref{Lem:TERM_N}. This is the case, since the original safety problem is
     preserved in the stack, so if $\Prs = \emptyset$, the original safety problem is terminating.
 
-    \textbf{Case 2.} If $\TERM$ is returned at line~\ref{SNA_Refined:TERM}, then the formula 
+    \textbf{Case 2.} If $\TERM$ is returned at line~\ref{SNA_Refined:TERM}, then formula 
     $\Init'(X) \land \Tr'(X,X')$ is unsatisfiable, so no transition is reachable from $\Init'$.
-    This means that the transition system is terminating, since all feasible transitions in the original 
-    transition system lead to deterministically terminating states.
+    Thus, all feasible transitions in the original 
+    transition system lead to deterministically terminating states, and the transition system is terminating.
 \end{proof}
 
 \begin{lemma}\label{Lem:FinalNontermination}

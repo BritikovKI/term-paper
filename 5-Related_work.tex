@@ -1,7 +1,7 @@
 \section{Related Work}
 \label{Sec:Related}
-Termination and nontermination analysis are active research areas. 
-Below we discuss the techniques related to our approach.
+Recent years have seen significant advances in automated techniques for both termination and nontermination analysis. 
+%Below we discuss the techniques related to our approach.
 
 
 \textbf{Nontermination.} 
@@ -16,10 +16,10 @@ our approach directly extends~\cite{DBLP:conf/tacas/ChenCFNO14}.
 An alternative approach detects nontermination by identifying 
 lasso-shaped executions — finite paths leading to a cycle — via 
 bounded model checking~\cite{DBLP:journals/entcs/BiereAS02}.
-Leike and Heizmann~\cite{DBLP:conf/tacas/LeikeH18} propose 
+Leike and Heizmann~\cite{DBLP:conf/tacas/LeikeH18} use 
 geometric nontermination witnesses: finite representations of 
 infinite executions via sums of geometric series.
-On the other hand, our technique is integrated with termination 
+In contrast, our technique is integrated with termination 
 analysis, so that intermediate results from each analysis 
 guide the other.
 
@@ -44,16 +44,13 @@ functions~\cite{DBLP:journals/jacm/Ben-AmramG14,FedyukovichZG18}, which
 significantly broaden the class of programs for which termination 
 can be proved. However, the complexity of a transition system can 
 make ranking function synthesis infeasible.
-An alternative is fixpoint computation~\cite{DBLP:journals/pacmpl/UnnoTGK23}, 
-which reduces termination and nontermination to the validity of a first-order fixpoint formula.
-Another family of techniques proves termination via 
-disjunctively well-founded transition 
+With fixpoint computation, ~\cite{DBLP:journals/pacmpl/UnnoTGK23} reduces termination and nontermination to the validity of a first-order fixpoint formula.
+Disjunctively well-founded transition 
 invariants~\cite{DBLP:conf/lics/PodelskiR04,DBLP:conf/sas/CookPR05,
-DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11}.
-These approaches over-approximate the behavior of the transition 
-system, reducing the termination proof to a disjunctive 
-well-foundedness check on the invariant. 
-The central challenge is the generation of the 
+DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11} enable over-approximating the behavior of the transition 
+system. % reducing the termination proof to a disjunctive 
+%well-foundedness check on the invariant. 
+The central challenge there is the generation of the 
 transition invariant itself: existing techniques rely either on 
 template-based generation or on the direct construction of a 
 ranking relation from a particular trace. 
