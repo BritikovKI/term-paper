@@ -45,11 +45,11 @@ $$\forall n \in \mathbb{N}.  \exists X^{(1)}, \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}
 \end{definition}
 
 Transition System is nonterminating if there exists a \emph{recurrent set}. 
-Intuitively, every state in the recurrent set has a successor that also lies in the recurrent set, and the recurrent set contains some of the 
+Intuitively, every state in a recurrent set has a successor that also lies in the recurrent set, and the recurrent set contains some of the 
 initial states.
 
 % \textit{Termination:} 
-A $\TS$ is called \textbf{terminating} if for every initial state it is possible to take only a finite number of transitions.
+A $\TS$ is called \textbf{terminating} if for every initial state it enables only a finite number of transitions.
 % For a Transition System $\tuple{ \Init, \Tr, X }$:
 Transition System $\tuple{ \Init, \Tr, X }$ terminates, if $\forall X. \Init(X)$ the following holds:
 % $$\forall X. \Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
@@ -67,10 +67,10 @@ $$\exists n \in \mathbb{N}. \lnot \exists X^{(1)}, \dots, X^{(n)}. \Tr^{n}(X, X^
       \forall i \in \mathbb{N}.\ (d_i, d_{i+1}) \in W$$
 \end{definition}
 
-A relation $W(X,X')$ can be proven~\cite{DBLP:conf/vmcai/PodelskiR04} to be well-founded by synthesizing a ranking function $f(X)$, such that
- $\forall X,X'. W(X,X') \rightarrow f(X) > f(X')$.
+A relation $W(X,X')$ can be proven to be well-founded by synthesizing a ranking function $f(X)$, such that
+ $\forall X,X'. W(X,X') \rightarrow f(X) > f(X')$~\cite{DBLP:conf/vmcai/PodelskiR04}.
 
-A transition invariant can be used to prove termination~\cite{DBLP:conf/lics/PodelskiR04}.
+Termination can be proven using transition invariants~\cite{DBLP:conf/lics/PodelskiR04}.
 If a transition invariant is a finite union of well-founded relations (for example, if each relation admits a ranking function), 
 then the transition system terminates.
 \begin{definition}[Disjunctively well-founded relation]
@@ -80,10 +80,9 @@ then the transition system terminates.
 % \textit{Craig Interpolation:} 
 Given two formulas $A$ and $B$ where $A \land B$ is unsatisfiable, a Craig interpolant~\cite{Craig_1957} 
 for $A$ and $B$ is a formula $I$, where: (1) $A \rightarrow I$; 
-(2) $I \land B$ is unsatisfiable; and (3) $I$ only contains the symbols, 
-common to both $A$ and $B$.
-The Craig interpolant serves as an overapproximation technique in our approach.
-We use $\textsc{Itp}(A, B)$ to denote the computation of the Craig interpolant.
+(2) $I \land B$ is unsatisfiable; and (3) $I$ only contains the symbols, common to both $A$ and $B$.
+Craig interpolants are widely used as overapproximations.
+We write $\textsc{Itp}(A, B)$ for the computation of a Craig interpolant.
 
 \subsection{Proving Nontermination via Safety}
 Many techniques reduce termination and nontermination analysis to safety verification.
@@ -218,8 +217,8 @@ If the whole trace is deterministic (it is not possible to take an alternative t
     safety problem is $P = \tuple{\Init, \Tr, \Sink, x}$.
     This $\TS$ is nonterminating, since $x$ infinitely decreases.
 
-    The execution of Algorithm~\ref{Alg:SNA} updates initial states
-    and transition in two iterations of the algorithm, via \blockTerm\: 
+    The execution of Algorithm~\ref{Alg:SNA} updates the initial states
+    and the transition relation in two iterations of the algorithm, via \blockTerm: 
     $\Init(X) \;\gets\; x \neq 0$, and  $\Tr(X, X') \;\gets\; \Tr(X, X') \land x' \neq 0$.
     The safety check of the updated problem concludes \SAFE,
     with $Inv(X) \triangleq x \neq 0$. 
@@ -228,7 +227,7 @@ If the whole trace is deterministic (it is not possible to take an alternative t
     \textit{Motivation for transition invariant-based termination analysis.} Consider a 
     small modification (replacing $x\neq0$ with $x>0$): $\Tr(X, X') \triangleq 
     (x' = x - 1 \lor x' = x - 2) \land x > 0$. 
-    This renders $\TS$ terminating, since $x$ is strictly positive and decreases every step. 
+    This renders $\TS$ terminating since $x$ is strictly positive and decreases every step. 
     However, Algorithm~\ref{Alg:SNA} cannot detect termination by design, and 
     it would return \UNKNOWN. 
 
