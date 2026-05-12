@@ -1,19 +1,22 @@
 \section{Introduction}
 \label{Sec:Introduction}
 
-Termination analysis of infinite-state systems is a fundamental problem that necessitates the discovery of complex ranking functions or inductive invariants to over-approximate system behavior.
+Termination analysis of infinite-state systems is a fundamental problem in formal methods. 
+% that necessitates the discovery of 
+% complex ranking functions or inductive invariants to over-approximate system behavior.
+% Konst: It not necessarily necessitates the discovery of complex ranking functions
 Proving termination and nontermination is undecidable~\cite{DBLP:conf/cav/Braverman06}, 
 yet there exist many techniques that succeed on a large class of real-world problems.
 Modern techniques treat termination and nontermination as separate 
 problems, since each has a different proof procedure.
 %State-of-the-art termination techniques are based on the synthesis of 
 %ranking functions for the transition relation
-The existence of a ranking function by e.g.~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/UrbanGK16,FedyukovichZG18,RileyF25} witnesses termination by providing a measure that strictly decreases along every 
-execution.
+The existence of a ranking function by e.g.~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/UrbanGK16,FedyukovichZG18,RileyF25} 
+witnesses termination by providing a measure that strictly decreases along every transition.
 Alternatively, fixpoint computation, e.g.~\cite{DBLP:journals/pacmpl/UnnoTGK23}, and disjunctively well-founded 
 transition invariants~\cite{Transition-Invariants-Revisited-CAV26,DBLP:conf/pldi/CookPR06,DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11} have been proposed for termination analysis.
-Nontermination techniques are mostly based on the detection of recurrent 
-sets — sets of states from which execution cannot escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14,FedyukovichZG18}.
+Nontermination techniques are predominantly based on the detection of recurrent 
+sets — sets of states from which execution cannot escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14,FedyukovichZG18}.
 There also exist alternative approaches based on Hoare-style reasoning~\cite{DBLP:conf/pldi/LeQC15}, 
 safety proving~\cite{DBLP:conf/tacas/ChenCFNO14,DBLP:journals/entcs/BiereAS02}, representing infinite 
 runs as sums of geometric series~\cite{DBLP:conf/tacas/LeikeH18},
@@ -28,7 +31,7 @@ disjunctively well-founded transition invariants for termination analysis.
 The proposed approach uses terminating transition traces constructed by SNA, overapproximating them with 
 a Craig interpolation~\cite{Craig_1957}.
 The interpolant is processed into a transition invariant candidate, which is used to prove termination.
-Additionally, based on the transition invariant candidate, algorithm creates smaller, focused
+Additionally, based on the transition invariant candidate, the algorithm creates smaller, focused
 (non)termination problems, which guide the analysis of the whole transition system.
 Solving these problems helps to extend the transition invariant candidate and
 enables an efficient nontermination analysis of complex problems.

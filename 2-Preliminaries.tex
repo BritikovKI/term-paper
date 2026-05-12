@@ -61,33 +61,33 @@ $$\exists n \in \mathbb{N}. \lnot \exists X^{(1)}, \dots, X^{(n)}. \Tr^{n}(X, X^
 \end{definition}
 
 \begin{definition}[Well-founded Relation]
-    A binary relation $R \subseteq D \times D$ over a domain $D$ is \emph{well-founded} if there exists no infinite descending chain:
+    A binary relation $W \subseteq D \times D$ over a domain $D$ is \emph{well-founded} if there exists no infinite descending chain:
     $$\nexists\, d_0, d_1, d_2, \dots \in D.\ 
-      \forall i \in \mathbb{N}.\ (d_i, d_{i+1}) \in R$$
+      \forall i \in \mathbb{N}.\ (d_i, d_{i+1}) \in W$$
 \end{definition}
 
-A relation $R(X,X')$ can be proven~\cite{DBLP:conf/vmcai/PodelskiR04} to be well-founded by synthesizing a ranking function $f(X)$, such that
- $\forall X,X'. R(X,X') \rightarrow f(X) > f(X')$.
+A relation $W(X,X')$ can be proven~\cite{DBLP:conf/vmcai/PodelskiR04} to be well-founded by synthesizing a ranking function $f(X)$, such that
+ $\forall X,X'. W(X,X') \rightarrow f(X) > f(X')$.
 
 A transition invariant can be used to prove termination~\cite{DBLP:conf/lics/PodelskiR04}.
 If a transition invariant is a finite union of well-founded relations (for example, if each relation admits a ranking function), 
 then the transition system terminates.
 \begin{definition}[Disjunctively well-founded relation]
-    A relation $W(X,X') = \bigcup_{i = 0}^{n} R_i(X,X')$ is called disjunctively well-founded if every relation $R_i(X,X')$ is well-founded. 
+    A relation $K(X,X') = \bigcup_{i = 0}^{n} W_i(X,X')$ is called disjunctively well-founded if every relation $W_i(X,X')$ is well-founded. 
 \end{definition}
 
 \textit{Craig Interpolation:} Given two formulas $A$ and $B$ where $A \land B$ is unsatisfiable, a Craig interpolant~\cite{Craig_1957} 
 for $A$ and $B$ is a formula $I$, where: (1) $A \rightarrow I$; 
 (2) $I \land B$ is unsatisfiable; and (3) $I$ only contains the symbols, 
 common to both $A$ and $B$.
-Craig interpolant is used in our approach as an abstraction technique, that can overapproximate formulae.
+The Craig interpolant serves as an overapproximation technique in our approach.
 We use $\textsc{Itp}(A, B)$ to denote the computation of the Craig interpolant.
 
 \subsection{Proving Nontermination via Safety}
 Many techniques reduce termination and nontermination analysis to safety verification.
 One notable approach is the reduction of nontermination to safety, which constructs
 recurrent sets via inductive invariants~\cite{DBLP:conf/tacas/ChenCFNO14}.
-It was introduced in the context of proving nontermination of programs with loops, and can be extended to Transition Systems.
+It was introduced in the context of proving nontermination of programs with loops, and can be extended to transition systems.
 
 \begin{definition}[Sink states]
     For a Transition System $\tuple{\Init, \Tr, X }$, a state $s$ is a sink state, if $\lnot \exists s'. \Tr(s,s')$.
@@ -106,7 +106,7 @@ Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis (SNA) takes a
 safety problem $P = \tuple{\Init, \Tr, \Sink, X}$, where sink states are constructed from $\TS$ using
 quantifier elimination (\QE): $\Sink(X) = \lnot \QE(\exists X'. \Tr(X,X'))$.
 As an output, it returns \NONTERM{} if the system is nonterminating, and \UNKNOWN, if the algorithm cannot conclude the analysis. 
-Figure~\ref{fig:SNA} contains the execution flow of Safety-based Nontermination.
+Figure~\ref{fig:SNA} illustrates the execution flow of Safety-based Nontermination.
 
 \begin{algorithm}[t!]
 	\SetInd{0.5em}{0.5em}

@@ -177,9 +177,9 @@ which $\TrInv$ is not a transition invariant. It is a coverage formula by constr
 % example has an issue!
 \begin{example}\label{Ex:C}
     Continuing Example~\ref{Ex:Tn}, suppose the procedure constructs an interpolant
-    $itp(X,X') \triangleq x' < x \land x > 0$. 
-    Since $itp$ is a conjunction and it encodes well-founded relation, execution
-    of steps 3 and 4 would yield $\TrInv(X,X') \triangleq x' < x \land x > 0$. 
+    $itp(X,X') \triangleq x' < x \land (x > 0 \lor x < -10)$. 
+    Afterwards, algorithm would construct DNF form: $(x' < x \land x > 0 ) \lor (x' < x \land x < -10 )$, and 
+    since the second disjunct is not well founded, it would be dropped, resulting in $\TrInv(X,X') \triangleq x' < x \land x > 0$. 
     Quantifier elimination at line~\ref{SNA_TrInv:NC} then returns $C(X) \triangleq (x \geq -10 \land x \leq 0) \lor x > 0$.
 \end{example}
 
