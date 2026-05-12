@@ -1,11 +1,11 @@
-\section{Termination Analysis via Interpolation-based Transition Invariant Generation}~\label{Sec:Main}
+\section{Termination Analysis via Interpolation-based Transition Invariant Generation}\label{Sec:Main}
 
 We present a new approach to proving termination that leverages safety verification to generate a 
 well-founded transition invariant via interpolation.
 At each iteration, our procedure constructs a trace from the initial states to a sink state.
 A candidate well-founded transition invariant is then constructed based on the overapproximation of the terminating trace.
 If the candidate is valid for all reachable states (meaning it is a transition invariant), termination is concluded. 
-The interpolation-based approach enables efficient generation of transition invariant guided by the termination condition.
+The interpolation-based approach enables efficient generation of a transition invariant guided by the termination conditions.
 
 \subsection{Interpolation-based Generation of Well-Founded Transition Invariants}
 
@@ -31,7 +31,7 @@ This enables efficient ranking function synthesis for each disjunct.
 Only well-founded relations are preserved, as transition invariant needs to be disjunctively well-founded to witness termination. 
 (5) Computing the formula $C(X)$, encoding states for which candidate transition invariant is valid.
 Transition invariant needs to be valid only over the reachable states to conclude termination.
-Therefore, if all reachable states satisfy $C(x)$, then $\TS$ is terminating.
+Therefore, if all reachable states satisfy $C(X)$, then $\TS$ is terminating.
 The overall flow of the procedure is illustrated in Figure~\ref{fig:TrInvGen} and described in Algorithm~\ref{Alg:SNA_TrInv}.
 
 \begin{figure}[t]
@@ -54,7 +54,7 @@ The overall flow of the procedure is illustrated in Figure~\ref{fig:TrInvGen} an
     \Input{Safety problem $P = \tuple{\Init, \Tr, \Sink, X}$, transition trace $\Tr^n(X^{(0)}, X^{(1)}, \dots, X^{(n)})$, candidate transition invariant $\TrInv(X,X')$}
     \Output{Updated transition invariant $\TrInv(X,X')$ and formula $C(X)$ encoding states covered by
     transition invariant}
-    $\NT^n(X^{(0)}) \gets  \QE(\exists X^{(1)}, \dots, X^{(n)}.$ $\Tr^{n}(X^{(0)}, X^{(1)}, \dots, X^{(n)}) \land \lnot \Sink(X^{(n)}))$ \label{SNA_TrInv:T} \\
+    $\NT^n(X^{(0)}) \gets \QE(\exists X^{(1)}, \dots, X^{(n)}.$ $\Tr^{n}(X^{(0)}, X^{(1)}, \dots, X^{(n)}) \land \lnot \Sink(X^{(n)}))$ \label{SNA_TrInv:T} \\
     % $T^n(X^{(0)}) \gets \lnot \QE(\exists X^{(1)}, \dots, X^{(n)}.$ $\Tr^{n}(X^{(0)}, X^{(1)}, \dots, X^{(n)}) \land \lnot \Sink(X^{(n)}))$ \label{SNA_TrInv:T} \\
     % $itp(X,X') \gets Itp(\Tr^{n}(X, \dots, X'), T^n(X) \land \lnot \Sink(X'))$\label{SNA_TrInv:Itp}\\
     $itp(X,X') \gets \textsc{Itp}(\Tr^{n}(X, \dots, X'), \lnot \NT^n(X) \land \lnot \Sink(X'))$\label{SNA_TrInv:Itp}\\
@@ -226,7 +226,7 @@ since the states satisfying $\lnot C(X) \triangleq x < -10$ cannot be reached wi
 
     \emph{Inductive step}: Assume $R(X) \land \Tr^n(X, \dots,X') \rightarrow 
     \TrInv(X,X')$ for some $n \geq 1$. 
-    Let $\Tr^{n+1}(X,X'')$ hold, so there $\exists X, \dots, X', X''. R(X) \land \Tr(X, X') \land \Tr^n(X',\dots,X'')$. 
+    Let $\Tr^{n+1}(X,X'')$ hold, so there $\exists X, X', \dots, X''. R(X) \land \Tr(X, X') \land \Tr^n(X',\dots,X'')$. 
     Since $R(X)$ is a formula encoding all reachable states: $R(X) \land \Tr(X, X') \land \Tr^n(X',\dots,X'') \rightarrow 
     R(X) \land \Tr(X, X') \land R(X') \land \Tr^n(X',\dots,X'')$.
     Since $R(X) \land \Tr^n(X, \dots, X') \rightarrow \TrInv(X,X')$, then trivially
@@ -249,7 +249,7 @@ since the states satisfying $\lnot C(X) \triangleq x < -10$ cannot be reached wi
 %-----------------------------------------------------------------------
 
 
-This subsection presents the full termination analysis procedure, using the interpolation-based transition invariant generation.
+This subsection presents the full termination analysis procedure using the interpolation-based transition invariant generation.
 It integrates \trInvSynthesis into the main loop of Algorithm~\ref{Alg:SNA}.
 At each iteration, instead of only blocking terminating states, the algorithm also constructs a transition invariant 
 candidate. 
@@ -354,7 +354,7 @@ Otherwise, the algorithm returns \UNKNOWN as the analysis is inconclusive.
     The coverage formula is computed as: $C(X) \;\triangleq\; x \leq 0 \lor u = 10$.
     The safety check for $\tuple{\Init, \Tr, \lnot C, X}$ returns \UNSAFE, since states 
     with $u < 10$ are reachable from $\Init$. 
-    \blockTerm, then blocks the states that are guaranteed to reach sink:
+    \blockTerm then blocks the states that are guaranteed to reach sink:
     $\Tr(X, X') \;\gets\; \Tr(X, X') \land x > 0$.
 
     The algorithm calls $\safetyCheck(P)$, which returns $\SAFE$ with inductive invariant 
@@ -409,8 +409,7 @@ and then we prove the correctness for the nontermination.
 \end{proof}
 
 
-\section{Extended Interpolation-based Transition Invariant Generation for Proving and Disproving Termination}
-\label{Sec:Extension}
+\section{Extended Interpolation-based Transition Invariant Generation for Proving and Disproving Termination}\label{Sec:Extension}
 
 Algorithm~\ref{Alg:SNA_Term} is already capable of proving termination 
 efficiently through the construction of transition invariants.
@@ -419,7 +418,7 @@ better interaction between termination and nontermination analysis.
 Additionally, we present further extensions to the original SNA algorithm that improve overall performance. 
 The high-level flow of the extended algorithm can be seen in Figure~\ref{fig:SNA++}.
 
-\subsection{Utilizing States for Which Transition Invariant is not Valid}~\label{Sec:Refinement}
+\subsection{Analysis of States for Which Transition Invariant is not Valid}~\label{Sec:Refinement}
 
 A transition invariant candidate can be used to guide the termination analysis.
 Particularly, Algorithm~\ref{Alg:SNA_Term} constructs the formula $C(X)$ encoding states for which the transition invariant is valid.
@@ -463,8 +462,7 @@ reachable from the initial states.
     \SetKwInOut{Data}{Data}
     \Input{Safety problem $P$}
     \Output{\TERM $\mid$ \NONTERM}
-    \Data{$\TrInv$ - formula that encodes transition invariant, $\Prs$ - stack of Safety Problems to be
-    analyzed for (non)termination}
+    \Data{$\TrInv$ - candidate transition invariant, $\Prs$ - stack of safety problems}
     $\TrInv \gets \bot$ \\
     $\Prs \gets [P]$ \label{SNA_Refined:Prs} \\
     \While{$\top$} {
@@ -567,8 +565,7 @@ proceed instead of returning \UNKNOWN.
 \begin{proof}
     \NONTERM is returned at line~\ref{SNA_Refined:RECURRENT}, where 
     $\phi(X)$ is a recurrent set for the currently considered $\TS$  $\tuple{\Init', \Tr', X}$. 
-    By construction, $\Init'$ is reachable from  $\Init$ (or it is $\Init$), and $\Tr'(X,X') \rightarrow \Tr(X,X')$.
-    By Lemma~\ref{Lem:NONTERM}, if \NONTERM is returned, then there exists a recurrent set in the transition system $\tuple{\Init', \Tr', X}$, thus there also exists a recurrent set in the original transition system $\tuple{\Init, \Tr, X}$. 
-    This proves nontermination.
+    By Lemma~\ref{Lem:NONTERM}, there exists a recurrent set in the transition system $\tuple{\Init', \Tr', X}$, and since 
+    $\Tr'(X,X') \rightarrow \Tr(X,X')$ and $\Init'$ is reachable from  $\Init$ (or it is $\Init$), this recurrent set witnesses nontermination of $\TS$.
 \end{proof}
 
