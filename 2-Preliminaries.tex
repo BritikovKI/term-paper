@@ -234,7 +234,7 @@ If the whole trace is deterministic (it is not possible to take an alternative t
     First, using \blockTerm, it blocks initial states that instantly terminate:
     $\Init(X) \;\gets\; x > 0$.
     In the second iteration, \safetyCheck$(P)$ returns \UNSAFE{} with a 
-    trace $\Tr^1(X^{(0)}, X^{(1)})$, detecting that $\exists X^{(0)}, X^{(1)}. 
+    trace $\Tr^1(X^{(0)}, X^{(1)})$ satisfying $\exists X^{(0)}, X^{(1)}. 
     \Init(X^{(0)}) \land \Tr^1(X^{(0)}, X^{(1)}) \land \Sink(X^{(1)})$.
     Our key insight is to generalise such terminating traces into a formula describing an 
     entire class of terminating behaviours. 
