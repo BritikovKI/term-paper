@@ -75,8 +75,8 @@ significantly influence the evaluation).
 %     \label{fig:golemComp}
 % \end{figure}
 
-Table~\ref{tab:internal} presents the experimental results for \snaOpt, \sna, and \snaTerm. 
-Our results indicate that \snaOpt consistently outperforms both \sna and \snaTerm for terminating 
+Table~\ref{tab:internal} gives the experimental results for \snaOpt, \sna, and \snaTerm. 
+It confirms that \snaOpt consistently outperforms both \sna and \snaTerm for terminating 
 and nonterminating instances, solving 240 instances solved by neither \sna nor \snaTerm. 
 We attribute this to the \snaOpt's generation of focused sub-problems, 
 which allows the analysis to concentrate on specific reachable states.
@@ -84,11 +84,12 @@ This benefits the recurrent set detection by focusing the analysis on specific s
 It also benefits termination proving by extending the transition invariant with additional disjuncts 
 that cover different regions of the reachable state space.
 In answer to \textbf{RQ1}, the combination of termination and nontermination reasoning in 
-\snaOpt yields significantly improved performance across both problem classes.
-Notably, during experimentation, we noticed that \snaOpt produces different outputs depending on the underlying 
-Safety Verification engine.
-The best results were obtained with the TPA safety checks, solving 761 instances. 
-\snaOpt with PDR solved fewer instances (756), however it could solve 17 benchmarks uniquely compared to the TPA-based algorithm.
+\snaOpt significantly outperforms either individual approach in isolation.
+
+Interestingly, \snaOpt behaves differently depending on the underlying  Safety Verification engine:
+with TPA it solved 761 instances and
+with PDR -- 756.
+That said, it solved 22 (resp. 17) benchmarks uniquely with TPA (resp. PDR).
 %
 
 \begin{figure*}[t!]
@@ -123,8 +124,8 @@ Orange squares denote nonterminating instances; blue crosses denote terminating 
 Points above the diagonal indicate instances where \snaOpt is faster than the competitor.
 \snaOpt solves 761 benchmarks, with \Tt solving 1002, \KoAT 562, and \LoAT 525 instances, the full comparison can be seen in Table~\ref{tab:external}.
 As shown in Figure~\ref{fig:stateOfArtComp}, \snaOpt, despite being a prototype implementation, is competitive with state-of-the-art termination analyzers.
-Among all tools, \snaOpt uniquely solves 8 instances (those instances were not solved by \sna and \snaTerm as well).
-Notably, 2 of these — \texttt{juLinkedListCreateAddAll.jar-obl-11} and \texttt{juLinkedListCreateAddAllAt.jar-obl-17} — belong to the 
-19 previously unsolved instances in the Termination Competition, for which \snaOpt found recurrent sets thus proving nontermination.
+Among all tools, \snaOpt uniquely solves eight instances (which were not solved by \sna and \snaTerm as well).
+Notably, two of these — \texttt{juLinkedListCreateAddAll.jar-obl-11} and \texttt{juLinkedListCreateAddAllAt.jar-obl-17} have never been solved in the Termination Competition.
+\snaOpt found recurrent sets and proved nontermination for them.
 In answer to \textbf{RQ2}, \snaOpt is competitive with state-of-the-art tools and solves 
 instances, not solved by any tool in the Termination Competition.
