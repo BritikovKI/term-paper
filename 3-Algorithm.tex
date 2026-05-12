@@ -92,7 +92,7 @@ Construction of $\NT^n$ enables the overapproximation of the trace.
     Consider $\TS = \tuple{\Init, \Tr, X}$ with $\Init \triangleq  x > 0$, 
     $\Tr(X,X') \triangleq  (x' = x - 1 \lor x' = x - 2) \land (x > 0 \lor x < -10)$, $X \triangleq  \{x\}$.
     The sink states are $\Sink(X) \triangleq x \leq 0 \land x \geq -10$.
-    For $n = 2$, quantifier elimination yields $\NT^2(X) = x > 2$: 
+    For $n = 2$, quantifier elimination yields $\NT^2(X) = x > 2 \land x < -10$: 
     states from which $\lnot \Sink$ is reachable in two transitions.
     % States with $x \in \{3,4\}$ can reach $\Sink$ in two transitions, but not necessarily,
     % therefore these states are included in $\NT^2$.
