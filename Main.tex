@@ -151,16 +151,19 @@
 \begin{abstract}
 Termination and nontermination of infinite-state systems are complementary problems that, 
 despite their close connection, are typically addressed by separate techniques.
-However, these approaches may often share their intermediate results to guide one another.
-We present a new approach for the interpolation-based 
-construction of well-founded transition invariants. 
+% However, the intermediate results of these approaches can be utilised to guide one another.
+The core idea of this paper is to connect termination and nontermination analysis,
+enabling the two to share their intermediate results and guide one another.
+We present a new termination analysis approach based on the
+generation of well-founded transition invariants. 
 It leverages Craig interpolation for transition invariant 
 generation, capturing the structural reasons for termination.
-The technique extends safety-based nontermination analysis, allowing it to prove both 
+The proposed technique extends safety-based nontermination analysis, allowing it to prove both 
 termination and nontermination within a unified framework.
 We implemented our approach in the \textsc{Golem} verification framework and evaluated it on benchmarks from the 
 Termination Competition (TermComp). 
-Empirical results demonstrate that combining termination and nontermination yields performance comparable to current state-of-the-art tools.
+Empirical results demonstrate that combining termination and nontermination is beneficial and 
+yields performance comparable to state-of-the-art tools.
 \end{abstract}
 
 %
