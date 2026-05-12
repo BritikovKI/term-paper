@@ -183,7 +183,8 @@ which $\TrInv$ is not a transition invariant.
 \emph{Note.} If $\lnot C(X)$ is unreachable, then $\TrInv(X,X')$ is a disjunctively well-founded
 transition invariant over all reachable states, and witnesses termination of the transition system.
 For illustration, the transition invariant in Example~\ref{Ex:C} is sufficient to prove termination, 
-since $\lnot C(X) \triangleq x < 0$ cannot be reached within $\TS$.
+since the only states in $\lnot C(X) \triangleq x < 0$ that ca be reached within $\TS$ are sink
+states.
 
 \begin{lemma}\label{Lem:Term}
     Let $\TS = \tuple{\Init, \Tr, X}$ be a transition system and let 
