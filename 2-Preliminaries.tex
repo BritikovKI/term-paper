@@ -11,7 +11,7 @@ The formula defined over $X$ is a state formula, and a formula over $X \cup X'$ 
 State formulas encode a set of states, and transition formulas define binary relations over the states.
 We use $Id(X,X')$ to denote the identity transition formula $\bigwedge_{x \in X} x = x’$.
 
-\textit{Transition systems and Safety Problem:} 
+%\textit{Transition systems and Safety Problem:} 
 A \emph{transition system} is defined as $\TS = \tuple{ \Init, \Tr, X }$, where $\Init$ is a formula 
 encoding the initial states of the system, $\Tr$ is a transition formula, encoding the transition 
 relation, and $X$ is the set of system variables.
@@ -33,7 +33,7 @@ If $\TS$ is unsafe it returns $\tuple{\UNSAFE, \Tr^{n}(X^{(0)}, \dots, X^{(n)})}
 
 $$\Init(X^{(0)}) \land \Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land Bad(X^{(n)})$$
 
-\textit{Nontermination:}
+% \textit{Nontermination:}
 A transition system is called \textbf{nonterminating} if there exists an initial state from which it is possible to take 
 any number of transitions, meaning $\exists X. \Init(X)$ such that:
 $$\forall n \in \mathbb{N}.  \exists X^{(1)}, \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
@@ -48,7 +48,8 @@ Transition System is nonterminating if there exists a \emph{recurrent set}.
 Intuitively, every state in the recurrent set has a successor that also lies in the recurrent set, and the recurrent set contains some of the 
 initial states.
 
-\textit{Termination:} A $\TS$ is called \textbf{terminating} if for every initial state it is possible to take only a finite number of transitions.
+% \textit{Termination:} 
+A $\TS$ is called \textbf{terminating} if for every initial state it is possible to take only a finite number of transitions.
 % For a Transition System $\tuple{ \Init, \Tr, X }$:
 Transition System $\tuple{ \Init, \Tr, X }$ terminates, if $\forall X. \Init(X)$ the following holds:
 % $$\forall X. \Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
@@ -76,7 +77,8 @@ then the transition system terminates.
     A relation $K(X,X') = \bigcup_{i = 0}^{n} W_i(X,X')$ is called disjunctively well-founded if every relation $W_i(X,X')$ is well-founded. 
 \end{definition}
 
-\textit{Craig Interpolation:} Given two formulas $A$ and $B$ where $A \land B$ is unsatisfiable, a Craig interpolant~\cite{Craig_1957} 
+% \textit{Craig Interpolation:} 
+Given two formulas $A$ and $B$ where $A \land B$ is unsatisfiable, a Craig interpolant~\cite{Craig_1957} 
 for $A$ and $B$ is a formula $I$, where: (1) $A \rightarrow I$; 
 (2) $I \land B$ is unsatisfiable; and (3) $I$ only contains the symbols, 
 common to both $A$ and $B$.
