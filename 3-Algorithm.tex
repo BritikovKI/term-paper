@@ -177,16 +177,16 @@ which $\TrInv$ is not a transition invariant. It is a coverage formula by constr
 % example has an issue!
 \begin{example}\label{Ex:C}
     Continuing Example~\ref{Ex:Tn}, suppose the procedure constructs an interpolant
-    $itp(X,X') \triangleq x' < x \land x \geq 0$. 
-    Since it encodes well-founded relation and it is a conjunction, execution
-    of steps 3 and 4 would yield $\TrInv(X,X') \triangleq x' < x \land x \geq 0$. 
+    $itp(X,X') \triangleq x' < x \land x > 0$. 
+    Since $itp$ is a conjunction and it encodes well-founded relation, execution
+    of steps 3 and 4 would yield $\TrInv(X,X') \triangleq x' < x \land x > 0$. 
     Quantifier elimination at line~\ref{SNA_TrInv:NC} then returns $C(X) \triangleq (x \geq -10 \land x \leq 0) \lor x > 0$.
 \end{example}
 
 \emph{Note.} If $\lnot C(X)$ is unreachable, then $\TrInv(X,X')$ is a disjunctively well-founded
 transition invariant over all reachable states, and witnesses termination of the transition system.
 For illustration, the transition invariant in Example~\ref{Ex:C} is sufficient to prove termination, 
-since the states satisfying $\lnot C(X) \triangleq x \leq -10$ cannot be reached within $\TS$.
+since the states satisfying $\lnot C(X) \triangleq x < -10$ cannot be reached within $\TS$.
 
 \begin{lemma}\label{Lem:Term}
     Let $\TS = \tuple{\Init, \Tr, X}$ be a transition system and let 
@@ -279,7 +279,7 @@ The overall flow is shown in Figure~\ref{fig:SNATrInv}.
     \Data{$\TrInv$ - formula that encodes transition invariant}
     $\TrInv \gets \bot$ \\
     \While{$\top$} {
-        \label{SNA_Term:Safety} $\tuple{\res, \phi = \Tr^n\ or\ \Inv} \gets \safetyCheck(P)$ \\
+        $\tuple{\res, \phi = \Tr^n\ or\ \Inv} \gets \safetyCheck(P)$ \label{SNA_Term:Safety}\\
         \eIf{$\res = \UNSAFE$} {
             $\tuple{\TrInv, C} \gets \trInvSynthesis(P, \Tr^n, \TrInv)$ \label{SNA_Term:Synth} \\
             $\tuple{\res', \_} \gets \safetyCheck(\tuple{\Init, \Tr, \lnot C, X})$ \label{SNA_Term:CheckNc} \\
@@ -336,7 +336,7 @@ Otherwise, the algorithm returns \UNKNOWN as the analysis is inconclusive.
 
     The safety check detects a trace $\Tr^1$ reaching $\Sink$. 
     \trInvSynthesis produces a transition invariant candidate $\TrInv(X,X') \triangleq x' < x \land x' \geq 0$ 
-    and the formula $C(X) \triangleq x > 0$.
+    and the formula $C(X) \triangleq (x \leq 0 \land x \geq -10) \lor x > 0$.
     The safety check for $\tuple{\Init, \Tr, \lnot C(X), X}$ returns \SAFE, and the algorithm concludes 
     that the transition system is terminating.
 
@@ -351,7 +351,7 @@ Otherwise, the algorithm returns \UNKNOWN as the analysis is inconclusive.
 
     The Algorithm~\ref{Alg:SNA_Term} detects a trace $\Tr^1(X^{(0)}, X^{(1)})$ reaching $\Sink$ states.
     \trInvSynthesis\ constructs transition invariant: $\TrInv(X, X') \;\triangleq\; x' < x \land x > 0$. 
-    The coverage formula is computed as: $C(X) \;\triangleq\; u = 10$.
+    The coverage formula is computed as: $C(X) \;\triangleq\; x \leq 0 \lor u = 10$.
     The safety check for $\tuple{\Init, \Tr, \lnot C, X}$ returns \UNSAFE, since states 
     with $u < 10$ are reachable from $\Init$. 
     \blockTerm, then blocks the states that are guaranteed to reach sink:
@@ -389,11 +389,11 @@ and then we prove the correctness for the nontermination.
     unreachable from the initial states.
     The safety problem is updated iteratively, blocking the states that deterministically lead to the termination,
     so in the end the $P = \tuple{\Init', \Tr', \Sink, X}$, where $\Init'(X) = \Init(X) \land \bigwedge_{i=0}^{m} \lnot S_i(X)$
-    and $\Tr' = \Tr(X,X') \land \bigwedge_{i=0}^{l} \lnot S_j(X')$ .
+    and $\Tr' = \Tr(X,X') \land \bigwedge_{j=0}^{l} \lnot S_j(X')$ .
     According to Lemma~\ref{Lem:Term}, transition system $\tuple{\Init', \Tr', X}$ is terminating, since $\TrInv$ is a disjunctively well-founded
     transition invariant over all reachable states.
 
-    Since the states satisfying $\bigvee_{i=0}^{m} S_i(X)$ and $\bigvee_{i=0}^{l} S_j(X')$ deterministically lead to the termination,
+    Since the states satisfying $\bigvee_{i=0}^{m} S_i(X)$ and $\bigvee_{j=0}^{l} S_j(X')$ deterministically lead to the termination,
     every trace of $\tuple{\Init, \Tr, X}$ either follows $\Tr'$ or passes through a blocked state which leads to termination.
     Hence $\tuple{\Init, \Tr, X}$ is terminating.
 \end{proof}
@@ -405,7 +405,7 @@ and then we prove the correctness for the nontermination.
 \begin{proof}
     The proof of this lemma follows directly from Lemma~\ref{Lem:NONTERM}, 
     as the nontermination analysis in Algorithm~\ref{Alg:SNA_Term} 
-    follows exactly the same structure as Algorithm~\ref{Alg:SNA}.
+    follows exactly the same process as Algorithm~\ref{Alg:SNA}.
 \end{proof}
 
 
@@ -509,9 +509,9 @@ $\TS$.
 The original safety problem always remains in the $\Prs$ stack.
 
 The postprocessing phase of transition invariant construction is the main change to Algorithm~\ref{Alg:SNA_Term}.
-When $\lnot C$ is reachable, the extended algorithm performs two actions: (1) it pushes the $\blockTerm$-refined problem 
+When $\lnot C$ is reachable, the extended algorithm performs three actions: (1) it pushes the $\blockTerm$-refined problem 
 (line~\ref{SNA_Refined:BlockTerm}); (2) it computes a formula encoding states reachable within transition system,
-for which transition invariant candidate is not valid (line~\ref{SNA_Refined:Sm}); and finally, it pushes a new 
+for which transition invariant candidate is not valid (line~\ref{SNA_Refined:Sm}); and (3) it pushes a new 
 subproblem to analyse for termination (line~\ref{SNA_Refined:PushNewProblem}), with $S_m$ as the initial states. 
 This allows the algorithm to concentrate on proving termination or nontermination of particular reachable states.
 
@@ -553,7 +553,7 @@ proceed instead of returning \UNKNOWN.
 
     \textbf{Case 1.} If $\TERM$ is returned at line~\ref{SNA_Refined:NEWTERM}, then the termination proof 
     follows directly from the Lemma~\ref{Lem:TERM_N}. This is the case, since the original safety problem is
-    preserved in the stack, so if $\Prs = \emptyset$, the original safety problem is necessarily terminating.
+    preserved in the stack, so if $\Prs = \emptyset$, the original safety problem is terminating.
 
     \textbf{Case 2.} If $\TERM$ is returned at line~\ref{SNA_Refined:TERM}, then the formula 
     $\Init'(X) \land \Tr'(X,X')$ is unsatisfiable, so no transition is reachable from $\Init'$.
@@ -566,10 +566,10 @@ proceed instead of returning \UNKNOWN.
 \end{lemma}
 \begin{proof}
     \NONTERM is returned at line~\ref{SNA_Refined:RECURRENT}, where 
-    $\phi(X)$ is a recurrent set for the current refined system  $\tuple{\Init', \Tr', X}$. 
+    $\phi(X)$ is a recurrent set for the currently considered $\TS$  $\tuple{\Init', \Tr', X}$. 
     By construction, $\Init'$ is reachable from  $\Init$ (or it is $\Init$), and $\Tr'(X,X') \rightarrow \Tr(X,X')$.
-    By Lemma~\ref{Lem:NONTERM}, if \NONTERM is returned, then there exists a recurrent set in the transition system $\tuple{\Init', \Tr', X}$, which 
-    means that there also exists a recurrent set in the original transition system $\tuple{\Init, \Tr, X}$. 
+    If \NONTERM is returned, then there exists a recurrent set in the $\TS$ $\tuple{\Init', \Tr', X}$,  
+    meaning the original $\TS$ $\tuple{\Init, \Tr, X}$ also has a recurrent set. 
     This proves nontermination.
 \end{proof}
 

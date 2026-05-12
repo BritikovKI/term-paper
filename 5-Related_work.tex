@@ -1,7 +1,7 @@
 \section{Related Work}
 \label{Sec:Related}
-Termination and nontermination analysis are active areas of research. 
-Below we discuss the techniques most closely related to our approach.
+Termination and nontermination analysis are active research areas. 
+Below we discuss the techniques related to our approach.
 
 
 \textbf{Nontermination.} 
@@ -19,9 +19,11 @@ bounded model checking~\cite{DBLP:journals/entcs/BiereAS02}.
 Leike and Heizmann~\cite{DBLP:conf/tacas/LeikeH18} propose 
 geometric nontermination witnesses: finite representations of 
 infinite executions via sums of geometric series.
-Compared to the approaches above, our technique is integrated with termination 
-analysis within a unified framework, so that intermediate results from each analysis 
+On the other hand, our technique is integrated with termination 
+analysis, so that intermediate results from each analysis 
 guide the other.
+
+%  within a unified framework
 % Nontermination analysis is typically centered around the construction of recurrent sets — sets of states from which execution cannot 
 % escape~\cite{DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/cade/FrohnG22,DBLP:conf/tacas/BrockschmidtCIK16,DBLP:conf/tacas/ChenCFNO14,DBLP:conf/foveoos/BrockschmidtSOG11,DBLP:conf/cav/LarrazNORR14}.
 % These techniques can vary from the template-based synthesis to the safety-check based recurrent set construction.
@@ -58,7 +60,8 @@ ranking relation from a particular trace.
 In contrast, our approach 
 uses Craig interpolation to guide transition invariant synthesis 
 with respect to the actual termination conditions, producing 
-property-directed invariants from terminating traces. 
+property-directed invariants.
+%  from terminating traces. 
 
 
 
