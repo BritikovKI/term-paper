@@ -5,7 +5,7 @@ well-founded transition invariant via interpolation.
 At each iteration, our procedure constructs a trace from the initial states to a sink state.
 A candidate well-founded transition invariant is then constructed based on the overapproximation of the terminating trace.
 If the candidate is valid for all reachable states (meaning it is a transition invariant), termination is concluded. 
-The interpolation-based approach enables efficient termination condition-guided transition invariant generation.
+The interpolation-based approach enables efficient generation of transition invariant guided by the termination condition.
 
 \subsection{Interpolation-based Generation of Well-Founded Transition Invariants}
 
@@ -60,7 +60,7 @@ The overall flow of the procedure is illustrated in Figure~\ref{fig:TrInvGen} an
     $itp(X,X') \gets \textsc{Itp}(\Tr^{n}(X, \dots, X'), \lnot \NT^n(X) \land \lnot \Sink(X'))$\label{SNA_TrInv:Itp}\\
     $\Cs(X,X') \gets \toDNF(itp)$ \label{SNA_TrInv:toDNF}\\
     $\TrInv \gets \TrInv \lor \bigvee_i \{d_i \in \Cs \mid \text{$\exists$ ranking function $f(X)$} \}$\label{SNA_TrInv:TrInv} \\
-    $C(X) \gets \lnot \QE(\exists X',X''.$ $\bigl(Id(X,X') \lor \TrInv(X,X')\bigr)  \land \Tr(X',X'') 
+    $C(X) \gets Sink(X) \lor \lnot \QE(\exists X',X''.$ $\Tr(X,X') \land \bigl(Id(X',X'') \lor \TrInv(X',X'')\bigr) 
         \land \lnot \TrInv(X,X''))$ \label{SNA_TrInv:NC} \\
     \Return $\tuple{\TrInv, C}$
 \end{algorithm}
@@ -159,6 +159,7 @@ The resulting formula is disjoined with the input candidate transition invariant
 \textbf{Step 5}: \textit{Synthesis of the states for which transition invariant is valid (line~\ref{SNA_TrInv:NC}).}
 If $\TrInv$ is a transition invariant over all reachable states, then $\TS$ terminates, since every disjunct encodes a well-founded relation.
 To verify this, the procedure computes the formula $C(X)$ encoding the states over which $\TrInv$ is a valid transition invariant. 
+The procedure also disjoins these states with the sink states.
 % Split this thing into 2 properties
 % Make it consistent with the code
 \begin{definition}[Coverage formula]
@@ -166,25 +167,26 @@ To verify this, the procedure computes the formula $C(X)$ encoding the states ov
     a formula $C(X)$ is called coverage, if the following holds $\forall X, X',X''$:
     \begin{align*}
      C(X) \land \Tr(X,X') \rightarrow& \TrInv(X,X') \\
-     C(X) \land \TrInv(X,X') \land \Tr(X',X'') \rightarrow& \TrInv(X,X'')
+     C(X) \land \Tr(X,X') \land \TrInv(X',X'') \rightarrow& \TrInv(X,X'')
     \end{align*}
  That is, $\TrInv$ is a transition invariant over states that satisfy $C(X)$.
 \end{definition}
 
 Similarly to $\NT^{n}$, $C(X)$ is constructed by applying quantifier elimination, negating the states for 
-which $\TrInv$ is not a transition invariant.
+which $\TrInv$ is not a transition invariant. It is a coverage formula by construction.
 % example has an issue!
 \begin{example}\label{Ex:C}
-    Continuing Example~\ref{Ex:Tn}, suppose the procedure constructs 
-    $\TrInv \triangleq x' < x \land x \geq 0$. Quantifier elimination
-    at line~\ref{SNA_TrInv:NC} then yields $C(X) \triangleq x > 0$.
+    Continuing Example~\ref{Ex:Tn}, suppose the procedure constructs an interpolant
+    $itp(X,X') \triangleq x' < x \land x \geq 0$. 
+    Since it encodes well-founded relation and it is a conjunction, execution
+    of steps 3 and 4 would yield $\TrInv(X,X') \triangleq x' < x \land x \geq 0$. 
+    Quantifier elimination at line~\ref{SNA_TrInv:NC} then returns $C(X) \triangleq (x \geq -10 \land x \leq 0) \lor x > 0$.
 \end{example}
 
 \emph{Note.} If $\lnot C(X)$ is unreachable, then $\TrInv(X,X')$ is a disjunctively well-founded
 transition invariant over all reachable states, and witnesses termination of the transition system.
 For illustration, the transition invariant in Example~\ref{Ex:C} is sufficient to prove termination, 
-since the only states in $\lnot C(X) \triangleq x < 0$ that ca be reached within $\TS$ are sink
-states.
+since the states satisfying $\lnot C(X) \triangleq x \leq -10$ cannot be reached within $\TS$.
 
 \begin{lemma}\label{Lem:Term}
     Let $\TS = \tuple{\Init, \Tr, X}$ be a transition system and let 
@@ -193,7 +195,7 @@ states.
     relations and satisfies $\forall X, X',X''$:
     \begin{align*}
      C(X) \land \Tr(X,X') \rightarrow& \TrInv(X,X') \\
-     C(X) \land \TrInv(X,X') \land \Tr(X',X'') \rightarrow& \TrInv(X,X'')
+     C(X) \land \Tr(X,X') \land \TrInv(X',X'') \rightarrow& \TrInv(X,X'')
     \end{align*}    
     then $\TS$ is terminating.
 \end{lemma}
@@ -213,8 +215,8 @@ states.
     where $R(X)$ denotes the reachable states of $\TS$, by induction 
     on the number of steps $n$ in $\Tr^+(X,X')$.
 
-   \emph{Base case} ($n = 1$): It is needed to prove that:
-   $$R(X) \land \Tr(X,X') \rightarrow \TrInv(X,X')$$ 
+    \emph{Base case} ($n = 1$): It is needed to prove that:
+    $$R(X) \land \Tr(X,X') \rightarrow \TrInv(X,X')$$ 
     Since $\lnot C(X)$ is unreachable, $R(X) \rightarrow C(X)$,
     and therefore $R(X) \land \Tr(X,X') \rightarrow C(X) \land \Tr(X,X')$. 
 
@@ -224,13 +226,15 @@ states.
 
     \emph{Inductive step}: Assume $R(X) \land \Tr^n(X, \dots,X') \rightarrow 
     \TrInv(X,X')$ for some $n \geq 1$. 
-    Let $\Tr^{n+1}(X,X'')$ hold, so there $\exists X, \dots, X', X''. R(X) \land \Tr^n(X, \dots, X') \land \Tr(X',X'')$. 
+    Let $\Tr^{n+1}(X,X'')$ hold, so there $\exists X, \dots, X', X''. R(X) \land \Tr(X, X') \land \Tr^n(X',\dots,X'')$. 
+    Since $R(X)$ is a formula encoding all reachable states: $R(X) \land \Tr(X, X') \land \Tr^n(X',\dots,X'') \rightarrow 
+    R(X) \land \Tr(X, X') \land R(X') \land \Tr^n(X',\dots,X'')$.
     Since $R(X) \land \Tr^n(X, \dots, X') \rightarrow \TrInv(X,X')$, then trivially
-    $R(X) \land \Tr^n(X,X') \land \Tr(X',X'') \rightarrow R(X) \land \TrInv(X,X') \land \Tr(X',X'')$.
+    $R(X) \land \Tr(X, X') \land R(X') \land \Tr^n(X',\dots,X'') \rightarrow R(X) \land \Tr(X,X') \land \TrInv(X',X'')$.
     Now, due to the fact that $R(X) \rightarrow C(X)$, the following holds:
-    $R(X) \land \TrInv(X,X') \land \Tr(X',X'') \rightarrow C(X) \land \TrInv(X,X') \land \Tr(X',X'').$
+    $R(X) \land \Tr(X, X') \land \TrInv(X',X'') \rightarrow C(X) \land \Tr(X,X') \land \TrInv(X',X'').$
     By the lemma hypothesis:
-    $$C(X) \land \TrInv(X,X') \land \Tr(X',X'') \rightarrow \TrInv(X,X'').$$
+    $$C(X) \land \Tr(X,X') \land \TrInv(X',X'') \rightarrow \TrInv(X,X'').$$
 
     Therefore, through the chain of implications, we have:
     $$R(X) \land \Tr^{n+1}(X,X') \rightarrow \TrInv(X,X').$$
