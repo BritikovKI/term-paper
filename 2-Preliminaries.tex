@@ -200,7 +200,7 @@ Using \QE, Algorithm~\ref{Alg:SNABlock} computes $S_i$ and $S_{i+1}$,
 encoding the states that are reachable after $i$ and $i+1$ transitions from $\Init$ (lines~\ref{SNA:Si1},~\ref{SNA:Si}).
 Then, at line~\ref{SNA:BLOCK} it checks if $S_i(X) \land \Tr(X,X') \land \lnot S_{i+1}(X')$ is satisfiable.%, sending a query to the SMT solver.
 %With this query, the algorithm checks if it is possible to reach some state that does not necessarily lead to the sink states.
-Intuitively, this query checks if it is possible to take an alternative transition at step $i$, one that does not lead to the sink states.
+Intuitively, with this query, the algorithm checks if it is possible to take an alternative transition at step $i$, one that does not lead to the sink states.
 If it is possible, the algorithm blocks the states deterministically leading to the sink states by excluding them from the transition relation (line~\ref{SNA:TRBLOCK}).
 If the whole trace is deterministic (it is not possible to take an alternative transition along the trace), \blockTerm blocks the subset of initial states deterministically leading to sink (line~\ref{SNA:BLOCKINIT}).
 

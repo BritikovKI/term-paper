@@ -185,7 +185,7 @@ which $\TrInv$ is not a transition invariant. It is a coverage formula by constr
 
 \emph{Note.} If $\lnot C(X)$ is unreachable, then $\TrInv(X,X')$ is a disjunctively well-founded
 transition invariant over all reachable states, and witnesses termination of the transition system.
-For illustration, the transition invariant in Example~\ref{Ex:C} is sufficient to prove termination, 
+For illustration, the transition invariant in Example~\ref{Ex:C} is sufficient to prove termination
 since the states satisfying $\lnot C(X) \triangleq x < -10$ cannot be reached within $\TS$.
 
 \begin{lemma}\label{Lem:Term}
@@ -387,14 +387,14 @@ and then we prove the correctness for the nontermination.
     $\TERM$ is returned only at line~\ref{SNA_Term:NEWTERM}.
     It means that there exists a transition invariant $\TrInv$ which is valid over states $C(X)$, and $\lnot C(X)$ is 
     unreachable from the initial states.
-    The safety problem is updated iteratively, blocking the states that deterministically lead to the termination,
+    The safety problem is updated iteratively, blocking the states that deterministically lead to termination,
     so in the end the $P = \tuple{\Init', \Tr', \Sink, X}$, where $\Init'(X) = \Init(X) \land \bigwedge_{i=0}^{m} \lnot S_i(X)$
     and $\Tr' = \Tr(X,X') \land \bigwedge_{j=0}^{l} \lnot S_j(X')$ .
     According to Lemma~\ref{Lem:Term}, transition system $\tuple{\Init', \Tr', X}$ is terminating, since $\TrInv$ is a disjunctively well-founded
     transition invariant over all reachable states.
 
-    Since the states satisfying $\bigvee_{i=0}^{m} S_i(X)$ and $\bigvee_{j=0}^{l} S_j(X')$ deterministically lead to the termination,
-    every trace of $\tuple{\Init, \Tr, X}$ either follows $\Tr'$ or passes through a blocked state which leads to termination.
+    Since the states satisfying $\bigvee_{i=0}^{m} S_i(X)$ and $\bigvee_{j=0}^{l} S_j(X')$ deterministically lead to the termination, 
+    every trace of $\tuple{\Init, \Tr, X}$ either follows $\Tr'$ or passes through a blocked state, which leads to termination.
     Hence $\tuple{\Init, \Tr, X}$ is terminating.
 \end{proof}
 
@@ -437,7 +437,7 @@ reachable from the initial states.
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{Figures/SNA++.pdf}
-    \caption{Extended Interpolation-based Termination Analysis (New components are highlighted in dark orange and dark blue colors).}
+    \caption{Extended Interpolation-based Termination Analysis (new components are highlighted in dark orange and dark blue colors).}
     \label{fig:SNA++}
 \end{figure}
 
@@ -503,7 +503,7 @@ reachable from the initial states.
 Algorithm~\ref{Alg:SNA_Refined} extends Algorithm~\ref{Alg:SNA_Term} to enable more efficient (non)termination analysis.
 First, in addition to maintaining the transition invariant,
 the algorithm maintains a stack of safety problems to be analyzed: $\Prs$ (line~\ref{SNA_Refined:Prs}).
-At each iteration, the algorithm pops a safety problem from the stack and analyses it.
+At each iteration, the algorithm pops a safety problem from the stack and analyzes it.
 The stack allows the algorithm to focus on (non)termination analysis of particular reachable states within 
 $\TS$.
 The original safety problem always remains in the $\Prs$ stack.
@@ -512,7 +512,7 @@ The postprocessing phase of transition invariant construction is the main change
 When $\lnot C$ is reachable, the extended algorithm performs three actions: (1) it pushes the $\blockTerm$-refined problem 
 (line~\ref{SNA_Refined:BlockTerm}); (2) it computes a formula encoding states reachable within transition system,
 for which transition invariant candidate is not valid (line~\ref{SNA_Refined:Sm}); and (3) it pushes a new 
-subproblem to analyse for termination (line~\ref{SNA_Refined:PushNewProblem}), with $S_m$ as the initial states. 
+subproblem to analyze for termination (line~\ref{SNA_Refined:PushNewProblem}), with $S_m$ as the initial states. 
 This allows the algorithm to concentrate on proving termination or nontermination of particular reachable states.
 
 If $\lnot C$ is not reachable, $\TrInv$ proves termination of the currently analyzed $\TS$ (the last $\TS$ 
@@ -538,7 +538,7 @@ New formula encoding sink states is computed as:
 
 $$\Sink'(X) = \lnot QE(\exists X'. \Tr'(X,X'))$$
 
-The formula $\Sink'$ replaces $\Sink$ in the safety problem, enabling the analysis to 
+Formula $\Sink'$ replaces $\Sink$ in the safety problem, enabling the analysis to 
 proceed instead of returning \UNKNOWN. 
 
 \begin{lemma}\label{Lem:FinalTermination}
@@ -568,8 +568,7 @@ proceed instead of returning \UNKNOWN.
     \NONTERM is returned at line~\ref{SNA_Refined:RECURRENT}, where 
     $\phi(X)$ is a recurrent set for the currently considered $\TS$  $\tuple{\Init', \Tr', X}$. 
     By construction, $\Init'$ is reachable from  $\Init$ (or it is $\Init$), and $\Tr'(X,X') \rightarrow \Tr(X,X')$.
-    If \NONTERM is returned, then there exists a recurrent set in the $\TS$ $\tuple{\Init', \Tr', X}$,  
-    meaning the original $\TS$ $\tuple{\Init, \Tr, X}$ also has a recurrent set. 
+    By Lemma~\ref{Lem:NONTERM}, if \NONTERM is returned, then there exists a recurrent set in the transition system $\tuple{\Init', \Tr', X}$, thus there also exists a recurrent set in the original transition system $\tuple{\Init, \Tr, X}$. 
     This proves nontermination.
 \end{proof}
 
