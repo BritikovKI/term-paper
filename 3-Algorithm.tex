@@ -20,10 +20,10 @@ The procedure consists of five steps:
 % (1) computing $T^n$, the formula encoding states that terminate within $n$ transitions.
 % $T^n$ is used to construct the interpolant. It guarantees that no states other then $\Sink$ are reachable in $n$ transitions; 
 (1) Computing $\NT^n$, the formula encoding states from which non-sink states 
-can be reached within $n$ transitions.
+can be reached within $n$~transitions.
 $\NT^n$ is used to construct the interpolant. 
-The negation of $\NT^n$ encodes the states from which $\Sink$ is guaranteed to be reached in at most $n$ transitions.
-(2) Constructing an over-approximation of the terminating trace via interpolation. 
+The negation of $\NT^n$ encodes the states from which $\Sink$ is guaranteed to be reached in at most~$n$~transitions.
+(2)~Constructing an over-approximation of the terminating trace via interpolation. 
 The usage of sink states allows the interpolant to capture the reason for termination.
 (3) Converting the interpolant into an underapproximating DNF formula.
 This enables efficient ranking function synthesis for each disjunct.
@@ -60,8 +60,8 @@ The overall flow of the procedure is illustrated in Figure~\ref{fig:TrInvGen} an
     $itp(X,X') \gets \textsc{Itp}(\Tr^{n}(X, \dots, X'), \lnot \NT^n(X) \land \lnot \Sink(X'))$\label{SNA_TrInv:Itp}\\
     $\Cs(X,X') \gets \toDNF(itp)$ \label{SNA_TrInv:toDNF}\\
     $\TrInv \gets \TrInv \lor \bigvee_i \{d_i \in \Cs \mid \text{$\exists$ ranking function $f(X)$} \}$\label{SNA_TrInv:TrInv} \\
-    $C(X) \gets Sink(X) \lor \lnot \QE(\exists X',X''.$ $\Tr(X,X') \land \bigl(Id(X',X'') \lor \TrInv(X',X'')\bigr) 
-        \land \lnot \TrInv(X,X''))$ \label{SNA_TrInv:NC} \\
+    $C(X) \gets \lnot \QE(\exists X',X''.$ $\bigl(Id(X,X') \lor \TrInv(X,X')\bigr) 
+        \land \Tr(X',X'') \land  \lnot \TrInv(X,X''))$ \label{SNA_TrInv:NC} \\
     \Return $\tuple{\TrInv, C}$
 \end{algorithm}
 
@@ -91,7 +91,7 @@ Construction of $\NT^n$ enables the overapproximation of the trace.
     Consider $\TS = \tuple{\Init, \Tr, X}$ with $\Init \triangleq  x > 0$, 
     $\Tr(X,X') \triangleq  (x' = x - 1 \lor x' = x - 2) \land (x > 0 \lor x < -10)$, $X \triangleq  \{x\}$.
     The sink states are $\Sink(X) \triangleq x \leq 0 \land x \geq -10$.
-    For $n = 1$, quantifier elimination yields $\NT^1(X) = x > 1 \land x < -10$: 
+    For $n = 1$, quantifier elimination yields $\NT^1(X) = x > 1 \lor x < -10$: 
     states from which $\lnot \Sink$ is reachable in one transition.
     % States with $x \in \{3,4\}$ can reach $\Sink$ in two transitions, but not necessarily,
     % therefore these states are included in $\NT^2$.
@@ -164,7 +164,7 @@ To verify this, the procedure computes the formula $C(X)$ encoding the states ov
     a formula $C(X)$ is called coverage, if the following holds $\forall X, X',X''$:
     \begin{align*}
      C(X) \land \Tr(X,X') \rightarrow& \TrInv(X,X') \\
-     C(X) \land \Tr(X,X') \land \TrInv(X',X'') \rightarrow& \TrInv(X,X'')
+     C(X) \land \TrInv(X,X') \land \Tr(X',X'') \rightarrow& \TrInv(X,X'')
     \end{align*}
  That is, $\TrInv$ is a transition invariant over states that satisfy $C(X)$.
 \end{definition}
@@ -174,10 +174,10 @@ which $\TrInv$ is not a transition invariant. It is a coverage formula by constr
 % example has an issue!
 \begin{example}\label{Ex:C}
     Continuing Example~\ref{Ex:Tn}, suppose the procedure constructs an interpolant
-    $itp(X,X') \triangleq x' < x \land (x > 0 \lor x < -10)$. 
-    Afterwards, algorithm would construct DNF form: $(x' < x \land x > 0 ) \lor (x' < x \land x < -10 )$, and 
-    since the second disjunct is not well founded, it would be dropped, resulting in $\TrInv(X,X') \triangleq x' < x \land x > 0$. 
-    Quantifier elimination at line~\ref{SNA_TrInv:NC} then returns $C(X) \triangleq (x \geq -10 \land x \leq 0) \lor x > 0$.
+    $itp(X,X') \triangleq x' < x \land ( (x > 0 \land x' > -2) \lor x < -10)$. 
+    Afterwards, algorithm would construct DNF form: $(x' < x \land x > 0 \land x' > -2 ) \lor (x' < x \land x < -10 )$, and 
+    since the second disjunct is not well-founded, it would be dropped, resulting in $\TrInv(X,X') \triangleq x' < x \land x > 0 \land x' > -2$. 
+    Quantifier elimination at line~\ref{SNA_TrInv:NC} then returns $C(X) \triangleq x \geq -10$.
 \end{example}
 
 \emph{Note.} If $\lnot C(X)$ is unreachable, then $\TrInv(X,X')$ is a disjunctively well-founded
@@ -192,7 +192,7 @@ since the states satisfying $\lnot C(X) \triangleq x < -10$ cannot be reached wi
     relations and satisfies $\forall X, X',X''$:
     \begin{align*}
      C(X) \land \Tr(X,X') \rightarrow& \TrInv(X,X') \\
-     C(X) \land \Tr(X,X') \land \TrInv(X',X'') \rightarrow& \TrInv(X,X'')
+     C(X) \land \TrInv(X,X') \land \Tr(X',X'') \rightarrow& \TrInv(X,X'')
     \end{align*}    
     then $\TS$ is terminating.
 \end{lemma}
@@ -291,8 +291,8 @@ Otherwise, the algorithm returns \UNKNOWN as the analysis is inconclusive.
     %
 
     The safety check detects a trace $\Tr^1$ reaching $\Sink$. 
-    \trInvSynthesis produces a transition invariant candidate $\TrInv(X,X') \triangleq x' < x \land x > 0$ 
-    and the formula $C(X) \triangleq (x \leq 0 \land x \geq -10) \lor x > 0$.
+    \trInvSynthesis produces a transition invariant candidate $\TrInv(X,X') \triangleq x' < x \land x > 0 \land x' > -2$ 
+    and the formula $C(X) \triangleq  x \geq -10$.
     The safety check for $\tuple{\Init, \Tr, \lnot C(X), X}$ returns \SAFE, and the algorithm concludes 
     that the transition system is terminating.
 
@@ -403,7 +403,7 @@ reachable from the initial states.
     $\TrInv \gets \bot$ \\
     $\Prs \gets [P]$ \label{SNA_Refined:Prs} \\
     \While{$\top$} {
-        \label{SNA_Refined:Extension} $P' \equiv \tuple{\Init, \Tr, \Sink, X} \gets \Prs.pop()$ \\
+        $P' \equiv \tuple{\Init, \Tr, \Sink, X} \gets \Prs.pop()$ \label{SNA_Refined:Extension}\\
         \label{SNA_Refined:Safety} $\tuple{\res, \phi} \gets \safetyCheck(P')$ \\
         \eIf{$\res = \UNSAFE$} {
             $\tuple{\TrInv, C} \gets \trInvSynthesis(P', \phi, \TrInv)$ \\
@@ -423,7 +423,7 @@ reachable from the initial states.
                 \Return $\NONTERM$ \label{SNA_Refined:RECURRENT}
             } 
             \uIf(\label{SNA_Refined:TERM}) {\UNSAT ? $\Init(X) \land \Tr(X,X')$} {
-                    \lIf{$\Prs = \emptyset$} {\Return $\TERM$ }
+                    \lIf{$\Prs = \emptyset$}{\Return $\TERM$ \label{SNA_Refined:TERMR}}
                     \textbf{else} \Continue
             } {
                 $\Sink'(X) \gets \lnot QE(\exists X'. \Tr(X,X'))$ \label{SNA_Refined:Refinement} \\ 
@@ -438,7 +438,7 @@ reachable from the initial states.
 Algorithm~\ref{Alg:SNA_Refined} extends Algorithm~\ref{Alg:SNA_Term} to enable more efficient (non)termination analysis.
 First, in addition to maintaining the transition invariant,
 the algorithm maintains a stack of safety problems to be analyzed: $\Prs$ (line~\ref{SNA_Refined:Prs}).
-At each iteration, the algorithm pops a safety problem from the stack and analyzes it.
+At each iteration, the algorithm pops a safety problem $P' = \tuple{Init, Tr, Sink, X}$ from the stack and analyzes it (line~\ref{SNA_Refined:Extension}).
 The stack allows the algorithm to focus on (non)termination analysis of particular reachable states within 
 $\TS$.
 The original safety problem always remains in the $\Prs$ stack.
@@ -480,7 +480,7 @@ proceed instead of returning \UNKNOWN.
     If Algorithm~\ref{Alg:SNA_Refined} returns $\TERM$, then the original transition system $\tuple{\Init, \Tr, X}$ is terminating.
 \end{lemma}
 \begin{proof}
-    \TERM is returned at line~\ref{SNA_Refined:NEWTERM} or line~\ref{SNA_Refined:TERM}.
+    \TERM is returned at line~\ref{SNA_Refined:NEWTERM} or line~\ref{SNA_Refined:TERMR}.
     As in Algorithm~\ref{Alg:SNA_Term}, to return $\TERM$, the termination conditions need to 
     be satisfied for the transition system $\tuple{\Init', \Tr', X}$, where $\Init'(X) = \Init(X) \land \bigwedge_i \lnot S_i(X)$, 
     and $\Tr'(X,X') = \Tr(X,X') \land \bigwedge_j \lnot S_j(X')$.
@@ -490,10 +490,10 @@ proceed instead of returning \UNKNOWN.
     follows directly from Lemma~\ref{Lem:TERM_N}. This is the case, since the original safety problem is
     preserved in the stack, so if $\Prs = \emptyset$, the original safety problem is terminating.
 
-    \textbf{Case 2.} If $\TERM$ is returned at line~\ref{SNA_Refined:TERM}, then formula 
+    \textbf{Case 2.} If $\TERM$ is returned at line~\ref{SNA_Refined:TERMR}, then formula 
     $\Init'(X) \land \Tr'(X,X')$ is unsatisfiable, so no transition is reachable from $\Init'$.
-    Thus, all feasible transitions in the original 
-    transition system lead to deterministically terminating states, and the transition system is terminating.
+    Thus, transition in the original 
+    transition system leads to deterministically terminating states, and the transition system is terminating.
 \end{proof}
 
 \begin{lemma}\label{Lem:FinalNontermination}
