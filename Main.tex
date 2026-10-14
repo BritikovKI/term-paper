@@ -2,7 +2,7 @@
 % LLNCS macro package for Springer Computer Science proceedings;
 % Version 2.20 of 2017/10/04
 %
-\documentclass[runningheads]{fmcad}
+\documentclass[runningheads]{llncs}
 %
 \usepackage{graphicx}
 \usepackage{listings}
@@ -13,8 +13,12 @@
 \usepackage{subfloat}
 \usepackage{float}
 \usepackage{amssymb}
+% llncs already defines proof; let amsthm redefine it
+\let\proof\relax
+\let\endproof\relax
 \usepackage{amsthm}
 \usepackage{cite}
+\usepackage{url}
 % \usepackage[colorlinks]{hyperref}
  
 \newif\ifbadgeavailable\newif\ifbadgefunctional\newif\ifbadgereusable
@@ -80,11 +84,12 @@
 % }%
 
 % \theoremstyle{mydef}
-\newtheorem{lemma}{Lemma}
+% llncs predefines some of these; only declare the missing ones
+\ifdefined\lemma\else\newtheorem{lemma}{Lemma}\fi
 \theoremstyle{definition}
-\newtheorem{definition}{Definition}
+\ifdefined\definition\else\newtheorem{definition}{Definition}\fi
 
-\newtheorem{example}{Example}
+\ifdefined\example\else\newtheorem{example}{Example}\fi
 
 
 
@@ -95,14 +100,18 @@
 % {\ifbadgeavailable\includegraphics[width=11mm]{Figures/FM_2024_AE_available}\hspace{.815\linewidth}\else\hspace{.905\linewidth}\fi%
 % \ifbadgefunctional\includegraphics[width=11mm]{Figures/FM_2024_AE_functional}\fi}}
 
-\title{Interpolation-based Transition Invariant Generation for Proving and Disproving Termination}
+\title{Interpolation-based Transition Invariants for Proving and Disproving Termination}
 
-% \titlerunning{Safety-based Termination Analysis With Transition Invariant Generation}
+\titlerunning{Interpolation-based Transition Invariants for (non)Termination Analysis}
 %
 % \titlerunning{Reachability Analysis for Multiloop Programs Using TPA}
 % If the paper title is too long for the running head, you can set
 % an abbreviated paper title here
 %
+
+\author{}
+\institute{}
+
 % \author{Konstantin Britikov(\Letter)\inst{1}
 %  \orcidID{0009-0005-7843-7290}
 % \and
@@ -116,25 +125,14 @@
 %  \orcidID{0000-0001-8140-4098}
 % }
 
-\author{\IEEEauthorblockN{Konstantin Britikov}
-\IEEEauthorblockA{USI, Switzerland\\
-% Email: britik@usi.ch
-}
-\and
-\IEEEauthorblockN{Martin Blicha}
-\IEEEauthorblockA{Argot Collective, Switzerland\\
-% Email: martin.blicha@argot.org
-}
-\and
-\IEEEauthorblockN{Grigory Fedyukovich}
-\IEEEauthorblockA{FSU, United States\\
-% Email: grigory.fedyukovich@gmail.com
-}
-\and
-\IEEEauthorblockN{Natasha Sharygina}
-\IEEEauthorblockA{USI, Switzerland\\
-% Email: sharygin@usi.ch
-}}
+% \author{Konstantin Britikov\inst{1} \and
+% Martin Blicha\inst{2} \and
+% Grigory Fedyukovich\inst{3} \and
+% Natasha Sharygina\inst{1}}
+% \authorrunning{K. Britikov et al.}
+% \institute{USI, Switzerland \and
+% Argot Collective, Switzerland \and
+% FSU, United States}
 
 % \author{
 % \IEEEauthorblockN{Konstantin Britikov \and
@@ -225,7 +223,6 @@ yields performance comparable to state-of-the-art tools.
 
 
 
-
 % \section{First Section}
 % \subsection{A Subsection Sample}
 % Please note that the first paragraph of a section or subsection is
@@ -304,9 +301,11 @@ yields performance comparable to state-of-the-art tools.
 % References will then be sorted and formatted in the correct style.
 %
 
-\bibliographystyle{IEEEtran}
+\bibliographystyle{splncs04}
 \bibliography{biblio}
 
-% \input{7-Appendix}
+%
+
+\input{7-Appendix}
 
 \end{document}

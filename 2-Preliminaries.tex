@@ -2,19 +2,19 @@
 \label{Sec:Preliminaries}
 This section introduces the definitions and formalisms used in the paper. 
 Logical formulas in our approach are defined over the theory of Linear Integer Arithmetic (LIA).
-We use $X,X'$ to denote sets of variables (unprimed and primed), where $X$ is a set of state variables, and $X'= \{x'| x \in X\}$ is a set of next state variables.
-If a formula contains variables over multiple states, we use superscript notation, e.g., $X^{(0)}, \dots, X^{(n)}$.
-
-%
-
+We use $X,X'$ to denote sets of variables (unprimed and primed).
 The formula defined over $X$ is a state formula, and a formula over $X \cup X'$ is a transition formula.
 State formulas encode a set of states, and transition formulas define binary relations over the states.
-We use $Id(X,X')$ to denote the identity transition formula $\bigwedge_{x \in X} x = x’$.
+We use $Id(X,X')$ to denote the identity transition formula $\bigwedge_{x \in X} x = x'$.
+To denote variables over multiple states, we use superscript notation, e.g., $X^{(0)}, \dots, X^{(n)}$.
+
 
 %\textit{Transition systems and Safety Problem:} 
 A \emph{transition system} is defined as $\TS = \tuple{ \Init, \Tr, X }$, where $\Init$ is a formula 
 encoding the initial states of the system, $\Tr$ is a transition formula, encoding the transition 
-relation, and $X$ is the set of system variables.
+relation, and $X$ is the set of state variables.
+In the context of transition system $X'= \{x'| x \in X\}$ is a set of next state variables.
+
 With respect to transition system, a \emph{transition trace} is a formula encoding multiple consecutive 
 transitions: $\Tr^{n}(X^{(0)}, \dots, X^{(n)}) = \Tr(X^{(0)}, X^{(1)}) \land \dots \land \Tr(X^{(n-1)}, X^{(n)})$.
 %We write $\Tr^{n}(X^{(0)},\dots,X^{(n)})$ for this conjunction throughout the paper.
@@ -35,8 +35,8 @@ $$\Init(X^{(0)}) \land \Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land Bad(X^{(n)})$$
 
 % \textit{Nontermination:}
 A transition system is called \textbf{nonterminating} if there exists an initial state from which it is possible to take 
-any number of transitions, meaning $\exists X. \Init(X)$ such that:
-$$\forall n \in \mathbb{N}.  \exists X^{(1)}, \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
+any number of transitions, meaning:
+$$\exists X. \Init(X) \land \forall n \in \mathbb{N}.  \exists X^{(1)}, \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
 
 \begin{definition}[Recurrent Set]
     For a Transition System $\tuple{ \Init, \Tr, X }$, a formula $N(X)$ is a recurrent set if: 
@@ -51,15 +51,17 @@ initial states.
 % \textit{Termination:} 
 A $\TS$ is called \textbf{terminating} if for every initial state it enables only a finite number of transitions.
 % For a Transition System $\tuple{ \Init, \Tr, X }$:
-Transition System $\tuple{ \Init, \Tr, X }$ terminates, if $\forall X. \Init(X)$ the following holds:
+Transition System $\tuple{ \Init, \Tr, X }$ terminates, if the following holds:
 % $$\forall X. \Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
-$$\exists n \in \mathbb{N}. \lnot \exists X^{(1)}, \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
+$$\forall X. \Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists X^{(1)}, \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
 % Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, mapping states to a well-founded domain, such that its value strictly decreases along every transition.
 
 \begin{definition}[Transition invariant]
     For a Transition System $\tuple{ \Init, \Tr, X }$, $\TrInv(X,X')$ is a transition invariant if: $\forall X,X'. R(X) \land \Tr^+(X,X') \rightarrow \TrInv(X,X')$, where $\Tr^+(X,X')$ is the transitive closure of $\Tr(X,X')$
     and $R(X)$ is a formula encoding all states reachable in $\TS$.
 \end{definition}
+
+Intuitively, a transition invariant is a formula that overapproximates any possible number of transitions in the transition system.
 
 \begin{definition}[Well-founded Relation]
     A binary relation $W \subseteq D \times D$ over a domain $D$ is \emph{well-founded} if there exists no infinite descending chain:
@@ -82,7 +84,7 @@ Given two formulas $A$ and $B$ where $A \land B$ is unsatisfiable, a Craig inter
 for $A$ and $B$ is a formula $I$, where: (1) $A \rightarrow I$; 
 (2) $I \land B$ is unsatisfiable; and (3) $I$ only contains the symbols, common to both $A$ and $B$.
 Craig interpolants are widely used as overapproximations.
-We write $\textsc{Itp}(A, B)$ for the computation of a Craig interpolant.
+We write $\textsc{Itp}(A, B)$ to denote a Craig interpolant.
 
 \subsection{Proving Nontermination via Safety}
 Many techniques reduce termination and nontermination analysis to safety verification.
@@ -170,13 +172,14 @@ Otherwise, SNA returns \UNKNOWN.
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
     \SetKwInOut{Data}{Data}
-    \Input{Safety problem $P = \tuple{\Init, \Tr, \Sink, X}$, terminating trace $\Tr^{n}(X^{(0)}, \dots, X^{(n)}) = \Tr(X^{(0)}, X^{(1)}) \land \dots \land \Tr(X^{(n-1)}, X^{(n)})$}
+    \Input{Safety problem $P = \tuple{\Init, \Tr, \Sink, X}$, terminating trace $\Tr^{n}(X^{(0)}, \ldots, X^{(n)}) = \Tr(X^{(0)}, X^{(1)}) \land \dots \land \Tr(X^{(n-1)}, X^{(n)})$}
     \Output{Refined safety problem $P'$}
-    \Data{$S_0,\dots,S_n$ - formulas which encode states within trace reachable in 0, ..., n transitions}
+    \Data{$S_0,\ldots,S_n$ - formulas which encode states within trace reachable in 0, ..., n transitions}
 
     % \SetKwFunction{FBlock}{BlockTerm}
     % \SetKwProg{Fn}{Function}{:}{}
     % \Fn{\FBlock{$P, trace$}}{
+    % Replace lpp[ with For loop
     \SetAlgoFuncName{BlockTerm}{autoref name}
         $i \gets n-1$ \\
         \While{$i > 0$}{
@@ -197,7 +200,7 @@ The $\blockTerm$ procedure takes as input a safety problem $P$ and a trace formu
 that $\Init(X^{(0)}) \land \Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \Sink(X^{(n)})$ is satisfiable.
 The algorithm iteratively analyses the trace from the last transition backwards. 
 % It checks if it is possible to take a transition that does not lead to the sink states, starting from the end of the trace.
-Using \QE, Algorithm~\ref{Alg:SNABlock} computes $S_i$ and $S_{i+1}$, 
+Using \QE Algorithm~\ref{Alg:SNABlock} computes $S_i$ and $S_{i+1}$, 
 encoding the states that are reachable after $i$ and $i+1$ transitions from $\Init$ (lines~\ref{SNA:Si1},~\ref{SNA:Si}).
 Then, at line~\ref{SNA:BLOCK} it checks if $S_i(X) \land \Tr(X,X') \land \lnot S_{i+1}(X')$ is satisfiable.%, sending a query to the SMT solver.
 %With this query, the algorithm checks if it is possible to reach some state that does not necessarily lead to the sink states.
@@ -214,7 +217,7 @@ If the whole trace is deterministic (it is not possible to take an alternative t
     $X = \{x\}$, $\Init(X)   \triangleq \top$, and
     $\Tr(X, X') \triangleq (x' = x - 1 \lor x' = x - 2) \land x \neq 0$.
     The sink states are $\Sink(X) \triangleq x = 0$, and the initial 
-    safety problem is $P = \tuple{\Init, \Tr, \Sink, x}$.
+    safety problem is $P = \tuple{\Init, \Tr, \Sink, X}$.
     This $\TS$ is nonterminating, since $x$ infinitely decreases.
 
     The execution of Algorithm~\ref{Alg:SNA} updates the initial states
@@ -222,7 +225,7 @@ If the whole trace is deterministic (it is not possible to take an alternative t
     $\Init(X) \;\gets\; x \neq 0$, and  $\Tr(X, X') \;\gets\; \Tr(X, X') \land x' \neq 0$.
     The safety check of the updated problem concludes \SAFE,
     with $Inv(X) \triangleq x \neq 0$. 
-    $Inv(X)$ is a recurrent set, and algorithm returns \NONTERM.
+    Invariant is a recurrent set, and algorithm returns \NONTERM.
 
     \textit{Motivation for transition invariant-based termination analysis.} Consider a 
     small modification (replacing $x\neq0$ with $x>0$): $\Tr(X, X') \triangleq 
