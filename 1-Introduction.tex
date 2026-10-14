@@ -2,15 +2,10 @@
 \label{Sec:Introduction}
 
 Termination analysis of infinite-state systems is a fundamental problem in formal methods. 
-% that necessitates the discovery of 
-% complex ranking functions or inductive invariants to over-approximate system behavior.
-% Konst: It not necessarily necessitates the discovery of complex ranking functions
 Proving termination and nontermination is undecidable~\cite{DBLP:conf/cav/Braverman06}, 
 yet there exist many techniques that succeed on a large class of real-world problems.
 Modern techniques treat termination and nontermination as separate 
 problems, since each has a different proof procedure.
-%State-of-the-art termination techniques are based on the synthesis of 
-%ranking functions for the transition relation
 The existence of a ranking function by e.g.~\cite{DBLP:conf/vmcai/PodelskiR04,DBLP:conf/cav/KuraUH20,DBLP:journals/jacm/Ben-AmramG14,DBLP:conf/cav/HeizmannHP14,DBLP:journals/jar/GieslABEFFHOPSS17,DBLP:conf/esop/SaritaSGSV26,DBLP:conf/sas/Ben-AmramDG19,DBLP:conf/tacas/UrbanGK16,FedyukovichZG18,RileyF25} 
 witnesses termination by providing a measure that strictly decreases along every transition.
 Alternatively, fixpoint computation, e.g.~\cite{DBLP:journals/pacmpl/UnnoTGK23}, and disjunctively well-founded 
