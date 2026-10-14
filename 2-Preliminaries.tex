@@ -181,15 +181,13 @@ Otherwise, SNA returns \UNKNOWN.
     % \Fn{\FBlock{$P, trace$}}{
     % Replace lpp[ with For loop
     \SetAlgoFuncName{BlockTerm}{autoref name}
-        $i \gets n-1$ \\
-        \While{$i > 0$}{
+        \For{$i = n-1; i > 0; i \gets i - 1$}{
             $S_{i+1}(X) \gets \QE(\exists X^{(0)},\dots, X^{(i)},  X^{(i+2)}, \dots, X^{(n)}.$ $\Init(X^{(0)}) \land \Tr^{n} \land \Sink(X^{(n)}))[X^{(i+1)} \mapsto X]$ \label{SNA:Si1}\\
             $S_{i}(X) \gets \QE(\exists X^{(0)},\dots, X^{(i-1)},  X^{(i+1)}, \dots, X^{(n)}.$ $\Init(X^{(0)}) \land \Tr^{n} \land \Sink(X^{(n)}))[X^{(i)} \mapsto X]$ \label{SNA:Si}\\
             \If{SAT ? $S_i(X) \land \Tr(X,X') \land \lnot S_{i+1}(X')$ \label{SNA:BLOCK}}{
                 $\Tr'(X,X') \gets \Tr(X,X') \land \lnot S_{i+1}(X')$ \label{SNA:TRBLOCK}  \\
                 \Return $\tuple{\Init, \Tr', \Sink, X}$
             }
-            $i \gets i - 1$   
         }
         $\Init'(X^{(0)}) \gets \Init(X^{(0)}) \land \lnot \QE(\exists X^{(1)}, \dots, X^{(n)}. \Init(X^{(0)}) \land \Tr^{n} \land \Sink(X^{(n)}))$  \label{SNA:BLOCKINIT} \\
         \Return $\tuple{\Init', \Tr, \Sink, X}$

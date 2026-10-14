@@ -27,7 +27,7 @@ Additionally, we used quantifier elimination, already implemented in \golem.
 % Quantifier Elimination is produced by executing Model Based Projections, untill the whole formula is covere
 %
 For SMT queries and interpolation, our implementation uses the \opensmt  solver~\cite{DBLP:conf/sat/HyvarinenMAS16,DBLP:conf/tacas/BruttomessoPST10}.
-\opensmt is integrated within \golem and provides native interpolation support.
+\opensmt is integrated within \golem and supports interpolation.
 
 
 \subsection{Evaluation}
@@ -123,7 +123,7 @@ Orange squares denote nonterminating instances; blue crosses denote terminating 
 Points above the diagonal indicate instances where \snaOpt is faster than the competitor.
 \snaOpt solves 805 benchmarks, with \Tt solving 1002, \KoAT 562, and \LoAT 525 instances, the full comparison can be seen in Table~\ref{tab:external}.
 As shown in Figure~\ref{fig:stateOfArtComp}, \snaOpt, despite being a prototype implementation, is competitive with state-of-the-art termination analyzers.
-Among all compared tools, \snaOpt uniquely solves nine instances.
+Among all compared tools, \snaOpt uniquely solves eight instances.
 Notably, two of these have never been solved in the Termination Competition — \texttt{juLinkedListCreateAddAll} and \texttt{juLinkedListCreateAddAllAt}.
 \snaOpt found recurrent sets and proved nontermination for them.
 In answer to \textbf{RQ2}, \snaOpt is competitive with state-of-the-art tools and solves 
