@@ -1,9 +1,6 @@
 \section{Related Work}
 \label{Sec:Related}
-Recent years have seen significant advances in automated techniques for both termination and nontermination analysis. 
-%Below we discuss the techniques related to our approach.
-
-
+% Recent years have seen significant advances in automated techniques for both termination and nontermination analysis. 
 \textbf{Nontermination.} 
 Nontermination analysis is typically centered on the construction 
 of recurrent sets — sets of states from which execution cannot 
@@ -42,8 +39,7 @@ State-of-the-art techniques focus on the construction of
 multiphase or lexicographic ranking 
 functions~\cite{DBLP:journals/jacm/Ben-AmramG14,FedyukovichZG18}, which 
 significantly broaden the class of programs for which termination 
-can be proved. However, the complexity of a transition system can 
-make ranking function synthesis infeasible.
+can be proved. However, ranking function synthesis is not always feasible.
 With fixpoint computation, ~\cite{DBLP:journals/pacmpl/UnnoTGK23} reduces termination and nontermination to the validity of a first-order fixpoint formula.
 Disjunctively well-founded transition 
 invariants~\cite{DBLP:conf/lics/PodelskiR04,DBLP:conf/sas/CookPR05,

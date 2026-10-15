@@ -2,6 +2,17 @@
 \renewcommand{\thesection}{\Alph{section}}%
 % TODO: MOVE TO THE APPENDICES
 \section{Proof of Lemma~\ref{Lem:Term}} \label{App:proofs}
+\begin{lemma}
+    Let $\TS = \tuple{\Init, \Tr, X}$ be a transition system and let 
+    $C(X)$ be a formula such that $\lnot C(X)$ is unreachable in 
+    $\TS$. If $\TrInv(X,X')$ is a finite disjunction of formulas encoding well-founded
+    relations and satisfies $\forall X, X',X''$:
+    \begin{align*}
+     C(X) \land \Tr(X,X') \rightarrow& \TrInv(X,X') \\
+     C(X) \land \TrInv(X,X') \land \Tr(X',X'') \rightarrow& \TrInv(X,X'')
+    \end{align*}    
+    then $\TS$ is terminating.
+\end{lemma}
 \begin{proof}
     We show that $\TrInv$ is a disjunctively well-founded transition 
     invariant over the reachable states of $\TS$, from which 
@@ -29,15 +40,13 @@
 
     \emph{Inductive step}: Assume $R(X) \land \Tr^n(X, \dots,X') \rightarrow 
     \TrInv(X,X')$ for some $n \geq 1$. 
-    Let $\Tr^{n+1}(X,X'')$ hold, so there $\exists X, X', \dots, X''. R(X) \land \Tr(X, X') \land \Tr^n(X',\dots,X'')$. 
-    Since $R(X)$ is a formula encoding all reachable states: $R(X) \land \Tr(X, X') \land \Tr^n(X',\dots,X'') \rightarrow 
-    R(X) \land \Tr(X, X') \land R(X') \land \Tr^n(X',\dots,X'')$.
+    Let $\Tr^{n+1}(X',X'')$ hold, so there $\exists X, X', \dots, X''. R(X) \land \Tr^n(X,\dots,X') \land \Tr(X', X'')$. 
     Since $R(X) \land \Tr^n(X, \dots, X') \rightarrow \TrInv(X,X')$, then trivially
-    $R(X) \land \Tr(X, X') \land R(X') \land \Tr^n(X',\dots,X'') \rightarrow R(X) \land \Tr(X,X') \land \TrInv(X',X'')$.
+    $R(X) \land \Tr^n(X,\dots,X') \land \Tr(X', X'') \rightarrow \TrInv(X,X') \land \Tr(X',X'')$.
     Now, due to the fact that $R(X) \rightarrow C(X)$, the following holds:
-    $R(X) \land \Tr(X, X') \land \TrInv(X',X'') \rightarrow C(X) \land \Tr(X,X') \land \TrInv(X',X'').$
+    $R(X) \land \TrInv(X,X') \land \Tr(X', X'') \rightarrow C(X) \land \TrInv(X,X') \land \Tr(X', X'') .$
     By the lemma hypothesis:
-    $$C(X) \land \Tr(X,X') \land \TrInv(X',X'') \rightarrow \TrInv(X,X'').$$
+    $$C(X) \land \TrInv(X,X') \land \Tr(X',X'') \rightarrow \TrInv(X,X'').$$
 
     Therefore, through the chain of implications, we have:
     $$R(X) \land \Tr^{n+1}(X,X') \rightarrow \TrInv(X,X').$$
@@ -56,11 +65,10 @@ Proof of Lemma~\ref{Lem:TERM_N}.
     $\TERM$ is returned only at line~\ref{SNA_Term:NEWTERM}.
     It means that there exists a transition invariant $\TrInv$ which is valid over states $C(X)$, and $\lnot C(X)$ is 
     unreachable from the initial states.
-    The safety problem is updated iteratively, blocking the states that deterministically lead to termination,
+    The safety problem is updated iteratively, blocking the states that deterministically lead to termination (Lemma ~\ref{Lem:DETTERM}),
     so in the end the $P = \tuple{\Init', \Tr', \Sink, X}$, where $\Init'(X) = \Init(X) \land \bigwedge_{i=0}^{m} \lnot S_i(X)$
     and $\Tr' = \Tr(X,X') \land \bigwedge_{j=0}^{l} \lnot S_j(X')$ .
-    According to Lemma~\ref{Lem:Term}, transition system $\tuple{\Init', \Tr', X}$ is terminating, since $\TrInv$ is a disjunctively well-founded
-    transition invariant over all reachable states.
+    According to Lemma~\ref{Lem:Term}, transition system $\tuple{\Init', \Tr', X}$ is terminating, since $\TrInv$ is a disjunctively well-founded transition invariant over all reachable states.
 
     Since the states satisfying $\bigvee_{i=0}^{m} S_i(X)$ and $\bigvee_{j=0}^{l} S_j(X')$ deterministically lead to the termination, 
     every trace of $\tuple{\Init, \Tr, X}$ either follows $\Tr'$ or passes through a blocked state, which leads to termination.
@@ -75,4 +83,29 @@ Proof of Lemma~\ref{Lem:NONTERM_N}.
     The proof of this lemma follows directly from Lemma~\ref{Lem:NONTERM}, 
     as the nontermination analysis in Algorithm~\ref{Alg:SNA_Term} 
     follows exactly the same process as Algorithm~\ref{Alg:SNA}.
+    Added transition invariant synthesis flow does not influence safety checks and nontermination analysis.
+\end{proof}
+
+\section{Proof of Algorithm~\ref{Alg:SNA_Refined} invariant}\label{App:invariant}
+
+Proof of Lemma~\ref{Lem:StackInv}.
+\begin{proof}
+    Initially $B = P_0$. Since problems are pushed on top of $B$, $B$ is popped only when it is the only element of $\Prs$.
+    The algorithm then either returns, or pushes as the new bottom
+    (a) $\blockTerm(B, \phi)$ (line~\ref{SNA_Refined:BlockTerm}), which keeps (1) because $\Sink_B$ is unchanged and $\Tr_B$ only shrinks,
+    and keeps (2) by Lemma~\ref{Lem:DETTERM}; or
+    (b) $\tuple{\Init_B \land \lnot \Sink', \Tr_B, \Sink', X}$ (line~\ref{SNA_Refined:NewPush}), which satisfies (1) by the definition of $\Sink'$
+    and keeps (2) because the removed initial states have no successors.
+\end{proof}
+
+\section{Proof that \blockTerm preserves the invariant}\label{App:BlockTerm}
+
+Proof of Lemma~\ref{Lem:DETTERM}.
+\begin{proof}
+    Let $i$ be the index at which \blockTerm stops ($i=-1$ if it reaches line~\ref{SNA:BLOCKINIT}).
+    For all $j > i$ the query at line~\ref{SNA:BLOCK} was unsatisfiable, so every $\Tr$-successor of an $S_j$-state
+    is in $S_{j+1}$, and $S_n \subseteq \Sink$. Hence every $\Tr$-path from a state in $S_{i+1}$
+    reaches a state without successors within $n$ steps.
+    An infinite run therefore never visits $S_{i+1}$, so it uses no transition removed at line~\ref{SNA:TRBLOCK}
+    and does not start in an initial state removed at line~\ref{SNA:BLOCKINIT}.
 \end{proof}

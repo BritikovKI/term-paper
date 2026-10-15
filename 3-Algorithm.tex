@@ -20,7 +20,7 @@ The procedure consists of five steps:
 % (1) computing $T^n$, the formula encoding states that terminate within $n$ transitions.
 % $T^n$ is used to construct the interpolant. It guarantees that no states other then $\Sink$ are reachable in $n$ transitions; 
 (1) Computing $\NT^n$, the formula encoding states from which non-sink states 
-can be reached within $n$~transitions.
+can be reached in $n$~transitions.
 $\NT^n$ is used to construct the interpolant. 
 The negation of $\NT^n$ encodes the states from which $\Sink$ is guaranteed to be reached in at most~$n$~transitions.
 (2)~Constructing an over-approximation of the terminating trace via interpolation. 
@@ -65,7 +65,7 @@ The overall flow of the procedure is illustrated in Figure~\ref{fig:TrInvGen} an
     \Return $\tuple{\TrInv, C}$
 \end{algorithm}
 
-Algorithm~\ref{Alg:SNA_TrInv} takes as input a safety problem $P = \tuple{\Init, \Tr, \newline\Sink, X}$,
+Algorithm~\ref{Alg:SNA_TrInv} takes as input a safety problem $P = \tuple{\Init, \Tr, \Sink, X}$,
 a transition trace $\Tr^n(X^{(0)}, X^{(1)}, \dots, X^{(n)})$, and a transition invariant formula $\TrInv(X,X')$. 
 It returns a tuple of formulas $\tuple{\TrInv, C}$, where $\TrInv(X,X')$ is a disjunctively well-founded transition invariant 
 candidate, and $C(X)$ is a formula encoding the states for which $\TrInv$ is a valid transition invariant. 
@@ -73,7 +73,7 @@ It proceeds in the following steps:
 % Define from the negation, not the itself
 
 \textbf{Step 1}: \textit{Computing $\NT^n$ (line~\ref{SNA_TrInv:T}).} 
-$\NT^n(X)$ encodes all states from which a non-sink state is reachable within $n$ transitions. 
+$\NT^n(X)$ encodes all states from which a non-sink state is reachable in exactly $n$ transitions. 
 The following property defines it: $\forall X^{(0)}. \NT^n(X^{(0)}) \leftrightarrow $
 % $\NT^n(X)$ encodes all states guaranteed to reach a sink state within $n$ 
 % transitions, is defined by the following property:
@@ -200,6 +200,10 @@ since the states satisfying $\lnot C(X) \triangleq x < -10$ cannot be reached wi
     Full proof is provided in Appendix~\ref{App:proofs}.
 \end{proof}
 
+\emph{Remark:} Soundness of \TERM{} does not depend on the interpolant: Lemma~\ref{Lem:Term}
+only requires that the disjuncts kept at line~\ref{SNA_TrInv:TrInv} are well-founded and that
+$C$ is a coverage formula, both of which are checked.
+
 %-----------------------------------------------------------------------
 \subsection{Interpolation-based Termination Analysis}
 %-----------------------------------------------------------------------
@@ -244,7 +248,7 @@ The overall flow is shown in Figure~\ref{fig:SNATrInv}.
             }
             \textbf{else} \Return $\TERM$\label{SNA_Term:NEWTERM}
         }{
-            \uIf{$\forall X. \phi(X) \rightarrow \exists X'. \Tr(X,X') \land \phi(X')$} {
+            \uIf{$\forall X. \phi(X) \rightarrow \exists X'. \Tr(X,X') \land \phi(X')$ and $\exists X. \Init(X) \land \phi(X)$} {
                 \Return $\NONTERM$ \label{SNA_Term:NONTERM}
             }
             \Return \UNKNOWN
@@ -296,26 +300,29 @@ Otherwise, the algorithm returns \UNKNOWN as the analysis is inconclusive.
     The safety check for $\tuple{\Init, \Tr, \lnot C(X), X}$ returns \SAFE, and the algorithm concludes 
     that the transition system is terminating.
 
-    \textbf{Limitation of the approach.} Consider a different $\TS$, 
-    with $X = \{x, u\}$, $\Init(X)   \triangleq u < 10 \land x > 0 $, and
-    $\Tr(X, X') \triangleq ((x' = x - 1 \land u' = u ) \lor (x' = x + 1 \land u' = u + 1 \land u < 10)) \land x > 0$.
-    Intuitively, each transition either decrements $x$ (and keeps $u$ unchanged), or 
-    increments both $x$ and $u$ until $u < 10$. 
-    Once $u = 10$, only the decrementing transition is possible, and $x$ decreases monotonically to zero. 
+    \textbf{Limitation of the approach.} Consider a different $\TS$,
+    with $X = \{x, u\}$, $\Init(X) \triangleq x > 0 \land u \leq 10$, and
+    $\Tr(X, X') \triangleq ((x' = x - 1 \land u' = u) \lor (x' = x + 1 \land u' = u + 1 \land u < 10)) \land x > 0 \land u \leq 10$.
+    Intuitively, each transition either decrements $x$ (and keeps $u$ unchanged), or
+    increments both $x$ and $u$ while $u < 10$.
+    Once $u = 10$, only the decrementing transition is possible, and $x$ decreases monotonically to zero.
     Hence $\TS$ is terminating.
-    The sink states are $\Sink(X) \triangleq x \leq 0$.
+    The sink states are $\Sink(X) \triangleq x \leq 0 \lor u > 10$.
 
-    The Algorithm~\ref{Alg:SNA_Term} detects a trace $\Tr^1(X^{(0)}, X^{(1)})$ reaching $\Sink$ states.
-    \trInvSynthesis\ constructs transition invariant: $\TrInv(X, X') \;\triangleq\; x' < x \land x > 0$. 
-    The coverage formula is computed as: $C(X) \;\triangleq\; x \leq 0 \lor (x>0 \land u = 10)$.
-    The safety check for $\tuple{\Init, \Tr, \lnot C, X}$ returns \UNSAFE, since states 
-    with $u < 10$ are reachable from $\Init$. 
-    \blockTerm then blocks the states that are guaranteed to reach sink:
-    $\Tr(X, X') \;\gets\; \Tr(X, X') \land x' > 0$.
+    Algorithm~\ref{Alg:SNA_Term} detects a trace $\Tr^1(X^{(0)}, X^{(1)})$ reaching $\Sink$ states.
+    One possible interpolant is $itp(X,X') \triangleq (x' < x \land x > 0 \land u' = u) \lor (x > 0 \land u < 10)$;
+    its second disjunct is not well-founded, so \trInvSynthesis\ constructs
+    $\TrInv(X, X') \triangleq x' < x \land x > 0 \land u' = u$
+    and the coverage formula $C(X) \triangleq x \leq 0 \lor u \geq 10$.
+    The safety check for $\tuple{\Init, \Tr, \lnot C, X}$ returns \UNSAFE, since initial states
+    with $u < 10$ satisfy $\lnot C$.
+    \blockTerm\ then blocks the states that deterministically reach $\Sink$:
+    $\Tr(X, X') \;\gets\; \Tr(X, X') \land \lnot(x' = 0 \land u' \leq 10)$.
 
-    The algorithm calls $\safetyCheck(P)$, which returns $\SAFE$ with inductive invariant 
-    $\Inv(X) \triangleq x > 0$. 
-    However, $\Inv$ is not a recurrent set, so Algorithm~\ref{Alg:SNA_Term} returns \textsc{Unknown}.
+    The algorithm calls $\safetyCheck(P)$, which returns $\SAFE$ with inductive invariant
+    $\Inv(X) \triangleq x > 0 \land u \leq 10$.
+    However, $\Inv$ is not a recurrent set (the state $x = 1, u = 10$ has no successor),
+    so Algorithm~\ref{Alg:SNA_Term} returns \UNKNOWN.
 
     The root cause why the algorithm cannot prove termination is that $\TrInv$ does 
     not cover states with $u < 10$. 
@@ -327,13 +334,10 @@ Otherwise, the algorithm returns \UNKNOWN as the analysis is inconclusive.
 \end{example}
 
 
-%-----------------------------------------------------------------------
-\subsection{Correctness}
-%-----------------------------------------------------------------------
-
-
-This subsection proves the soundness of the introduced approach. We first prove that when the algorithm returns \TERM, the transition system is terminating,
-and then we prove the correctness for the nontermination.
+\paragraph{Correctness:} Below, the soundness of the Algorithm~\ref{Alg:SNA_Term} is discussed. 
+The proofs of Lemma~\ref{Lem:TERM_N} and Lemma~\ref{Lem:NONTERM_N} are provided in Appendix~\ref{App:proofs_correctness}.
+% We first prove that when the algorithm returns \TERM, the transition system is terminating,
+% and then we prove the correctness for the nontermination.
 %  Add well-foundness definition
 
 \begin{lemma}\label{Lem:TERM_N}
@@ -344,9 +348,6 @@ and then we prove the correctness for the nontermination.
     If Algorithm~\ref{Alg:SNA_Term} returns $\NONTERM$, then the transition system $\tuple{\Init, \Tr, X}$ is nonterminating.
 \end{lemma}
 
-The proofs of Lemma~\ref{Lem:TERM_N} and Lemma~\ref{Lem:NONTERM_N} are provided in Appendix~\ref{App:proofs_correctness}.
-
-
 \section{Extended Interpolation-based Transition Invariant Generation for Proving and Disproving Termination}\label{Sec:Extension}
 
 Algorithm~\ref{Alg:SNA_Term} is already capable of proving termination 
@@ -355,7 +356,7 @@ This section describes an extension of the algorithm that aims to improve intera
 Additionally, we present further extensions to the original SNA algorithm that improve overall performance. 
 The high-level flow of the extended algorithm can be seen in Figure~\ref{fig:SNA++}.
 
-\subsection{Analysis of States for which Transition Invariant is not Valid}~\label{Sec:Refinement}
+\subsection{Analysis of States for which Transition Invariant is not Valid}\label{Sec:Refinement}
 
 A transition invariant candidate can be used to guide the termination analysis.
 Particularly, Algorithm~\ref{Alg:SNA_Term} constructs the formula $C(X)$ encoding states for which the transition invariant is valid.
@@ -364,8 +365,8 @@ The intuition is to compute the reachable states $S_m$ within $\lnot C(X)$ (whic
 Then, it is possible to run (non)termination check for these particular states within $\TS$ (line~\ref{SNA_Refined:PushNewProblem}).
 
 
-In the case of termination, the algorithm produces a witness transition invariant that extends the 
-transition invariant of the original system, making it valid for more states.
+In the case if any transition trace from $S_m$ eventually reaches $C$, the algorithm produces a witness transition invariant that extends the 
+transition invariant of the original system, potentially making it valid for more states.
 If nontermination is proved for $S_m$, then the original $\TS$ is also nonterminating, since $S_m$ is 
 reachable from the initial states.
 
@@ -419,7 +420,7 @@ reachable from the initial states.
             } 
         }{
         %    \label{SNA_TERM:SAFE}
-            \uIf{$\forall X. \phi(X) \rightarrow \exists X'. \Tr(X,X') \land \phi(X')$} {
+            \uIf{$\forall X. \phi(X) \rightarrow \exists X'. \Tr(X,X') \land \phi(X')$ and $\exists X. \Init(X) \land \phi(X)$} {
                 \Return $\NONTERM$ \label{SNA_Refined:RECURRENT}
             } 
             \uIf(\label{SNA_Refined:TERM}) {\UNSAT ? $\Init(X) \land \Tr(X,X')$} {
@@ -427,7 +428,7 @@ reachable from the initial states.
                     \textbf{else} \Continue
             } {
                 $\Sink'(X) \gets \lnot QE(\exists X'. \Tr(X,X'))$ \label{SNA_Refined:Refinement} \\ 
-                $\Prs.push(\tuple{\Init, \Tr, \Sink', X})$ \label{SNA_Refined:NewPush}
+                $\Prs.push(\tuple{\Init \land \lnot \Sink', \Tr, \Sink', X})$ \label{SNA_Refined:NewPush}
             }
         }
         
@@ -448,7 +449,8 @@ When $\lnot C$ is reachable, the extended algorithm performs three actions: (1) 
 (line~\ref{SNA_Refined:BlockTerm}); (2) it computes a formula encoding reachable states,
 for which transition invariant candidate is not valid (line~\ref{SNA_Refined:Sm}); and (3) it pushes a new 
 subproblem to analyze for termination (line~\ref{SNA_Refined:PushNewProblem}), with $S_m$ as the initial states. 
-This allows the algorithm to concentrate on proving termination or nontermination of particular reachable states.
+This allows the algorithm to synthesize additional termination arguments or prove nontermination of particular 
+reachable states.
 
 If $\lnot C$ is not reachable, $\TrInv$ proves termination of the currently analyzed $\TS$ (the last $\TS$ 
 popped from the stack), and the number of remaining subproblems decreases.
@@ -476,24 +478,27 @@ $$\Sink'(X) = \lnot QE(\exists X'. \Tr'(X,X'))$$
 Formula $\Sink'$ replaces $\Sink$ in the safety problem, enabling the analysis to 
 proceed instead of returning \UNKNOWN. 
 
+\paragraph{Correctness:} Below, the soundness of the Algorithm~\ref{Alg:SNA_Refined} is discussed. 
+Proof for Lemma~\ref{Lem:StackInv} is given in the Appendix~\ref{App:invariant}.
+
+\begin{lemma}\label{Lem:StackInv}
+    Let $P_0 = \tuple{\Init_0, \Tr_0, \Sink_0, X}$ be the (preprocessed) input of Algorithm~\ref{Alg:SNA_Refined}.
+    At the start of every iteration, the bottom element $B = \tuple{\Init_B, \Tr_B, \Sink_B, X}$ of $\Prs$ satisfies:
+    (1) no $\Sink_B$ state has a $\Tr_B$-successor, and
+    (2) every infinite run of $\tuple{\Init_0, \Tr_0, X}$ is an infinite run of $\tuple{\Init_B, \Tr_B, X}$.
+\end{lemma}
+
 \begin{lemma}\label{Lem:FinalTermination}
     If Algorithm~\ref{Alg:SNA_Refined} returns $\TERM$, then the original transition system $\tuple{\Init, \Tr, X}$ is terminating.
 \end{lemma}
 \begin{proof}
-    \TERM is returned at line~\ref{SNA_Refined:NEWTERM} or line~\ref{SNA_Refined:TERMR}.
-    As in Algorithm~\ref{Alg:SNA_Term}, to return $\TERM$, the termination conditions need to 
-    be satisfied for the transition system $\tuple{\Init', \Tr', X}$, where $\Init'(X) = \Init(X) \land \bigwedge_i \lnot S_i(X)$, 
-    and $\Tr'(X,X') = \Tr(X,X') \land \bigwedge_j \lnot S_j(X')$.
-    $\bigvee_{i=0}^m S_i(X)$ and $\bigvee_{j=0}^l S_j(X')$ are the states that deterministically lead to termination.
-
-    \textbf{Case 1.} If $\TERM$ is returned at line~\ref{SNA_Refined:NEWTERM}, then the termination proof 
-    follows directly from Lemma~\ref{Lem:TERM_N}. This is the case, since the original safety problem is
-    preserved in the stack, so if $\Prs = \emptyset$, the original safety problem is terminating.
-
-    \textbf{Case 2.} If $\TERM$ is returned at line~\ref{SNA_Refined:TERMR}, then formula 
-    $\Init'(X) \land \Tr'(X,X')$ is unsatisfiable, so no transition is reachable from $\Init'$.
-    Thus, transition in the original 
-    transition system leads to deterministically terminating states, and the transition system is terminating.
+    \TERM is returned only at lines~\ref{SNA_Refined:NEWTERM} and~\ref{SNA_Refined:TERMR}, both when $\Prs = \emptyset$ after the pop,
+    i.e., when the analyzed problem is the bottom element $B$ of Lemma~\ref{Lem:StackInv}.
+    At line~\ref{SNA_Refined:NEWTERM}, $\lnot C$ is unreachable in $\tuple{\Init_B, \Tr_B, X}$, $C$ is a coverage formula of $\TrInv$
+    w.r.t.\ $\Tr_B$, and every disjunct of $\TrInv$ admits a ranking function (regardless of the subproblem that produced it);
+    by Lemma~\ref{Lem:Term}, $\tuple{\Init_B, \Tr_B, X}$ terminates.
+    At line~\ref{SNA_Refined:TERMR}, $\Init_B \land \Tr_B$ is unsatisfiable, so $\tuple{\Init_B, \Tr_B, X}$ terminates trivially.
+    In both cases, by Lemma~\ref{Lem:StackInv}(2) the original system is terminating.
 \end{proof}
 
 \begin{lemma}\label{Lem:FinalNontermination}
