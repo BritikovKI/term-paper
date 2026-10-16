@@ -66,7 +66,7 @@ all reported numbers refer to the remaining 1180 benchmarks.
     \end{tabular}
 \end{table}
 
-\paragraph{RQ1:} Table~\ref{tab:internal} gives the experimental results for \snaOpt, \sna, and \snaTerm with TPA as the safety verification engine.
+\textbf{RQ1:} Table~\ref{tab:internal} gives the experimental results for \snaOpt, \sna, and \snaTerm with TPA as the safety verification engine.
 \snaOpt solves more terminating and more nonterminating instances than both \sna and \snaTerm,
 including 284 instances solved by neither of them;
 conversely, \sna and \snaTerm each solve 7 instances not solved by \snaOpt.
@@ -102,20 +102,22 @@ and 800 with PDKIND (29 not with TPA). Unless stated otherwise, \snaOpt uses TPA
         \hline
         \Tt & 1002 & 572 & 430 & 33 \\
         \hline
-        \snaOpt & 805 & 358 & 447 & 8 \\
+        \snaOpt (TPA) & 805 & 359 & 446 & 8 \\
+        \hline
+        \snaOpt (PDKIND) & 800 & 358 & 442 & 8 \\
         \hline
         \snaOpt portfolio & 834 & 372 & 462 & 9 \\
         \hline
     \end{tabular}
 \end{table}
 
-\paragraph{RQ2:} Termination tools typically combine several techniques,
+\textbf{RQ2:} Termination tools typically combine several techniques,
 and the safety engines of \golem are complementary.
 We therefore also evaluate \emph{\snaOpt portfolio}, which runs \snaOpt with two engines
 (TPA, PDKIND) concurrently on the same single core.
 Figure~\ref{fig:stateOfArtComp} compares runtimes (orange squares: nonterminating, blue crosses: terminating;
 above the diagonal: \snaOpt is faster), and Table~\ref{tab:external} the solved instances.
-\snaOpt portfolio solves 834 instances (\snaOpt: 805), against 1002 for \Tt, 562 for \KoAT, and 525 for \LoAT.
+\snaOpt portfolio solves 834 instances (\snaOpt (TPA): 805, \snaOpt (PDKIND): 800), against 1002 for \Tt, 562 for \KoAT, and 525 for \LoAT.
 On nontermination, \snaOpt portfolio (462) is second only to \LoAT (525) among the compared tools, ahead of \Tt (430);
 on termination (372), it is behind \Tt (572) and \KoAT (562).
 No answer of \snaOpt portfolio contradicts an answer of \LoAT, \KoAT, or \Tt.

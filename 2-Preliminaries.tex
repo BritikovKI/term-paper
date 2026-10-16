@@ -6,7 +6,7 @@ We use $X,X'$ to denote sets of variables (unprimed and primed).
 The formula defined over $X$ is a state formula, and a formula over $X \cup X'$ is a transition formula.
 State formulas encode a set of states, and transition formulas define binary relations over the states.
 We use $Id(X,X')$ to denote the identity transition formula $\bigwedge_{x \in X} x = x'$.
-To denote variables over multiple states, we use superscript notation, e.g., $X^{(0)}, \dots, X^{(n)}$.
+To denote variables over multiple states, we use superscript notation, e.g., $X^{(0)}, \ldots, X^{(n)}$.
 
 
 %\textit{Transition systems and Safety Problem:} 
@@ -16,28 +16,28 @@ relation, and $X$ is the set of state variables.
 In the context of transition system $X'= \{x'| x \in X\}$ is a set of next state variables.
 
 With respect to transition system, a \emph{transition trace} is a formula encoding multiple consecutive 
-transitions: $\Tr^{n}(X^{(0)}, \dots, X^{(n)}) = \Tr(X^{(0)}, X^{(1)}) \land \dots \land \Tr(X^{(n-1)}, X^{(n)})$
+transitions: $\Tr^{n}(X^{(0)}, \ldots, X^{(n)}) = \Tr(X^{(0)}, X^{(1)}) \land \ldots \land \Tr(X^{(n-1)}, X^{(n)})$
 (we assume that $Tr^{0} = \top$).
-%We write $\Tr^{n}(X^{(0)},\dots,X^{(n)})$ for this conjunction throughout the paper.
+%We write $\Tr^{n}(X^{(0)},\ldots,X^{(n)})$ for this conjunction throughout the paper.
 A \emph{safety problem} is $P = \tuple{ \Init, \Tr, Bad, X }$, where $Bad$ is a formula representing 
 states that violate the safety property.
 
 %
 
 Safety verification amounts to determining whether there exists a transition trace that reaches a $Bad$ state from some initial state.
-If $\TS$ is safe, then there exists an inductive invariant $Inv(X)$ such that (1) $\forall X. \Init(X) \rightarrow Inv(X)$, 
+An inductive invariant is a formula $Inv(X)$ such that (1) $\forall X. \Init(X) \rightarrow Inv(X)$, 
 (2) $\forall X, X'. Inv(X) \land \Tr(X,X') \rightarrow Inv(X')$, and (3) $\forall X. Inv(X) \rightarrow \lnot Bad(X)$.
+Its existence proves that $\TS$ is safe.
 We use \safetyCheck$(P)$ to denote a safety verification procedure that returns a tuple $\tuple{\SAFE, Inv(X)}$ if 
 $\TS$ is safe ($Inv(X)$ is an inductive invariant).
-% Otherwise, if \TS is unsafe it returns $\tuple{\UNSAFE, \Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, such that: 
-If $\TS$ is unsafe it returns $\tuple{\UNSAFE, \Tr^{n}(X^{(0)}, \dots, X^{(n)})}$, s.t. $\exists X^{(0)}, \dots, X^{(n)}$\footnote{It is a shorthand notation for $\exists  X^{(0)}, \dots, \exists X^{(n)}$}.
+% Otherwise, if \TS is unsafe it returns $\tuple{\UNSAFE, \Tr^{n}(X^{(0)}, \ldots, X^{(n)})}$, such that: 
+If $\TS$ is unsafe, it returns $\tuple{\UNSAFE, \Tr^{n}}$, s.t.\footnote{$\exists X^{(0)}, \ldots, X^{(n)}$ is a shorthand notation for $\exists  X^{(0)}, \ldots, \exists X^{(n)}$}:
 
-$$\Init(X^{(0)}) \land \Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land Bad(X^{(n)})$$
+$$\exists X^{(0)}, \ldots, X^{(n)}. \Init(X^{(0)}) \land \Tr^{n}(X^{(0)}, \ldots, X^{(n)}) \land Bad(X^{(n)})$$
 
 % \textit{Nontermination:}
-A transition system is called \textbf{nonterminating} if there exists an initial state from which exists
-an infinite sequence of states, meaning:
-$$\exists X^{(0)}, X^{(1)}, \dots. \Init(X^{(0)}) \land \forall i \in \mathbb{N}. \Tr(X^{(i)}, X^{(i+1)})$$
+A transition system is called \textbf{nonterminating} if there exists an infinite execution beginning in an initial state:
+$$\exists X^{(0)}, X^{(1)}, \ldots. \Init(X^{(0)}) \land \forall i \in \mathbb{N}. \Tr(X^{(i)}, X^{(i+1)})$$
 
 \begin{definition}[Recurrent Set]
     For a transition system $\tuple{ \Init, \Tr, X }$, a formula $N(X)$ is a recurrent set if: 
@@ -50,10 +50,9 @@ Intuitively, every state in a recurrent set has a successor that also lies in th
 initial states.
 
 % \textit{Termination:} 
-A $\TS$ is called \textbf{terminating} if for every initial state there does not exist an infinite sequence of reachable states.
-Transition system $\tuple{ \Init, \Tr, X }$ terminates, if the following holds:
-% $$\forall X. \Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists \dots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \dots, X^{(n)})$$
-$$\lnot \exists X^{(0)}, X^{(1)}, \dots. \Init(X^{(0)}) \land \forall i \in \mathbb{N}. \Tr(X^{(i)}, X^{(i+1)})$$
+A $\TS$ is called \textbf{terminating} if it's not nonterminating, i.e. there exists no infinite execution beginning in an initial state.
+% $$\forall X. \Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists \ldots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \ldots, X^{(n)})$$
+% $$\lnot \exists X^{(0)}, X^{(1)}, \ldots. \Init(X^{(0)}) \land \forall i \in \mathbb{N}. \Tr(X^{(i)}, X^{(i+1)})$$
 % Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, mapping states to a well-founded domain, such that its value strictly decreases along every transition.
 
 \begin{definition}[Transition invariant]
@@ -65,7 +64,7 @@ Intuitively, a transition invariant is a formula that overapproximates any possi
 
 \begin{definition}[Well-founded Relation]
     A binary relation $W \subseteq D \times D$ over a domain $D$ is \emph{well-founded} if there exists no infinite descending chain:
-    $$\nexists\, d_0, d_1, d_2, \dots \in D.\ 
+    $$\nexists\, d_0, d_1, d_2, \ldots \in D.\ 
       \forall i \in \mathbb{N}.\ (d_i, d_{i+1}) \in W$$
 \end{definition}
 
@@ -155,14 +154,13 @@ refines the safety problem $P$ by blocking the states that deterministically
 lead to the sink states, updating the safety problem.
 \fi
 SNA iteratively solves increasingly refined safety problems until the given sink states are proven unreachable.
-In every iteration, if there exists a trace reaching sink states (line~\ref{SNA:UNSAFE}), $\blockTerm$ (Algorithm~\ref{Alg:SNABlock}) refines the safety problem $P$ by blocking the states that deterministically
-lead to the sink states, updating the safety problem.
+In every iteration, if there exists a trace reaching sink states (line~\ref{SNA:UNSAFE}), $\blockTerm$ (Algorithm~\ref{Alg:SNABlock}) refines the safety problem $P$ by blocking states from which every path
+leads to the sink states.
 $\blockTerm$ is described in detail below.
 %When $P$ is safe, the algorithm checks if the inductive invariant $Inv(X)$ is a recurrent set (line~\ref{SNA:SAFE}).
 When the original sink states are no longer reachable, SNA checks if the computed inductive invariant $\inv(X)$ is a recurrent set (line~\ref{SNA:SAFE}).
 %The check at line~\ref{SNA:SAFE} is executed using quantifier elimination, checking if the following formula is unsatisfiable:
-This amounts to deciding satisfiability of the following formula:
-$$\inv(X) \land \lnot \exists X'. \Tr(X,X').$$
+Since $\inv$ is inductive, it suffices to check that every $\inv$-state has a successor: $\inv(X) \land \lnot \exists X'. \Tr(X,X')$.
 If $\inv(X)$ is a recurrent set, then the transition system is nonterminating.
 Otherwise, SNA returns \UNKNOWN.
 
@@ -181,9 +179,9 @@ Otherwise, SNA returns \UNKNOWN.
     \SetKwInOut{Input}{Input}
     \SetKwInOut{Output}{Output}
     \SetKwInOut{Data}{Data}
-    \Input{Safety problem $P = \tuple{\Init, \Tr, \Sink, X}$, terminating trace $\Tr^{n}(X^{(0)}, \ldots, X^{(n)}) = \Tr(X^{(0)}, X^{(1)}) \land \dots \land \Tr(X^{(n-1)}, X^{(n)})$}
+    \Input{Safety problem $P = \tuple{\Init, \Tr, \Sink, X}$, trace $\Tr^{n}(X^{(0)}, \ldots, X^{(n)}) = \Tr(X^{(0)}, X^{(1)}) \land \ldots \land \Tr(X^{(n-1)}, X^{(n)})$}
     \Output{Refined safety problem $P'$}
-    \Data{$S_0,\ldots,S_n$ - formulas which encode states within trace reachable in 0, ..., n transitions}
+    \Data{$S_0,\ldots,S_n$ - states at positions $0, \ldots, n$ of the $n$-step paths from $\Init$ that end in $\Sink$}
 
     % \SetKwFunction{FBlock}{BlockTerm}
     % \SetKwProg{Fn}{Function}{:}{}
@@ -191,24 +189,24 @@ Otherwise, SNA returns \UNKNOWN.
     % Replace lpp[ with For loop
     \SetAlgoFuncName{BlockTerm}{autoref name}
         \For{$i = n-1; i >= 0; i \gets i - 1$}{
-            $S_{i+1}(X) \gets \QE(\exists X^{(0)},\dots, X^{(i)},  X^{(i+2)}, \dots, X^{(n)}.$ $\Init(X^{(0)}) \land \Tr^{n} \land \Sink(X^{(n)}))[X^{(i+1)} \mapsto X]$ \label{SNA:Si1}\\
-            $S_{i}(X) \gets \QE(\exists X^{(0)},\dots, X^{(i-1)},  X^{(i+1)}, \dots, X^{(n)}.$ $\Init(X^{(0)}) \land \Tr^{n} \land \Sink(X^{(n)}))[X^{(i)} \mapsto X]$ \label{SNA:Si}\\
+            $S_{i+1}(X) \gets \QE(\exists X^{(0)},\ldots, X^{(i)},  X^{(i+2)}, \ldots, X^{(n)}.$ $\Init(X^{(0)}) \land \Tr^{n} \land \Sink(X^{(n)}))[X^{(i+1)} \mapsto X]$ \label{SNA:Si1}\\
+            $S_{i}(X) \gets \QE(\exists X^{(0)},\ldots, X^{(i-1)},  X^{(i+1)}, \ldots, X^{(n)}.$ $\Init(X^{(0)}) \land \Tr^{n} \land \Sink(X^{(n)}))[X^{(i)} \mapsto X]$ \label{SNA:Si}\\
             \If{SAT ? $S_i(X) \land \Tr(X,X') \land \lnot S_{i+1}(X')$ \label{SNA:BLOCK}}{
                 $\Tr'(X,X') \gets \Tr(X,X') \land \lnot S_{i+1}(X')$ \label{SNA:TRBLOCK}  \\
                 \Return $\tuple{\Init, \Tr', \Sink, X}$
             }
         }
-        $\Init'(X^{(0)}) \gets \Init(X^{(0)}) \land \lnot \QE(\exists X^{(1)}, \dots, X^{(n)}. \Init(X^{(0)}) \land \Tr^{n} \land \Sink(X^{(n)}))$  \label{SNA:BLOCKINIT} \\
+        $\Init'(X^{(0)}) \gets \Init(X^{(0)}) \land \lnot \QE(\exists X^{(1)}, \ldots, X^{(n)}. \Init(X^{(0)}) \land \Tr^{n} \land \Sink(X^{(n)}))$  \label{SNA:BLOCKINIT} \\
         \Return $\tuple{\Init', \Tr, \Sink, X}$
     % }
 \end{algorithm}
 
-The $\blockTerm$ procedure takes as input a safety problem $P$ and a trace formula $\Tr^{n}(X^{(0)}, \dots, X^{(n)})$ such 
-that $\Init(X^{(0)}) \land \Tr^{n}(X^{(0)}, \dots, X^{(n)}) \land \Sink(X^{(n)})$ is satisfiable.
+The $\blockTerm$ procedure takes as input a safety problem $P$ and a trace formula $\Tr^{n}(X^{(0)}, \ldots, X^{(n)})$ such 
+that $\Init(X^{(0)}) \land \Tr^{n}(X^{(0)}, \ldots, X^{(n)}) \land \Sink(X^{(n)})$ is satisfiable.
 The algorithm iteratively analyses the trace from the last transition backwards. 
 % It checks if it is possible to take a transition that does not lead to the sink states, starting from the end of the trace.
 Using \QE Algorithm~\ref{Alg:SNABlock} computes $S_i$ and $S_{i+1}$, 
-encoding the states that are reachable after $i$ and $i+1$ transitions from $\Init$ (lines~\ref{SNA:Si1},~\ref{SNA:Si}).
+encoding the states at positions $i$ and $i+1$ of the $n$-step trace from $\Init$ that end in $\Sink$ (lines~\ref{SNA:Si1},~\ref{SNA:Si}).
 Then, at line~\ref{SNA:BLOCK} it checks if $S_i(X) \land \Tr(X,X') \land \lnot S_{i+1}(X')$ is satisfiable. %, sending a query to the SMT solver.
 %With this query, the algorithm checks if it is possible to reach some state that does not necessarily lead to the sink states.
 Intuitively, with this query, the algorithm checks if it is possible to take an alternative transition at step $i$, one that does not lead to the sink states.

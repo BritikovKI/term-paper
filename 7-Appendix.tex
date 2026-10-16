@@ -2,17 +2,8 @@
 \renewcommand{\thesection}{\Alph{section}}%
 % TODO: MOVE TO THE APPENDICES
 \section{Proof of Lemma~\ref{Lem:Term}} \label{App:proofs}
-\begin{lemma}
-    Let $\TS = \tuple{\Init, \Tr, X}$ be a transition system and let 
-    $C(X)$ be a formula such that $\lnot C(X)$ is unreachable in 
-    $\TS$. If $\TrInv(X,X')$ is a finite disjunction of formulas encoding well-founded
-    relations and satisfies $\forall X, X',X''$:
-    \begin{align*}
-     C(X) \land \Tr(X,X') \rightarrow& \TrInv(X,X') \\
-     C(X) \land \TrInv(X,X') \land \Tr(X',X'') \rightarrow& \TrInv(X,X'')
-    \end{align*}    
-    then $\TS$ is terminating.
-\end{lemma}
+
+
 \begin{proof}
     We show that $\TrInv$ is a disjunctively well-founded transition 
     invariant over the reachable states of $\TS$, from which 
@@ -38,11 +29,11 @@
     $$C(X) \land \Tr(X,X') \rightarrow \TrInv(X,X').$$
     Therefore the base case holds.
 
-    \emph{Inductive step}: Assume $R(X) \land \Tr^n(X, \dots,X') \rightarrow 
+    \emph{Inductive step}: Assume $R(X) \land \Tr^n(X, \ldots,X') \rightarrow 
     \TrInv(X,X')$ for some $n \geq 1$. 
-    Let $\Tr^{n+1}(X',X'')$ hold, so there $\exists X, X', \dots, X''. R(X) \land \Tr^n(X,\dots,X') \land \Tr(X', X'')$. 
-    Since $R(X) \land \Tr^n(X, \dots, X') \rightarrow \TrInv(X,X')$, then trivially
-    $R(X) \land \Tr^n(X,\dots,X') \land \Tr(X', X'') \rightarrow \TrInv(X,X') \land \Tr(X',X'')$.
+    Let $\Tr^{n+1}(X,X'')$ hold, so there $\exists X, X', \ldots, X''. R(X) \land \Tr^n(X,\ldots,X') \land \Tr(X', X'')$. 
+    Since $R(X) \land \Tr^n(X, \ldots, X') \rightarrow \TrInv(X,X')$, then trivially
+    $R(X) \land \Tr^n(X,\ldots,X') \land \Tr(X', X'') \rightarrow \TrInv(X,X') \land \Tr(X',X'')$.
     Now, due to the fact that $R(X) \rightarrow C(X)$, the following holds:
     $R(X) \land \TrInv(X,X') \land \Tr(X', X'') \rightarrow C(X) \land \TrInv(X,X') \land \Tr(X', X'') .$
     By the lemma hypothesis:
@@ -93,7 +84,7 @@ Proof of Lemma~\ref{Lem:StackInv}.
     Initially $B = P_0$. Since problems are pushed on top of $B$, $B$ is popped only when it is the only element of $\Prs$.
     The algorithm then either returns, or pushes as the new bottom
     (a) $\blockTerm(B, \phi)$ (line~\ref{SNA_Refined:BlockTerm}), which keeps (1) because $\Sink_B$ is unchanged and $\Tr_B$ only shrinks,
-    and keeps (2) by Lemma~\ref{Lem:DETTERM}; or
+    and keeps (2) by Lemma~\ref{Lem:DETTERM}, whose premise holds by (1); or
     (b) $\tuple{\Init_B \land \lnot \Sink', \Tr_B, \Sink', X}$ (line~\ref{SNA_Refined:NewPush}), which satisfies (1) by the definition of $\Sink'$
     and keeps (2) because the removed initial states have no successors.
 \end{proof}
