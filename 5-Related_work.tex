@@ -40,13 +40,13 @@ multiphase or lexicographic ranking
 functions~\cite{DBLP:journals/jacm/Ben-AmramG14,FedyukovichZG18}, which 
 significantly broaden the class of programs for which termination 
 can be proved. However, ranking function synthesis is not always feasible.
-With fixpoint computation, ~\cite{DBLP:journals/pacmpl/UnnoTGK23} reduces termination and nontermination to the validity of a first-order fixpoint formula.
+Unno et al.~\cite{DBLP:journals/pacmpl/UnnoTGK23} use fixpoint computation, reducing termination and nontermination to the validity of a first-order fixpoint formula.
 Disjunctively well-founded transition 
 invariants~\cite{DBLP:conf/lics/PodelskiR04,DBLP:conf/sas/CookPR05,
-DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11} enable over-approximating the behavior of the transition 
-system. % reducing the termination proof to a disjunctive 
-%well-foundedness check on the invariant. 
-The central challenge there is the generation of the 
+DBLP:conf/cav/KroeningSTW10,DBLP:conf/tacas/TsitovichSWK11} enable overapproximating the behavior of the transition
+system. % reducing the termination proof to a disjunctive
+%well-foundedness check on the invariant.
+The central challenge in these approaches is the generation of the
 transition invariant itself: existing techniques rely either on 
 template-based generation~\cite{DBLP:conf/tacas/TsitovichSWK11} or on the direct construction of a 
 ranking relation from a particular trace~\cite{DBLP:conf/sas/CookPR05}. 

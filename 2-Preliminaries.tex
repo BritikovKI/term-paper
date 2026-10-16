@@ -3,7 +3,7 @@
 This section introduces the definitions and formalisms used in the paper. 
 Logical formulas in our approach are defined over the theory of Linear Integer Arithmetic (LIA).
 We use $X,X'$ to denote sets of variables (unprimed and primed).
-The formula defined over $X$ is a state formula, and a formula over $X \cup X'$ is a transition formula.
+A formula defined over $X$ is a state formula, and a formula over $X \cup X'$ is a transition formula.
 State formulas encode a set of states, and transition formulas define binary relations over the states.
 We use $Id(X,X')$ to denote the identity transition formula $\bigwedge_{x \in X} x = x'$.
 To denote variables over multiple states, we use superscript notation, e.g., $X^{(0)}, \ldots, X^{(n)}$.
@@ -11,13 +11,13 @@ To denote variables over multiple states, we use superscript notation, e.g., $X^
 
 %\textit{Transition systems and Safety Problem:} 
 A \emph{transition system} is defined as $\TS = \tuple{ \Init, \Tr, X }$, where $\Init$ is a formula 
-encoding the initial states of the system, $\Tr$ is a transition formula, encoding the transition 
+encoding the initial states of the system, $\Tr$ is a transition formula encoding the transition
 relation, and $X$ is the set of state variables.
-In the context of transition system $X'= \{x'| x \in X\}$ is a set of next state variables.
+In the context of a transition system, $X'= \{x'| x \in X\}$ is the set of next-state variables.
 
-With respect to transition system, a \emph{transition trace} is a formula encoding multiple consecutive 
+With respect to a transition system, a \emph{transition trace} is a formula encoding multiple consecutive 
 transitions: $\Tr^{n}(X^{(0)}, \ldots, X^{(n)}) = \Tr(X^{(0)}, X^{(1)}) \land \ldots \land \Tr(X^{(n-1)}, X^{(n)})$
-(we assume that $Tr^{0} = \top$).
+(we assume that $\Tr^{0} = \top$).
 %We write $\Tr^{n}(X^{(0)},\ldots,X^{(n)})$ for this conjunction throughout the paper.
 A \emph{safety problem} is $P = \tuple{ \Init, \Tr, Bad, X }$, where $Bad$ is a formula representing 
 states that violate the safety property.
@@ -31,7 +31,7 @@ Its existence proves that $\TS$ is safe.
 We use \safetyCheck$(P)$ to denote a safety verification procedure that returns a tuple $\tuple{\SAFE, Inv(X)}$ if 
 $\TS$ is safe ($Inv(X)$ is an inductive invariant).
 % Otherwise, if \TS is unsafe it returns $\tuple{\UNSAFE, \Tr^{n}(X^{(0)}, \ldots, X^{(n)})}$, such that: 
-If $\TS$ is unsafe, it returns $\tuple{\UNSAFE, \Tr^{n}}$, s.t.\footnote{$\exists X^{(0)}, \ldots, X^{(n)}$ is a shorthand notation for $\exists  X^{(0)}, \ldots, \exists X^{(n)}$}:
+If $\TS$ is unsafe, it returns $\tuple{\UNSAFE, \Tr^{n}}$ such that\footnote{$\exists X^{(0)}, \ldots, X^{(n)}$ is shorthand notation for $\exists  X^{(0)}, \ldots, \exists X^{(n)}$.}
 
 $$\exists X^{(0)}, \ldots, X^{(n)}. \Init(X^{(0)}) \land \Tr^{n}(X^{(0)}, \ldots, X^{(n)}) \land Bad(X^{(n)})$$
 
@@ -45,12 +45,12 @@ $$\exists X^{(0)}, X^{(1)}, \ldots. \Init(X^{(0)}) \land \forall i \in \mathbb{N
     (2) $\exists X. N(X) \land \Init(X)$.
 \end{definition}
 
-Transition system is nonterminating if there exists a \emph{recurrent set}. 
+A transition system is nonterminating if there exists a \emph{recurrent set}.
 Intuitively, every state in a recurrent set has a successor that also lies in the recurrent set, and the recurrent set contains some of the 
 initial states.
 
 % \textit{Termination:} 
-A $\TS$ is called \textbf{terminating} if it's not nonterminating, i.e. there exists no infinite execution beginning in an initial state.
+A $\TS$ is called \textbf{terminating} if it is not nonterminating, i.e., there exists no infinite execution beginning in an initial state.
 % $$\forall X. \Init(X) \rightarrow \exists n \in \mathbb{N}. \lnot \exists \ldots, X^{(n)}. \Tr^{n}(X, X^{(1)}, \ldots, X^{(n)})$$
 % $$\lnot \exists X^{(0)}, X^{(1)}, \ldots. \Init(X^{(0)}) \land \forall i \in \mathbb{N}. \Tr(X^{(i)}, X^{(i+1)})$$
 % Termination can be proven by synthesizing a \emph{ranking function}~\cite{DBLP:conf/vmcai/PodelskiR04}, mapping states to a well-founded domain, such that its value strictly decreases along every transition.
@@ -82,7 +82,7 @@ then the transition system terminates.
 % \textit{Craig Interpolation:} 
 Given two formulas $A$ and $B$ where $A \land B$ is unsatisfiable, a Craig interpolant~\cite{Craig_1957} 
 for $A$ and $B$ is a formula $I$, where: (1) $A \rightarrow I$; 
-(2) $I \land B$ is unsatisfiable; and (3) $I$ only contains the symbols, common to both $A$ and $B$.
+(2) $I \land B$ is unsatisfiable; and (3) $I$ contains only the symbols common to both $A$ and $B$.
 Craig interpolants are widely used as overapproximations.
 We write $\textsc{Itp}(A, B)$ to denote a Craig interpolant.
 
@@ -90,10 +90,10 @@ We write $\textsc{Itp}(A, B)$ to denote a Craig interpolant.
 Many techniques reduce termination and nontermination analysis to safety verification.
 One notable approach is the reduction of nontermination to safety, which constructs
 recurrent sets via inductive invariants~\cite{DBLP:conf/tacas/ChenCFNO14}.
-It was introduced in the context of proving nontermination of programs with loops, and can be extended to transition systems.
+It was introduced in the context of proving nontermination of programs with loops and can be extended to transition systems.
 
 \begin{definition}[Sink states]
-    For a transition system $\tuple{\Init, \Tr, X }$, a state $s$ is a sink state, if $\lnot \exists s'. \Tr(s,s')$.
+    For a transition system $\tuple{\Init, \Tr, X }$, a state $s$ is a sink state if $\lnot \exists s'. \Tr(s,s')$.
     We use $\Sink(X)$ to denote the formula encoding all sink states in the transition system:
     $\forall X. \Sink(X) \leftrightarrow \lnot \exists X'. \Tr(X,X')$
 \end{definition}
@@ -101,18 +101,18 @@ It was introduced in the context of proving nontermination of programs with loop
 \begin{figure}[t]
     \centering
     \includegraphics[width=\linewidth]{Figures/SNA.pdf}
-    \caption{Execution flow of Safety-based Nontermination analysis, cf.~\cite{DBLP:conf/tacas/ChenCFNO14}}
+    \caption{Execution Flow of Safety-based Nontermination Analysis, cf.~\cite{DBLP:conf/tacas/ChenCFNO14}.}
     \label{fig:SNA}
 \end{figure}
 
-Algorithm~\ref{Alg:SNA} for Safety-based Nontermination analysis (SNA) takes a 
+Algorithm~\ref{Alg:SNA} for Safety-based Nontermination Analysis (SNA) takes a
 safety problem $P = \tuple{\Init, \Tr, \Sink, X}$, where sink states are constructed from $\TS$ using
 quantifier elimination (\QE): $\Sink(X) = \lnot \QE(\exists X'. \Tr(X,X'))$.
-Throughout the paper we assume that \QE is exact.
-As an output, it returns \NONTERM{} if the system is nonterminating, and \UNKNOWN, if the algorithm cannot conclude the analysis. 
-Figure~\ref{fig:SNA} illustrates the execution flow of Safety-based Nontermination.
-As a preprocessing step, the sink states are removed from initial states, $\Init \gets \Init \land \lnot \Sink$, 
-since no transition can be taken from them (it is also applied to the algorithms later in the paper).
+Throughout the paper, we assume that \QE{} is exact.
+As output, SNA returns \NONTERM{} if the system is nonterminating, and \UNKNOWN{} if the algorithm cannot conclude the analysis.
+Figure~\ref{fig:SNA} illustrates the execution flow of SNA.
+As a preprocessing step, the sink states are removed from the initial states, $\Init \gets \Init \land \lnot \Sink$,
+since no transition can be taken from them (this step is also applied in the algorithms presented later in the paper).
 
 \begin{algorithm}[t!]
 	\SetInd{0.5em}{0.5em}
@@ -160,7 +160,7 @@ $\blockTerm$ is described in detail below.
 %When $P$ is safe, the algorithm checks if the inductive invariant $Inv(X)$ is a recurrent set (line~\ref{SNA:SAFE}).
 When the original sink states are no longer reachable, SNA checks if the computed inductive invariant $\inv(X)$ is a recurrent set (line~\ref{SNA:SAFE}).
 %The check at line~\ref{SNA:SAFE} is executed using quantifier elimination, checking if the following formula is unsatisfiable:
-Since $\inv$ is inductive, it suffices to check that every $\inv$-state has a successor: $\inv(X) \land \lnot \exists X'. \Tr(X,X')$.
+Since $\inv$ is inductive, it suffices to check that every $\inv$-state has a successor, i.e., that $\inv(X) \land \lnot \exists X'. \Tr(X,X')$ is unsatisfiable.
 If $\inv(X)$ is a recurrent set, then the transition system is nonterminating.
 Otherwise, SNA returns \UNKNOWN.
 
@@ -203,20 +203,20 @@ Otherwise, SNA returns \UNKNOWN.
 
 The $\blockTerm$ procedure takes as input a safety problem $P$ and a trace formula $\Tr^{n}(X^{(0)}, \ldots, X^{(n)})$ such 
 that $\Init(X^{(0)}) \land \Tr^{n}(X^{(0)}, \ldots, X^{(n)}) \land \Sink(X^{(n)})$ is satisfiable.
-The algorithm iteratively analyses the trace from the last transition backwards. 
+The algorithm iteratively analyzes the trace from the last transition backwards.
 % It checks if it is possible to take a transition that does not lead to the sink states, starting from the end of the trace.
-Using \QE Algorithm~\ref{Alg:SNABlock} computes $S_i$ and $S_{i+1}$, 
-encoding the states at positions $i$ and $i+1$ of the $n$-step trace from $\Init$ that end in $\Sink$ (lines~\ref{SNA:Si1},~\ref{SNA:Si}).
-Then, at line~\ref{SNA:BLOCK} it checks if $S_i(X) \land \Tr(X,X') \land \lnot S_{i+1}(X')$ is satisfiable. %, sending a query to the SMT solver.
+Using \QE, Algorithm~\ref{Alg:SNABlock} computes $S_i$ and $S_{i+1}$,
+encoding the states at positions $i$ and $i+1$ of the $n$-step traces from $\Init$ that end in $\Sink$ (lines~\ref{SNA:Si1} and~\ref{SNA:Si}).
+Then, at line~\ref{SNA:BLOCK}, it checks if $S_i(X) \land \Tr(X,X') \land \lnot S_{i+1}(X')$ is satisfiable. %, sending a query to the SMT solver.
 %With this query, the algorithm checks if it is possible to reach some state that does not necessarily lead to the sink states.
 Intuitively, with this query, the algorithm checks if it is possible to take an alternative transition at step $i$, one that does not lead to the sink states.
 If it is possible, the algorithm blocks the states deterministically leading to the sink states by excluding them from the transition relation (line~\ref{SNA:TRBLOCK}).
-If the whole trace is deterministic (it is not possible to take an alternative transition along the trace), \blockTerm blocks the subset of initial states deterministically leading to sink (line~\ref{SNA:BLOCKINIT}).
+If the whole trace is deterministic (it is not possible to take an alternative transition along the trace), \blockTerm blocks the subset of initial states deterministically leading to the sink states (line~\ref{SNA:BLOCKINIT}).
 
 \begin{lemma}\label{Lem:DETTERM}
     Let $P = \tuple{\Init, \Tr, \Sink, X}$ be a safety problem where $\Sink$ are sink states,
     and let $\tuple{\Init', \Tr', \Sink, X} = \blockTerm(P, \Tr^n)$.
-    Then every infinite run of $\tuple{\Init, \Tr, X}$ is an infinite run of $\tuple{\Init', \Tr', X}$ cf.~\cite{DBLP:conf/tacas/ChenCFNO14} (proof is given in Appendix~\ref{App:BlockTerm}).
+    Then every infinite run of $\tuple{\Init, \Tr, X}$ is an infinite run of $\tuple{\Init', \Tr', X}$, cf.~\cite{DBLP:conf/tacas/ChenCFNO14} (the proof is given in Appendix~\ref{App:BlockTerm}).
 \end{lemma}
 
 \begin{example}\label{Ex:SNA}
@@ -228,32 +228,32 @@ If the whole trace is deterministic (it is not possible to take an alternative t
     This $\TS$ is nonterminating, since $x$ infinitely decreases.
 
     First, preprocessing removes sink states from the initial states: $\Init(X) \;\gets\; x \neq 0$.
-    Then, Algorithm~\ref{Alg:SNA} updates the transition relation via \blockTerm : 
+    Then, Algorithm~\ref{Alg:SNA} updates the transition relation via \blockTerm:
     $\Tr(X, X') \;\gets\; \Tr(X, X') \land x' \neq 0$.
-    The safety check of the updated problem concludes \SAFE,
-    with $Inv(X) \triangleq x \neq 0$. 
-    Invariant is a recurrent set, and algorithm returns \NONTERM.
+    The safety check of the updated problem concludes \SAFE{}
+    with $Inv(X) \triangleq x \neq 0$.
+    The invariant is a recurrent set, and the algorithm returns \NONTERM.
 
     \textit{Motivation for transition invariant-based termination analysis.} Consider a 
     small modification (replacing $x\neq0$ with $x>0$): $\Tr(X, X') \triangleq 
     (x' = x - 1 \lor x' = x - 2) \land x > 0$. 
-    This renders $\TS$ terminating since $x$ is strictly positive and decreases every step. 
+    This renders $\TS$ terminating, since $x$ is strictly positive and decreases at every step.
     However, Algorithm~\ref{Alg:SNA} cannot detect termination by design, and 
     it would return \UNKNOWN. 
 
     Let us examine the execution of Algorithm~\ref{Alg:SNA} on this example.
-    First, preprocessing removes sink states from initial states:
+    First, preprocessing removes sink states from the initial states:
     $\Init(X) \;\gets\; x > 0$.
     In the first iteration, \safetyCheck$(P)$ returns \UNSAFE{} with a 
     trace $\Tr^1(X^{(0)}, X^{(1)})$ satisfying $\exists X^{(0)}, X^{(1)}. 
     \Init(X^{(0)}) \land \Tr^1(X^{(0)}, X^{(1)}) \land \Sink(X^{(1)})$.
-    Our key insight is to generalise such terminating traces into a formula describing an 
-    entire class of terminating behaviours. 
-    If this generalisation yields a disjunctively well-founded 
+    Our key insight is to generalize such terminating traces into a formula describing an
+    entire class of terminating behaviors.
+    If this generalization yields a disjunctively well-founded 
     transition invariant over all reachable states, it witnesses 
     termination.
-    Particularly, $\TrInv(X, X') \triangleq x' < x \land x > 0 \land x' > -2$ is a well-founded transition 
+    In particular, $\TrInv(X, X') \triangleq x' < x \land x > 0 \land x' > -2$ is a well-founded transition 
     invariant that proves the termination of $\TS$.
-    Section~\ref{Sec:Main} presents the algorithm that automates this generalisation via 
+    Section~\ref{Sec:Main} presents the algorithm that automates this generalization via
     Craig interpolation.
 \end{example}

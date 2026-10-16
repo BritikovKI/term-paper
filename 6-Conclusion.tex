@@ -7,19 +7,19 @@ invariant generation for proving and disproving termination of
 infinite-state systems. 
 The approach extends safety-based nontermination analysis with a termination proving capability, 
 unifying the two within a single framework. 
-Our key insight is to exploit terminating traces produced by the SNA
+Our key insight is to exploit terminating traces produced by SNA
 as a source of structural information, using Craig interpolation 
 to construct well-founded transition invariants guided by the 
 termination conditions. 
 The interaction between termination and nontermination reasoning is central to our technique: 
-transition invariants focus the nontermination analysis on not covered states, 
+transition invariants focus the nontermination analysis on not covered states,
 while SNA provides terminating traces that drive invariant generation.
 % Grounding the approach in safety verification provides a robust foundation, enabling 
 % efficient checking of both termination and nontermination via 
 % existing safety solvers. 
 We proved the soundness of the algorithm and conducted an extensive
 experimental evaluation. 
-The results demonstrate the benefit of combining termination and nontermination analysis, 
+The results demonstrate the benefit of combining termination and nontermination analyses,
 and show that our approach is particularly strong at proving nontermination and complementary to state-of-the-art tools,
 solving unique instances, including two that no participant of the Termination Competition~2025 solved.
 
